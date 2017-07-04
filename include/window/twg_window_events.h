@@ -17,21 +17,15 @@ namespace twg
 	class WindowEvents : WindowBase
 	{
 	public:
-		virtual void onMouse(int32 x, int32 y, MouseType type, int32 wheel) {};
+		virtual void onMouse(int32 x, int32 y, MouseType type) {};
 		virtual void onKeyboard(int32 key, bool isDown) {};
-		virtual void onSize(Point_i newSize) {};
-		virtual void onSizing(int32& left,
-							  int32& top,
-							  int32& right,
-							  int32& bottom,
+		virtual void onResize(Point_i diffSize, 
+							  Point_i diffPos, 
 							  SizingType type) {};
-		virtual void onMoving(int32& left,
-							  int32& top,
-							  int32& right,
-							  int32& bottom) {};
-		virtual void onActivate(bool isActive, bool isMinimized) {};
-		virtual void onComand(int32 comandNo) {};
-		virtual void onClose(void) {};
+		virtual void onMove(Point_i diffPos) {};
+		virtual void onMessage(int32 messageNo) {};
+		virtual void onKillFocus(void) {};
+		virtual void onActivate(void) {};
 	protected:
 		LRESULT wndProcNext(HWND hwnd, 
 							UINT msg,
@@ -46,15 +40,6 @@ namespace twg
 	};
 
 	//-------------------------------------------------------------------------
-	enum TaskbarColor
-	{
-		TASKBAR_GREEN,
-		TASKBAR_YELLOW,
-		TASKBAR_RED,
-		TASKBAR_LOADING,
-		TASKBAR_BLINK
-	};
-
 	enum MouseType
 	{
 		MOUSE_L_DBL, 	MOUSE_L_DOWN, 	MOUSE_L_UP,
@@ -63,7 +48,9 @@ namespace twg
 		MOUSE_X1_DBL, 	MOUSE_X1_DOWN, 	MOUSE_X1_UP,
 		MOUSE_X2_DBL, 	MOUSE_X2_DOWN, 	MOUSE_X2_UP,
 
-		MOUSE_WHEEL, 
+		MOUSE_WHEEL_UP,
+		MOUSE_WHEEL_DOWN,
+
 		MOUSE_MOVE
 	};
 

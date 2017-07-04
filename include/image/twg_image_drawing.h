@@ -50,6 +50,14 @@ namespace twg
 	class ImageDrawing_win : ImageDrawing {};
 
 	//-------------------------------------------------------------------------
+	std::vector<Point_d> computeEllipse(Point_d pos, Point_d radius);
+	std::vector<Point_d> computeArc(Point_d c, 
+								 double radius, 
+								 double startAngle,
+								 double endAngle);
+	/// @todo write other primitives ...
+
+	//-------------------------------------------------------------------------
 	class Pen
 	{
 	public:

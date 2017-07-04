@@ -47,7 +47,7 @@ namespace twg
 		WindowStandart(WidnowType type);
 		~WindowStandart();
 
-		Point_i 	getCanvasSize(void);
+		Point_i 	getClientSize(void);
 		Point_i 	getWindowSize(void);
 		Point_i 	getPos(void);
 		Point_i 	getMaxSize(void);
@@ -55,7 +55,7 @@ namespace twg
 		std::string getCaption(void);
 		WindowStyle getStyle(void);
 
-		void setCanvasSize(Point_i size);
+		void setClientSize(Point_i size);
 		void setWindowSize(Point_i size);
 		void setPos(Point_i size);
 		void setMaxSize(Point_i maxSize_);
@@ -117,7 +117,16 @@ namespace twg
 		WINDOW_MAX_BUTTON 	= 0x100,
 		WINDOW_MIN_BUTTON 	= 0x200
 	};
-	
+
+	enum TaskbarColor
+	{
+		TASKBAR_GREEN,
+		TASKBAR_YELLOW,
+		TASKBAR_RED,
+		TASKBAR_LOADING,
+		TASKBAR_BLINK
+	};
+
 }
 
 #endif // TWG_WINDOW_INCLUDED

@@ -23,8 +23,8 @@ Coming soon...
 - Использование Doxygen для документации.
 
 ## Использованные библиотеки
-- `AGG`(Anti-Grain Geometry). Автор: Maxim Shemanarev. Сайт: [www.antigrain.com](www.antigrain.com).
-- `EasyBMP`. Автор: Paul Macklin. Сайт: [easybmp.sourceforge.net](easybmp.sourceforge.net).
+- `AGG`(Anti-Grain Geometry). Автор: Maxim Shemanarev. Сайт: [www.antigrain.com](http://www.antigrain.com).
+- `EasyBMP`. Автор: Paul Macklin. Сайт: [easybmp.sourceforge.net](http://easybmp.sourceforge.net).
 
 ## Лицензия
 

@@ -18,28 +18,17 @@ namespace twg
 	class WindowCtrl : WindowEventsBase
 	{
 	public:
-		addCtrl(Ctrl* ctrl);
+		int32u addCtrl(Ctrl* ctrl);
+		void deleteCtrl(int32u id);
+		void makeOrder(int32u idMove2Up, int32u idMove2Down);
+		
+		int32u getUniqueId(void);
+		int32u getCtrlNum(void);
 
-		/** @todo Чтобы можно было настраивать порядок, удалять ctrl'ы.
-			@todo Сделать контролы на стандартное меню, кнопку, textEdit.
-			@todo Реализовать с учетом возможной анимации ctrl'ов.
-		 */
+		void runTimer(int32u delay);
+		void stopTimer(void);
 	private:
-		void onMouse(int32 x, int32 y, MouseType type, int32 wheel) {};
-		void onKeyboard(int32 key, bool isDown) {};
-		void onSize(Point_i newSize) {};
-		void onSizing(int32& left,
-					  int32& top,
-					  int32& right,
-					  int32& bottom,
-					  SizingType type) {};
-		void onMoving(int32& left,
-					  int32& top,
-					  int32& right,
-					  int32& bottom) {};
-		void onActivate(bool isActive, bool isMinimized) {};
-		void onComand(int32 comandNo) {};
-		void onClose(void) {};
+		
 	};
 
 	

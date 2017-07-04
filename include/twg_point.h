@@ -20,7 +20,7 @@ namespace twg
 		ComputeType getLength(void);
 		ComputeType getAngle(void);
 
-		void toBasis(SelfConst x1, SelfConst y1);
+		void toBasis(SelfConst x1, SelfConst y1);		
 		void fromBasis(SelfConst x1, SelfConst y1);
 
 		void rotate(const ComputeType angle, 
@@ -54,6 +54,8 @@ namespace twg
 	};
 
 	typedef PointBase<int32, double>	Point_i;
+	typedef PointBase<int32u, double>	Point_iu;
+	typedef PointBase<int32&, double>	Point_ri;
 	typedef PointBase<double>			Point_d;
 
 }
