@@ -33,7 +33,7 @@ DWORD WINAPI msgCycle(LPVOID hwnd)
 
 WindowBase::WindowBase() 
 {
-	m_hwnd = create(wndProc);
+	m_hwnd = create((void*)(wndProc));
 	m_hdc = GetDC(m_hwnd);
 
 	UpdateWindow(hwnd);

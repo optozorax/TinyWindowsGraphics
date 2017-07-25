@@ -1,13 +1,13 @@
 #ifndef TWG_WINDOW_BUFER_INCLUDED
 #define TWG_WINDOW_BUFER_INCLUDED
 
-#include "../twg_window.h"
-#include "../twg_image.h"
+#include "twg/window.h"
+#include "twg/image.h"
 
-#include "../image/twg_image_drawing.h"
-#include "../image/twg_image_agg.h"
+#include "twg/image/image_drawing.h"
+#include "twg/image/image_agg.h"
 
-#include "twg_window_events.h"
+#include "twg/window/window_events.h"
 
 namespace twg
 {
@@ -16,7 +16,7 @@ namespace twg
 	class WindowBuffer : WindowClass
 	{
 	public:
-		void redraw()
+		void redraw();
 		ImageClass buffer;
 	private:
 		using WindowClass::canvas;

@@ -1,8 +1,8 @@
 #ifndef TWG_IMAGE_DRAWING_INCLUDED
 #define TWG_IMAGE_DRAWING_INCLUDED
 
-#include "../twg_basics.h"
-#include "../twg_image.h"
+#include "twg/basics.h"
+#include "twg/image.h"
 
 namespace twg
 {
@@ -16,8 +16,8 @@ namespace twg
 	class ImageDrawing : ImageBase
 	{
 	public:
-		virtual void setPen(Color clr, ImageBase *img) = 0;
-		virtual void setBrush(Color clr, ImageBase *img) = 0;
+		virtual void setPen(Pen pen) = 0;
+		virtual void setBrush(Brush brush) = 0;
 		virtual void setTextStyle(int8u width, 
 								  std::string name, 
 								  TextFlag flags = TEXT_NONE) = 0;
@@ -25,7 +25,7 @@ namespace twg
 		virtual void drawTo(ImageWin *dst, 
 							Point_i dstStart, 
 							Point_i srcStart,
-							Point_i srcSize);
+							Point_i srcSize); // Used AlphaBlend.
 
 		virtual Pen 		getPen(void) = 0;
 		virtual Brush 		getBrush(void) = 0;
@@ -61,7 +61,11 @@ namespace twg
 	class Pen
 	{
 	public:
-		int 		thick;
+		Pen(int32u thick, Color clr) : thick(thick), clr(clr), img(nullptr) {};
+		Pen(int32u thick, ImageBase* img) : thick(thick), clr(Transparent), 
+			img(img) {};
+
+		int32u 		thick;
 		Color 		clr;
 		ImageBase*	img;
 	};
@@ -69,6 +73,9 @@ namespace twg
 	class Brush
 	{
 	public:
+		Brush(Color clr) : clr(clr), img(nullptr) {};
+		Brush(ImageBase* img) : clr(Transparent), img(img) {};
+
 		Color 		clr;
 		ImageBase*	img;
 	};
@@ -85,6 +92,9 @@ namespace twg
 	class TextStyle
 	{
 	public:
+		TextStyle(int8u width, std::string name, TextFlag  flags = TEXT_NONE) :
+			width(width), name(name), flags(flags) {};
+
 		int8u		width;
 		std::string	name;
 		TextFlag 	flags;

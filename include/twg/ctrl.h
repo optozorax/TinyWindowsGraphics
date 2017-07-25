@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include "twg_basics.h"
-#include "twg_point.h"
-#include "twg_window.h"
+#include "basics.h"
+#include "point.h"
+#include "window.h"
 
 namespace twg
 {

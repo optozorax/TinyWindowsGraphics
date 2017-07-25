@@ -3,10 +3,10 @@
 
 #include <string>
 
-#include "twg_window_events.h"
-#include "../twg_ctrl.h"
-#include "../twg_window.h"
-#include "../twg_basics.h"
+#include "twg/window/window_events.h"
+#include "twg/ctrl.h"
+#include "twg/window.h"
+#include "twg/basics.h"
 
 namespace twg
 {

@@ -10,27 +10,26 @@ namespace twg
 
 	enum 	MouseType;
 	enum 	SizingType;
-	enum 	TaskbarColor;
 
 	//-------------------------------------------------------------------------
 	// Имеет обработку событий окна.
 	class WindowEvents : WindowBase
 	{
 	public:
-		virtual void onMouse(int32 x, int32 y, MouseType type) {};
+		virtual void onMouse(Point_i pos, MouseType type) {};
 		virtual void onKeyboard(int32 key, bool isDown) {};
 		virtual void onResize(Point_i diffSize, 
 							  Point_i diffPos, 
 							  SizingType type) {};
-		virtual void onMove(Point_i diffPos) {};
+		virtual void onMove(Point_i newPos) {};
 		virtual void onMessage(int32 messageNo) {};
+		virtual void onTimer(void) {};
 		virtual void onKillFocus(void) {};
-		virtual void onActivate(void) {};
 	protected:
 		LRESULT wndProcNext(HWND hwnd, 
 							UINT msg,
 							WPARAM wParam, 
-							LPARAM lParam);
+							LPARAM lParam) override;
 
 		// По умолчанию возвращает DefWindowProc(hwnd, msg, wParam, lParam);
 		virtual LRESULT wndProcNextNext(HWND hwnd, 

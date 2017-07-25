@@ -14,7 +14,7 @@ namespace twg
 
 		//---------------------------------------------------------------------
 		T x, y;
-		PointBase(T x_ = 0, T y_ = 0);
+		PointBase(T x = 0, T y = 0);
 
 		//---------------------------------------------------------------------
 		ComputeType getLength(void);
@@ -28,7 +28,7 @@ namespace twg
 
 		ComputeType computeAngle(SelfType a);
 		
-		bool inRectanglenui(const SelfType p1, const SelfType p2);
+		bool inRectangle(const SelfType p1, const SelfType p2);
 		bool inTriangle(const SelfType p1, 
 						const SelfType p2, 
 						const SelfType p3);

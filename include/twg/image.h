@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include "twg_basics.h"
-#include "twg_point.h"
-#include "twg_color.h"
+#include "basics.h"
+#include "point.h"
+#include "color.h"
 
 namespace twg
 {
@@ -54,7 +54,7 @@ namespace twg
 
 	//-------------------------------------------------------------------------
 	void loadFromBmp(ImageBase *img, std::string fileName);
-	void saveToBmp(ImageBase *img, std::string fileName, bool is32bit = false);
+	void saveToBmp(ImageBase *img, std::string fileName, bool is32bitBmp = false);
 	
 }
 

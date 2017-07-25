@@ -1,9 +1,9 @@
 #ifndef TWG_IMAGE_AGG_INCLUDED
 #define TWG_IMAGE_AGG_INCLUDED
 
-#include "../twg_basics.h"
-#include "../twg_point.h"
-#include "../twg_color.h"
+#include "twg/basics.h"
+#include "twg/point.h"
+#include "twg/color.h"
 
 #include "agg_scanline_u.h"
 #include "agg_rasterizer_scanline_aa.h"
@@ -23,6 +23,7 @@ namespace twg
 	typedef agg::renderer_scanline_aa_solid<renderer_base>	renderer_scanline;
 	typedef agg::rasterizer_scanline_aa<>					rasterizer_scanline;
 	typedef agg::scanline_u8								scanline;
+	/// @TODO: add many objects.
 
 	//-------------------------------------------------------------------------
 	class ImageAgg : ImageBase
@@ -35,6 +36,7 @@ namespace twg
 		renderer_base 			renBase;
 		renderer_scanline 		renSl;
 		rasterizer_scanline 	sl;
+		/// @TODO: add many objects.
 	};
 
 	//-------------------------------------------------------------------------

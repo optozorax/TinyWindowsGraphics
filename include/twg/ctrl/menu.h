@@ -2,7 +2,7 @@
 #define TWG_CTRL_MENU_INCLUDED
 
 #include <string>
-#include "../twg_ctrl.h"
+#include "twg/ctrl.h"
 
 namespace twg
 {

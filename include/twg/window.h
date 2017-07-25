@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "twg_basics.h"
-#include "twg_point.h"
+#include "basics.h"
+#include "point.h"
 
 namespace twg
 {
@@ -31,7 +31,7 @@ namespace twg
 		HWND 	m_hwnd;
 		HDC 	m_hdc;
 
-		virtual HWND create() = 0;
+		virtual HWND create(void*) = 0;
 		virtual LRESULT wndProc(HWND hwnd, 
 								UINT msg,
 								WPARAM wParam, 
@@ -44,8 +44,8 @@ namespace twg
 	class WindowBase : WindowObject
 	{
 	public:
-		WindowStandart(WidnowType type);
-		~WindowStandart();
+		WindowBase(WindowType type);
+		~WindowBase();
 
 		Point_i 	getClientSize(void);
 		Point_i 	getWindowSize(void);
@@ -70,11 +70,11 @@ namespace twg
 		Point_i		m_minSize;
 		Point_i		m_maxSize;
 
-		HWND 	create();
+		HWND 	create(void*) override;
 		LRESULT wndProc(HWND hwnd, 
 						UINT msg,
 						WPARAM wParam, 
-						LPARAM lParam);
+						LPARAM lParam) override;
 
 		// По умолчанию возвращает DefWindowProc(hwnd, msg, wParam, lParam);
 		virtual LRESULT wndProcNext(HWND hwnd, 
