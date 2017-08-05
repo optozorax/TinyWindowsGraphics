@@ -1,5 +1,5 @@
-#ifndef TWG_WINDOW_BUFER_INCLUDED
-#define TWG_WINDOW_BUFER_INCLUDED
+#ifndef TWG_WINDOW_BUFFER_INCLUDED
+#define TWG_WINDOW_BUFFER_INCLUDED
 
 #include "twg/window.h"
 #include "twg/image.h"
@@ -13,24 +13,35 @@ namespace twg
 {
 
 	template<class WindowClass, class ImageClass>
-	class WindowBuffer : WindowClass
+	class WindowBuffer : public WindowClass
 	{
 	public:
-		void redraw();
+		WindowBuffer(WindowType type, Point_i startSize) : 
+			WindowClass(type),
+			buffer(startSize) {}
+
+		void redraw() {
+			canvas.copyTo(&buffer, 
+						  Point_i(0, 0), 
+						  Point_i(0, 0), 
+						  buffer.size());
+		}
+
 		ImageClass buffer;
 	private:
 		using WindowClass::canvas;
 	};
 
-	typedef WindowBufer<WindowBase, ImageBase> 			WindowBaseBase;
-	typedef WindowBufer<WindowBase, ImageDrawing_aa> 	WindowBaseDraw_aa;
-	typedef WindowBufer<WindowBase, ImageDrawing_win> 	WindowBaseDraw_win;
-	typedef WindowBufer<WindowBase, ImageAgg> 			WindowBaseAgg;
+	//-------------------------------------------------------------------------
+	typedef WindowBuffer<WindowBase, ImageBase> 		WinBufBaseBase;
+	typedef WindowBuffer<WindowBase, ImageDrawing_aa> 	WinBufBaseDraw_aa;
+	typedef WindowBuffer<WindowBase, ImageDrawing_win> 	WinBufBaseDraw_win;
+	typedef WindowBuffer<WindowBase, ImageAgg> 			WinBufBaseAgg;
 	
-	typedef WindowBufer<WindowEvents, ImageBase> 		WindowEventsBase;
-	typedef WindowBufer<WindowEvents, ImageDrawing_aa> 	WindowEventsDraw_aa;
-	typedef WindowBufer<WindowEvents, ImageDrawing_win> WindowEventsDraw_win;
-	typedef WindowBufer<WindowEvents, ImageAgg> 		WindowEventsAgg;
+	typedef WindowBuffer<WindowEvents, ImageBase> 		WinBufEventsBase;
+	typedef WindowBuffer<WindowEvents, ImageDrawing_aa> WinBufEventsDraw_aa;
+	typedef WindowBuffer<WindowEvents, ImageDrawing_win>WinBufEventsDraw_win;
+	typedef WindowBuffer<WindowEvents, ImageAgg> 		WinBufEventsAgg;
 	
 }
 

@@ -1,13 +1,17 @@
 #include <map>
 #include <windows.h>
-#include "twg_window.h"
+#include "twg/window.h"
 
-std::map<HWND, window*> WindowMap;
+namespace twg
+{
+
+//-----------------------------------------------------------------------------
+std::map<HWND, WindowObject*> WindowMap;
 LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 {
-	WindowBase *curWin = WindowMap[hwnd];
+	WindowObject *curWin = WindowMap[hwnd];
 	if (msg == WM_CREATE) {
-		WindowBase *curWin = ((WindowBase*) 
+		WindowObject *curWin = ((WindowObject*) 
 			((CREATESTRUCT*)lParam)->lpCreateParams);
 		WindowMap[hwnd] = curWin;
 	}
@@ -18,6 +22,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+//-----------------------------------------------------------------------------
 DWORD WINAPI msgCycle(LPVOID hwnd)
 {
 	MSG msg;
@@ -31,13 +36,16 @@ DWORD WINAPI msgCycle(LPVOID hwnd)
 	}
 }
 
-WindowBase::WindowBase() 
+//-----------------------------------------------------------------------------
+WindowObject::WindowObject() 
 {
-	m_hwnd = create((void*)(wndProc));
+	m_hwnd = create((void*)(&wndProc));
 	m_hdc = GetDC(m_hwnd);
 
-	UpdateWindow(hwnd);
-	ShowWindow(hwnd, SW_SHOW);
+	UpdateWindow(m_hwnd);
+	ShowWindow(m_hwnd, SW_SHOW);
 
-	CreateThread(NULL, 0, &msgCycle, hwnd, 0, NULL);
+	CreateThread(NULL, 0, &msgCycle, m_hwnd, 0, NULL);
+}
+
 }

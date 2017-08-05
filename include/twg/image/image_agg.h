@@ -4,15 +4,16 @@
 #include "twg/basics.h"
 #include "twg/point.h"
 #include "twg/color.h"
+#include "twg/image.h"
 
-#include "agg_scanline_u.h"
-#include "agg_rasterizer_scanline_aa.h"
-#include "agg_pixfmt_rgba.h"
-#include "agg_rendering_buffer.h"
-#include "agg_conv_stroke.h"
-#include "agg_renderer_scanline.h"
-#include "agg_ellipse.h"
-#include "agg_basics.h"
+#include <agg_scanline_u.h>
+#include <agg_rasterizer_scanline_aa.h>
+#include <agg_pixfmt_rgba.h>
+#include <agg_rendering_buffer.h>
+#include <agg_conv_stroke.h>
+#include <agg_renderer_scanline.h>
+#include <agg_ellipse.h>
+#include <agg_basics.h>
 
 namespace twg
 {
@@ -26,7 +27,7 @@ namespace twg
 	/// @TODO: add many objects.
 
 	//-------------------------------------------------------------------------
-	class ImageAgg : ImageBase
+	class ImageAgg : public ImageBase
 	{
 	public:
 		ImageAgg(Point_i size);
@@ -43,7 +44,7 @@ namespace twg
 	class VertexSrc 
 	{
 	public:
-		VertexSrc(int num_ = 100);
+		VertexSrc(int num = 100);
 		~VertexSrc();
 
 		void reset(void);

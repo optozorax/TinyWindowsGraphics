@@ -1,36 +1,72 @@
 #ifndef TWG_CTRL_INCLUDED
 #define TWG_CTRL_INCLUDED
 
-#include <string>
+#include <vector>
 
-#include "basics.h"
-#include "point.h"
-#include "window.h"
+#include "twg/basics.h"
+#include "twg/point.h"
+#include "twg/events.h"
+#include "twg/image.h"
 
 namespace twg
 {
 
-	class CtrlBase
+	enum 	CtrlMessages : int32u;
+	class 	CtrlBase;
+	class 	CtrlStorage;
+
+	//-------------------------------------------------------------------------
+	enum CtrlMessages : int32u
+	{
+		CTRL_GET_POINTER = 1001,
+		CTRL_GET_UNIQUE_ID = 1002
+	};
+
+	//-------------------------------------------------------------------------
+	class CtrlBase : public EventsHandler
 	{
 	public:
-		virtual void onMouse(Point_i pos, MouseType type) {};
-		virtual void onKeyboard(int32 key, bool isDown) {};
-		virtual void onResize(Point_i diffSize, 
-							  Point_i diffPos, 
-							  SizingType type) {};
-		virtual void onMove(Point_i newPos) {};
-		virtual void onMessage(int32 messageNo) {};
-		virtual void onTimer(void) {};
-		virtual void onKillFocus(void) {};
+		CtrlBase(EventsBase* parent) : 
+			EventsHandler(parent) {
+			int32u* idp = sendMessageUp(CTRL_GET_UNIQUE_ID, nullptr);
+			id = *idp;
+			delete idp;
+		}
 
-		virtual void draw(void) {};
+		virtual ~CtrlBase() {}
 
-		int32u		id;
-		bool 		isEnabled; /**< Если включен, то принимает все сообщения, 
-							   		иначе только рисуется по-особому. */
-	protected:
-		void*		m_parent; ///< Окно, которому принадлежит данный ctrl
-		ImageBase* 	m_bufer; ///< Сюда рисуется ctrl при вызове draw
+		virtual void draw(ImageBase* buffer) {}
+	public:
+		int32u	id;
+	};
+
+	//-------------------------------------------------------------------------
+	class CtrlStorage : CtrlBase
+	{
+	public:
+		CtrlStorage(EventsBase* parent) : 
+			CtrlBase(m_parent) {}
+		~CtrlStorage() {}
+
+		int32u getUniqueId(void);
+		std::vector<CtrlBase*>	array;
+
+		bool 					OMFOC; // One Message For One Ctrl
+
+		//---------------------------------------------------------------------
+		void draw(ImageBase* buffer);
+
+		bool onMouse(Point_i pos, MouseType type);
+		bool onKeyboard(int32 key, bool isDown);
+
+		bool onResize(Point_i diffSize, Point_i diffPos, SizingType type);
+		bool onMove(Point_i newPos);
+		bool onKillFocus(void);
+
+		bool onMessage(int32u messageNo, void* data);
+		void* sendMessageUp(int32u messageNo, void* data);
+	private:
+		std::vector<int32u> 	m_ids;
 	};
 
 }

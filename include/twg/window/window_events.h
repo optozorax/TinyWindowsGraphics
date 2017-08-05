@@ -1,69 +1,26 @@
 #ifndef TWG_WINDOW_EVENTS_INCLUDED
 #define TWG_WINDOW_EVENTS_INCLUDED
 
-#include "../window.h"
-#include "../twg_basics.h"
-#include "../twg_point.h"
+#include "twg/events.h"
+#include "twg/window.h"
+#include "twg/basics.h"
+#include "twg/point.h"
 
 namespace twg
 {
 
-	enum 	MouseType;
-	enum 	SizingType;
-
-	//-------------------------------------------------------------------------
-	// Имеет обработку событий окна.
-	class WindowEvents : WindowBase
+	class WindowEvents : public WindowBase, public EventsHandler
 	{
 	public:
-		virtual void onMouse(Point_i pos, MouseType type) {};
-		virtual void onKeyboard(int32 key, bool isDown) {};
-		virtual void onResize(Point_i diffSize, 
-							  Point_i diffPos, 
-							  SizingType type) {};
-		virtual void onMove(Point_i newPos) {};
-		virtual void onMessage(int32 messageNo) {};
-		virtual void onTimer(void) {};
-		virtual void onKillFocus(void) {};
+		WindowEvents(WindowType type) : 
+			WindowBase(type), 
+			EventsHandler(nullptr) {}
 	protected:
+		// Эта функция посылает все необычные сообщения в onMessage
 		LRESULT wndProcNext(HWND hwnd, 
 							UINT msg,
 							WPARAM wParam, 
-							LPARAM lParam) override;
-
-		// По умолчанию возвращает DefWindowProc(hwnd, msg, wParam, lParam);
-		virtual LRESULT wndProcNextNext(HWND hwnd, 
-										UINT msg,
-										WPARAM wParam, 
-										LPARAM lParam);
-	};
-
-	//-------------------------------------------------------------------------
-	enum MouseType
-	{
-		MOUSE_L_DBL, 	MOUSE_L_DOWN, 	MOUSE_L_UP,
-		MOUSE_R_DBL, 	MOUSE_R_DOWN, 	MOUSE_R_UP,
-		MOUSE_M_DBL, 	MOUSE_M_DOWN, 	MOUSE_M_UP,
-		MOUSE_X1_DBL, 	MOUSE_X1_DOWN, 	MOUSE_X1_UP,
-		MOUSE_X2_DBL, 	MOUSE_X2_DOWN, 	MOUSE_X2_UP,
-
-		MOUSE_WHEEL_UP,
-		MOUSE_WHEEL_DOWN,
-
-		MOUSE_MOVE
-	};
-
-	enum SizingType
-	{
-		SIZING_LEFT,
-		SIZING_RIGHT,
-		SIZING_BOTTOM,
-		SIZING_TOF,
-
-		SIZING_BOTTOM_LEFT,
-		SIZING_BOTTOM_RIGHT,
-		SIZING_TOP_LEFT,
-		SIZING_TOP_RIGHT
+							LPARAM lParam);
 	};
 	
 }

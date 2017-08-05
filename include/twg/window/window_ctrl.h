@@ -11,26 +11,47 @@
 namespace twg
 {
 
+	class 	WindowCtrl;
+	enum 	WindowMessages : int32u;
+
+	//-------------------------------------------------------------------------
 	/* Имеет хранилище для ctrl'ов, каждый обрабатывает все возможные события.
 	   Для плавности рисования имеет второй буфер. Все контролы рисуются 
 	   сначала в него, а затем на экран.
 	 */
-	class WindowCtrl : WindowEventsBase
+	class WindowCtrl : public WindowEvents
 	{
 	public:
-		int32u addCtrl(Ctrl* ctrl);
-		void deleteCtrl(int32u id);
-		void makeOrder(int32u idMove2Up, int32u idMove2Down);
-		
-		int32u getUniqueId(void);
-		int32u getCtrlNum(void);
+		WindowCtrl(WindowType type) : 
+			WindowEvents(type), 
+			storage(this), 
+			m_buffer(new ImageBase(Point_i(2000, 2000))) {}
 
-		void runTimer(int32u delay);
-		void stopTimer(void);
+		CtrlStorage 	storage;	
+
+		//---------------------------------------------------------------------
+		bool onMessage(int32u messageNo, void* data);
+		// Здесь обрабатывается сообщение WINDOW_GET_HWND, а все остальное отправляется на onMessage хранилищу.
+		void* sendMessageUp(int32u messageNo, void* data);
+
+		bool onMouse(Point_i pos, MouseType type);
+		bool onKeyboard(int32 key, bool isDown);
+
+		bool onResize(Point_i diffSize, 
+					  Point_i diffPos, 
+					  SizingType type);
+		bool onMove(Point_i newPos);
+		bool onKillFocus(void);
 	private:
-		
+		// В resize следить за размером окна, потому что может понадобиться ресайзить буфер.
+		ImageBase*		m_buffer;
 	};
 
+	//-------------------------------------------------------------------------
+	enum WindowMessages : int32u
+	{
+		WINDOW_GET_POINTER = 1000
+	};
 	
 }
 

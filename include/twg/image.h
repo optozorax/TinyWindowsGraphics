@@ -3,13 +3,17 @@
 
 #include <string>
 
-#include "basics.h"
-#include "point.h"
-#include "color.h"
+#include "twg/basics.h"
+#include "twg/point.h"
+#include "twg/color.h"
 
 namespace twg
 {
 
+	class ImageWin;
+	class ImageBase;
+
+	//-------------------------------------------------------------------------
 	class ImageWin
 	{
 	public:
@@ -17,17 +21,18 @@ namespace twg
 		ImageWin(HDC hdc);
 		~ImageWin();
 
-		virtual void copyTo(ImageWin *dst, 
-							Point_i dstStart, 
-							Point_i srcStart,
-							Point_i srcSize);
+		void copyTo(ImageWin *dst, 
+					Point_i dstStart, 
+					Point_i srcStart,
+					Point_i srcSize);
 
 		HDC 	getHdc(void);
 	protected:
 		HDC		m_hdc;
-	}
+	};
 
-	class ImageBase : ImageWin
+	//-------------------------------------------------------------------------
+	class ImageBase : public ImageWin
 	{
 	public:
 		ImageBase(Point_i size);	
@@ -42,14 +47,14 @@ namespace twg
 
 		void clear(Color bk = White);
 		
-		Color* getPixel(int32 x, int32 y);
-		Color* operator[](int32 x, int32 y);
+		Color* getPixel(int32 x, int32 y); // Имеет проверку на выход за границы
+		Color* operator[](Point_i pos);
 	protected:
 		Color*	m_buf;
 		int32u	m_width;
 		int32u	m_height;
 
-		HBMP 	m_hbmp;
+		HBITMAP m_hbmp;
 	};
 
 	//-------------------------------------------------------------------------

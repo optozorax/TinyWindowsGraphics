@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "basics.h"
+#include "twg/basics.h"
 
 namespace twg
 {
@@ -40,14 +40,14 @@ namespace twg
 					  std::vector<Color> colors,
 					  CycleType cycle = CYCLE_NULL);
 	Color getGradient(double pos, 
-					  std::vector<Color> colors, 
-					  std::vector<double> sizes,
+					  std::vector<Color>& colors, 
+					  std::vector<double>& sizes,
 					  CycleType cycle = CYCLE_NULL);
 
 	Color computeOverlay(Color upper, Color lower);
 
 	//-------------------------------------------------------------------------
-	const Color Transparent 	= argb(0, 0, 0, 0);
+	const Color Transparent 	= rgba(0, 0, 0, 0);
 
 	const Color White 			= rgb(0xFF, 0xFF, 0xFF);
 	const Color Black 			= rgb(0x00, 0x00, 0x00);
@@ -83,6 +83,65 @@ namespace twg
 	const Color SeaGreen 		= rgb(0x52, 0x9B, 0x2F);
 	const Color Pink 			= rgb(0xF9, 0x26, 0x72);
 	const Color GreenYellow 	= rgb(0xAD, 0xFF, 0x2F);
+
+//=============================================================================
+//=============================================================================
+//=============================================================================
+
+//-----------------------------------------------------------------------------
+inline Color rgb(const int8u r, 
+				 const int8u g, 
+				 const int8u b) {
+
+}
+
+//-----------------------------------------------------------------------------
+inline Color rgba(const int8u r, 
+				  const int8u g, 
+				  const int8u b, 
+				  const int8u a) {
+
+}
+
+//-----------------------------------------------------------------------------
+inline Color setAlpha(Color clr) {
+
+}
+
+//-----------------------------------------------------------------------------
+inline Color setRed(Color clr) {
+
+}
+
+//-----------------------------------------------------------------------------
+inline Color setGreen(Color clr) {
+
+}
+
+//-----------------------------------------------------------------------------
+inline Color setBlue(Color clr) {
+
+}
+
+//-----------------------------------------------------------------------------
+inline int8u getAlpha(Color clr) {
+
+}
+
+//-----------------------------------------------------------------------------
+inline int8u getRed(Color clr) {
+
+}
+
+//-----------------------------------------------------------------------------
+inline int8u getGreen(Color clr) {
+
+}
+
+//-----------------------------------------------------------------------------
+inline int8u getBlue(Color clr) {
+
+}
 	
 }
 

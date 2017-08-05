@@ -3,8 +3,9 @@
 
 #include <string>
 
-#include "basics.h"
-#include "point.h"
+#include "twg/basics.h"
+#include "twg/point.h"
+#include "twg/image.h"
 
 namespace twg
 {
@@ -12,7 +13,7 @@ namespace twg
 	class 	WindowObject;
 	class 	WindowBase;
 	class 	WindowType;
-	enum 	WindowStyle;
+	enum 	WindowStyle : int32u;
 
 	//-------------------------------------------------------------------------
 	/* Класс, который: запускает независимую обработку сообщений окна, и
@@ -22,30 +23,30 @@ namespace twg
 	class WindowObject
 	{
 	public:
-		WindowBase();
+		WindowObject();
 
 		HWND getHwnd(void);
+
+		virtual HWND create(void*) {}
+		virtual LRESULT wndProc(HWND hwnd, 
+								UINT msg,
+								WPARAM wParam, 
+								LPARAM lParam) {}
 
 		ImageWin 	canvas;
 	protected:
 		HWND 	m_hwnd;
 		HDC 	m_hdc;
-
-		virtual HWND create(void*) = 0;
-		virtual LRESULT wndProc(HWND hwnd, 
-								UINT msg,
-								WPARAM wParam, 
-								LPARAM lParam) = 0;
 	};
 
 	//-------------------------------------------------------------------------
 	/* Класс для настройки внешнего вида окна. Так же имеет интерфейс таскбара.
 	 */
-	class WindowBase : WindowObject
+	class WindowBase : public WindowObject
 	{
 	public:
 		WindowBase(WindowType type);
-		~WindowBase();
+		~WindowBase();  // Окно автоматически закрывается, здесь вызывается функция по закрытия окна.
 
 		Point_i 	getClientSize(void);
 		Point_i 	getWindowSize(void);
@@ -58,23 +59,26 @@ namespace twg
 		void setClientSize(Point_i size);
 		void setWindowSize(Point_i size);
 		void setPos(Point_i size);
-		void setMaxSize(Point_i maxSize_);
-		void setMinSize(Point_i minSize_);
+		void setMaxSize(Point_i maxSize);
+		void setMinSize(Point_i minSize);
 		void setCaption(std::string caption);
 		void setStyle(WindowStyle style);
 
-		void setTaskbarColor(TaskbarColor clr);
-		void setTaskbarProgress(double progress);
-		void setFullScreen(bool isFullScreen);
-	protected:
-		Point_i		m_minSize;
-		Point_i		m_maxSize;
+		void invalidateScreen(void);
 
-		HWND 	create(void*) override;
+		// Надо ли? Это вносит лишь лишних костылей, а пользы немного.
+		// void setTaskbarColor(TaskbarColor clr);
+		// void setTaskbarProgress(double progress);
+		// void setFullScreen(bool isFullScreen);
+
+		HWND 	create(void*);
 		LRESULT wndProc(HWND hwnd, 
 						UINT msg,
 						WPARAM wParam, 
-						LPARAM lParam) override;
+						LPARAM lParam);
+	protected:
+		Point_i		m_minSize;
+		Point_i		m_maxSize;
 
 		// По умолчанию возвращает DefWindowProc(hwnd, msg, wParam, lParam);
 		virtual LRESULT wndProcNext(HWND hwnd, 
@@ -87,7 +91,20 @@ namespace twg
 	class WindowType 
 	{
 	public:
-		WindowType();
+		WindowType(int32		iconNo,
+				   Point_i		pos,
+				   Point_i		size,
+				   Point_i		minSize,
+				   Point_i		maxSize,
+				   std::string 	caption,
+				   WindowStyle	style) : 
+			iconNo(iconNo),
+			pos(pos),
+			size(size),
+			minSize(minSize),
+			maxSize(maxSize),
+			caption(caption),
+			style(style) {}
 
 		int32		iconNo;
 		Point_i		pos;
@@ -100,7 +117,7 @@ namespace twg
 		void* 		m_thisWindow;
 	};
 
-	enum WindowStyle 
+	enum WindowStyle : int32u
 	{
 		// Среди этих можно выбрать только один
 		WINDOW_STANDART 	= 0,
@@ -118,14 +135,14 @@ namespace twg
 		WINDOW_MIN_BUTTON 	= 0x200
 	};
 
-	enum TaskbarColor
-	{
-		TASKBAR_GREEN,
-		TASKBAR_YELLOW,
-		TASKBAR_RED,
-		TASKBAR_LOADING,
-		TASKBAR_BLINK
-	};
+	// enum TaskbarColor
+	// {
+	// 	TASKBAR_GREEN,
+	// 	TASKBAR_YELLOW,
+	// 	TASKBAR_RED,
+	// 	TASKBAR_LOADING,
+	// 	TASKBAR_BLINK
+	// };
 
 }
 
