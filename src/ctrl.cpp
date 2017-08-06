@@ -19,12 +19,12 @@ bool CtrlStorage::onMouse(Point_i pos, MouseType type) {
 }
 
 //-----------------------------------------------------------------------------
-bool CtrlStorage::onKeyboard(int32 key, bool isDown) {
+bool CtrlStorage::onKeyboard(KeyType key, bool isDown) {
 
 }
 
 //-----------------------------------------------------------------------------
-bool CtrlStorage::onResize(Point_i diffSize, Point_i diffPos, SizingType type) {
+bool CtrlStorage::onResize(Point_i newSize, Point_i pos, SizingType type) {
 
 }
 

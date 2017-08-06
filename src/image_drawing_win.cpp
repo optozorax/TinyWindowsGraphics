@@ -15,7 +15,7 @@ void ImageDrawing_win::setBrush(Brush brush) {
 
 //-----------------------------------------------------------------------------
 void ImageDrawing_win::setTextStyle(int8u width, 
-									std::string name, 
+									std::wstring name, 
 									TextFlag flags = TEXT_NONE) {
 }
 
@@ -48,7 +48,7 @@ TextStyle ImageDrawing_win::getTextStyle(void) {
 }
 
 //-----------------------------------------------------------------------------
-Point_d ImageDrawing_win::getTextSize(std::string) {
+Point_d ImageDrawing_win::getTextSize(std::wstring) {
 
 }
 
@@ -73,7 +73,7 @@ void ImageDrawing_win::fillFlood(Point_d pos) {
 }
 
 //-----------------------------------------------------------------------------
-void ImageDrawing_win::drawText(Point_d pos, std::string text) {
+void ImageDrawing_win::drawText(Point_d pos, std::wstring text) {
 
 }
 

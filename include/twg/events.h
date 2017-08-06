@@ -51,10 +51,10 @@ namespace twg
 		virtual ~EventsHandler() {}
 
 		virtual bool onMouse(Point_i pos, MouseType type) { return false; }
-		virtual bool onKeyboard(int32 key, bool isDown) { return false; }
+		virtual bool onKeyboard(KeyType key, bool isDown) { return false; }
 
-		virtual bool onResize(Point_i diffSize, 
-							  Point_i diffPos, 
+		virtual bool onResize(Point_i newSize, 
+							  Point_i pos, 
 							  SizingType type) { return false; }
 		virtual bool onMove(Point_i newPos) { return false; }
 		virtual bool onKillFocus(void) { return false; }

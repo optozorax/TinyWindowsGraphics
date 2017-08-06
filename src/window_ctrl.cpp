@@ -19,12 +19,12 @@ bool WindowCtrl::onMouse(Point_i pos, MouseType type) {
 }
 
 //-----------------------------------------------------------------------------
-bool WindowCtrl::onKeyboard(int32 key, bool isDown) {
+bool WindowCtrl::onKeyboard(KeyType key, bool isDown) {
 
 }
 
 //-----------------------------------------------------------------------------
-bool WindowCtrl::onResize(Point_i diffSize, Point_i diffPos, SizingType type) {
+bool WindowCtrl::onResize(Point_i newSize, Point_i pos, SizingType type) {
 
 }
 

@@ -57,21 +57,24 @@ namespace twg
 		WindowBase(WindowType type);
 		~WindowBase();  // Окно автоматически закрывается, здесь вызывается функция по закрытия окна.
 
-		Point_i 	getClientSize(void);
-		Point_i 	getWindowSize(void);
-		Point_i 	getPos(void);
-		Point_i 	getMaxSize(void);
-		Point_i 	getMinSize(void);
-		std::string getCaption(void);
-		WindowStyle getStyle(void);
+		Point_i 	 getClientSize(void);
+		Point_i 	 getWindowSize(void);
+		Point_i 	 getPos(void);
+		Point_i 	 getMaxSize(void);
+		Point_i 	 getMinSize(void);
+		std::wstring getCaption(void);
+		WindowStyle  getStyle(void);
 
 		void setClientSize(Point_i size);
 		void setWindowSize(Point_i size);
 		void setPos(Point_i pos);
 		void setMaxSize(Point_i maxSize);
 		void setMinSize(Point_i minSize);
-		void setCaption(std::string caption);
+		void setCaption(std::wstring caption);
 		void setStyle(WindowStyle style);
+
+		Point_i global2client(Point_i globalPos);
+		Point_i client2global(Point_i clientPos);
 
 		void invalidateScreen(void);
 
@@ -80,10 +83,10 @@ namespace twg
 		// void setTaskbarProgress(double progress);
 		// void setFullScreen(bool isFullScreen);
 	protected:
-		Point_i		m_minSize;
-		Point_i		m_maxSize;
-		WindowType*	m_type;
-		std::string m_className;
+		Point_i		 m_minSize;
+		Point_i		 m_maxSize;
+		WindowType*	 m_type;
+		std::wstring m_className;
 	
 		HWND 	create(void* wndProc) override;
 		LRESULT wndProc(HWND hwnd, 
@@ -107,7 +110,7 @@ namespace twg
 				   Point_i		size,
 				   Point_i		minSize,
 				   Point_i		maxSize,
-				   std::string 	caption,
+				   std::wstring 	caption,
 				   WindowStyle	style) : 
 			iconNo(iconNo),
 			pos(pos),
@@ -122,7 +125,7 @@ namespace twg
 		Point_i		size;
 		Point_i		minSize;
 		Point_i		maxSize;
-		std::string caption;
+		std::wstring caption;
 		WindowStyle	style;
 	};
 

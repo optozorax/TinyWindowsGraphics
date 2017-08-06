@@ -9,6 +9,10 @@
 namespace twg
 {
 
+	class WindowEvents;
+	struct onMessageStruct;
+
+	//-------------------------------------------------------------------------
 	class WindowEvents : public WindowBase, public EventsHandler
 	{
 	public:
@@ -21,6 +25,18 @@ namespace twg
 							UINT msg,
 							WPARAM wParam, 
 							LPARAM lParam);
+	};
+
+	//-------------------------------------------------------------------------
+	struct onMessageStruct 
+	{
+		onMessageStruct(WPARAM wParam1, LPARAM lParam1) {
+			wParam = wParam1;
+			lParam = lParam1;
+		}
+
+		WPARAM wParam;
+		LPARAM lParam;
 	};
 	
 }

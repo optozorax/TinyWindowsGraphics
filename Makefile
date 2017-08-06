@@ -1,11 +1,12 @@
 # Компилятор. Может быть как и mingw32-g++, так и g++
-CXX = mingw32-g++
+CXX = g++
 
 # Defin'ы для указания новой версии Windows
 CXXFLAGS += -D__USE_MINGW_ANSI_STDIO=0
 CXXFLAGS += -D_WIN32_IE=0x501
 CXXFLAGS += -DWINVER=0x0501
 CXXFLAGS += -D_WIN32_WINNT=0x501
+CXXFLAGS += -DUNICODE
 
 # Каталоги .h файлов
 CXXFLAGS += -I include
@@ -14,18 +15,20 @@ CXXFLAGS += -I include
 
 # Общие флаги
 CXXFLAGS += -O3
-CXXFLAGS += -std=c++11
+CXXFLAGS += -std=gnu++11
 CXXFLAGS += -w
 CXXFLAGS += -fpermissive
-CXXFLAGS += -static-libgcc
-CXXFLAGS += -Wl,--subsystem,windows
-CXXFLAGS += -mwin32 -mconsole -mwindows
+# CXXFLAGS += -static-libgcc -static-libstdc++
+CXXFLAGS += -mconsole
+CXXFLAGS += -mwindows
+
+#-mwindows
 
 # Библиотеки для линковки
-CXXFLAGS += -lgdi32 -lwinmm -lmsimg32 -lcomctl32 -lcomdlg32 -lole32     
+CXXFLAGS += -lgdi32 -lwinmm -lmsimg32 -lcomctl32 -lcomdlg32 -lole32
 CXXFLAGS += -lstdc++
 # Эти надо компилировать самому
-CXXFLAGS += -lagg -leasybmp
+CXXFLAGS += -lagg
 
 # Оптимизация размера
 CXXFLAGS += -s -Wl,--gc-sections -Wl,--strip-all 
@@ -59,5 +62,5 @@ obj/%.o: examples/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	if exist "bin" rd bin /S Y
-	if exist "obj" rd obj /S Y
+	if exist "bin" rd bin /S /Q
+	if exist "obj" rd obj /S /Q

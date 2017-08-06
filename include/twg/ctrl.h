@@ -57,9 +57,9 @@ namespace twg
 		void draw(ImageBase* buffer);
 
 		bool onMouse(Point_i pos, MouseType type);
-		bool onKeyboard(int32 key, bool isDown);
+		bool onKeyboard(KeyType key, bool isDown);
 
-		bool onResize(Point_i diffSize, Point_i diffPos, SizingType type);
+		bool onResize(Point_i newSize, Point_i pos, SizingType type);
 		bool onMove(Point_i newPos);
 		bool onKillFocus(void);
 

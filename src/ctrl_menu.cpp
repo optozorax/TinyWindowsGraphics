@@ -8,7 +8,7 @@ namespace twg
 {
 
 //-----------------------------------------------------------------------------
-Menu::Menu(std::string str, bool isPopup, Point_i pos, EventsBase* parent) : 
+Menu::Menu(std::wstring str, bool isPopup, Point_i pos, EventsBase* parent) : 
 	CtrlBase(parent) {
 	WindowCtrl* wnd = sendMessageUp(WINDOW_GET_POINTER, nullptr);
 	m_hwnd = wnd->getHwnd();
@@ -17,7 +17,7 @@ Menu::Menu(std::string str, bool isPopup, Point_i pos, EventsBase* parent) :
 }
 
 //-----------------------------------------------------------------------------
-void Menu::makeMenu(std::string str, bool isPopup) {
+void Menu::makeMenu(std::wstring str, bool isPopup) {
 	// Удаление старого HMEUN
 	// Парсинг str в HMENU
 	if (!isPopup)

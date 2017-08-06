@@ -21,13 +21,18 @@ namespace twg
 		ImageWin(HDC hdc);
 		~ImageWin();
 
+		HDC getHdc(void);
+		void assign(HDC hdc);
+		void assignScreen(void);
+
+		virtual int32u width(void);
+		virtual int32u height(void);
+		virtual Point_i size(void);
+
 		void copyTo(ImageWin *dst, 
 					Point_i dstStart, 
 					Point_i srcStart,
 					Point_i srcSize);
-
-		HDC 	getHdc(void);
-		void	assign(HDC hdc);
 	protected:
 		HDC		m_hdc;
 	};
@@ -48,8 +53,8 @@ namespace twg
 
 		void clear(Color bk = White);
 		
-		Color* getPixel(int32 x, int32 y); // Имеет проверку на выход за границы
-		Color* operator[](Point_i pos);
+		Color& getPixel(int32 x, int32 y); // Имеет проверку на выход за границы
+		Color& operator[](Point_i pos);
 	protected:
 		Color*	m_buf;
 		int32u	m_width;
@@ -59,8 +64,8 @@ namespace twg
 	};
 
 	//-------------------------------------------------------------------------
-	void loadFromBmp(ImageBase *img, std::string fileName);
-	void saveToBmp(ImageBase *img, std::string fileName, bool is32bitBmp = false);
+	void loadFromBmp(ImageBase* img, std::wstring fileName);
+	void saveToBmp(ImageBase* img, std::wstring fileName, bool is32bitBmp = false);
 	
 }
 

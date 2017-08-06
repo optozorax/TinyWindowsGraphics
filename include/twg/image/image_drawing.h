@@ -44,12 +44,12 @@ namespace twg
 	class TextStyle
 	{
 	public:
-		TextStyle() : width(12), name("Consolas"), flags(0) {}
-		TextStyle(int8u width, std::string name, TextFlag  flags) :
+		TextStyle() : width(12), name(L"Consolas"), flags(0) {}
+		TextStyle(int8u width, std::wstring name, TextFlag  flags) :
 			width(width), name(name), flags(flags) {};
 
 		int8u		width;
-		std::string	name;
+		std::wstring	name;
 		TextFlag 	flags;
 	};
 
@@ -111,7 +111,7 @@ namespace twg
 		virtual void setPen(Pen pen) {}
 		virtual void setBrush(Brush brush) {}
 		virtual void setTextStyle(int8u width, 
-								  std::string name, 
+								  std::wstring name, 
 								  TextFlag flags = TEXT_NONE) {}
 
 		virtual void drawTo(ImageWin* dst, 
@@ -126,7 +126,7 @@ namespace twg
 		virtual Pen 		getPen(void) {}
 		virtual Brush 		getBrush(void) {}
 		virtual TextStyle 	getTextStyle(void) {}
-		virtual Point_d 	getTextSize(std::string) {}
+		virtual Point_d 	getTextSize(std::wstring) {}
 
 		virtual void drawPolygon(Polygon_d points) {}
 		virtual void drawPolyline(Polygon_d points, 
@@ -135,7 +135,7 @@ namespace twg
 
 		virtual void fillFlood(Point_d pos) {}
 
-		virtual void drawText(Point_d pos, std::string text) {}
+		virtual void drawText(Point_d pos, std::wstring text) {}
 	protected:
 		Pen 		m_pen;
 		Brush 		m_brush;
@@ -150,7 +150,7 @@ namespace twg
 		void setPen(Pen pen);
 		void setBrush(Brush brush);
 		void setTextStyle(int8u width, 
-						  std::string name, 
+						  std::wstring name, 
 						  TextFlag flags = TEXT_NONE);
 
 		void drawTo(ImageWin* dst, 
@@ -162,7 +162,7 @@ namespace twg
 		Pen 		getPen(void);
 		Brush 		getBrush(void);
 		TextStyle 	getTextStyle(void);
-		Point_d 	getTextSize(std::string);
+		Point_d 	getTextSize(std::wstring);
 
 		void drawPolygon(Polygon_d points);
 		void drawPolyline(Polygon_d points, bool isRoundJoin);
@@ -170,7 +170,7 @@ namespace twg
 
 		void fillFlood(Point_d pos);
 
-		void drawText(Point_d pos, std::string text);
+		void drawText(Point_d pos, std::wstring text);
 	};
 
 	class ImageDrawing_win : public ImageDrawing 
@@ -181,7 +181,7 @@ namespace twg
 		void setPen(Pen pen);
 		void setBrush(Brush brush);
 		void setTextStyle(int8u width, 
-						  std::string name, 
+						  std::wstring name, 
 						  TextFlag flags = TEXT_NONE);
 
 		void drawTo(ImageWin* dst, 
@@ -193,7 +193,7 @@ namespace twg
 		Pen 		getPen(void);
 		Brush 		getBrush(void);
 		TextStyle 	getTextStyle(void);
-		Point_d 	getTextSize(std::string);
+		Point_d 	getTextSize(std::wstring);
 
 		void drawPolygon(Polygon_d points);
 		void drawPolyline(Polygon_d points, bool isRoundJoin);
@@ -201,7 +201,7 @@ namespace twg
 
 		void fillFlood(Point_d pos);
 
-		void drawText(Point_d pos, std::string text);
+		void drawText(Point_d pos, std::wstring text);
 	};
 	
 }

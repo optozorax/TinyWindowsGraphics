@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <string>
 #include "twg/window.h"
 
 namespace twg
@@ -49,10 +50,10 @@ Point_i WindowBase::getMinSize(void) {
 }
 
 //-----------------------------------------------------------------------------
-std::string WindowBase::getCaption(void) {
-	char str[100] = {};
+std::wstring WindowBase::getCaption(void) {
+	wchar_t str[100] = {};
 	GetWindowText(m_hwnd, str, 100);
-	return std::string(str);
+	return std::wstring(str);
 }
 
 //-----------------------------------------------------------------------------
@@ -113,7 +114,7 @@ void WindowBase::setMinSize(Point_i minSize) {
 }
 
 //-----------------------------------------------------------------------------
-void WindowBase::setCaption(std::string caption) {
+void WindowBase::setCaption(std::wstring caption) {
 	SetWindowText(m_hwnd, caption.c_str());
 }
 
@@ -148,11 +149,26 @@ void getEX_WS_Styles(WindowStyle style, DWORD& EX_Style, DWORD& WS_Style) {
 	}
 }
 
+//-----------------------------------------------------------------------------
 void WindowBase::setStyle(WindowStyle style) {
 	DWORD EX_Style, WS_Style;
 	getEX_WS_Styles(style, EX_Style, WS_Style);
 	SetWindowLong(m_hwnd, GWL_EXSTYLE, EX_Style);
 	SetWindowLong(m_hwnd, GWL_STYLE, WS_Style);
+}
+
+//-----------------------------------------------------------------------------
+Point_i WindowBase::global2client(Point_i globalPos) {
+	POINT p = { globalPos.x, globalPos.y };
+	ScreenToClient(m_hwnd, &p);
+	return Point_i(p.x, p.y);
+}
+
+//-----------------------------------------------------------------------------
+Point_i WindowBase::client2global(Point_i clientPos) {
+	POINT p = { clientPos.x, clientPos.y };
+	ClientToScreen(m_hwnd, &p);
+	return Point_i(p.x, p.y);
 }
 
 //-----------------------------------------------------------------------------
@@ -196,7 +212,7 @@ HWND WindowBase::create(void* data) {
 	bool registered = false;
 	do {
 		currentClassN++;
-		m_className = "TWG_CLASS_" + std::to_string(currentClassN);
+		m_className = L"TWG_CLASS_" + str2wstr(std::to_string(currentClassN));
 		wc.lpszClassName = m_className.c_str();
 		registered = RegisterClassEx(&wc) != 0;
 	} while (!registered);
@@ -228,9 +244,8 @@ LRESULT WindowBase::wndProc(HWND hwnd,
 		case WM_GETMINMAXINFO:
 		if (m_minSize != Point_i(-1, -1) && m_maxSize != Point_i(-1, -1)) {
 			MINMAXINFO *pInfo = (MINMAXINFO *)(lParam);
-			Point_i diff = getWindowSize() - getClientSize();
-			pInfo->ptMinTrackSize = { m_minSize.x+diff.x, m_minSize.y+diff.y };
-			pInfo->ptMaxTrackSize = { m_maxSize.x+diff.x, m_maxSize.y+diff.y };
+			pInfo->ptMinTrackSize = { m_minSize.x, m_minSize.y };
+			pInfo->ptMaxTrackSize = { m_maxSize.x, m_maxSize.y };
 			return 0;
 		} break;
 	}

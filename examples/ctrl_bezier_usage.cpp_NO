@@ -261,7 +261,7 @@ bool PointCtrl::isInside(Point_i pos) {
 
 void PointCtrl::onRMouse(Point_i pos) {
 	std::ostringstream out;
-    out << std::setprecision(2) << "=" << id << " Удалить точку | --- | " << id << " | --- | Координаты: | " << m_pos.x << '\t' << m_pos.y << " | Радиус:\t" << m_radius;
+    out << std::setprecision(2) << L"=" << id << L" Удалить точку | --- | " << id << L" | --- | Координаты: | " << m_pos.x << '\t' << m_pos.y << L" | Радиус:\t" << m_radius;
 
     int32u* id = sendMessageUp(CTRL_GET_UNIQUE_ID, nullptr);
 
@@ -509,7 +509,7 @@ public:
 	ObjectsAllocator(int32u nObjects, EventsBase* parent) : 
 		CtrlBase(parent), 
 		m_storage(0, parent),
-		m_menu("", false, Point_i(0, 0), parent),
+		m_menu(L"", false, Point_i(0, 0), parent),
 		m_nObjects(nObjects),
 		m_oneMsg4OneObj(false) {
 		makeMenu();
@@ -555,36 +555,36 @@ void ObjectsAllocator::makeMenu(void) {
 
 	id = 0;
 
-	sout << "Добавить > ";
+	sout << L"Добавить > ";
 	for (int i = 0; i < m_nObjects; ++i) {
-		sout << "=" << id+i << " " << getObjectName(i) << " | ";
+		sout << L"=" << id+i << L" " << getObjectName(i) << L" | ";
 	}
-	sout << " < ";
+	sout << L" < ";
 
 	id = 20;
 
-	sout << "Активировать > ";
+	sout << L"Активировать > ";
 	for (int i = 0; i < m_objects.size(); ++i) {
-		sout << "=" << id+i << (m_objects[i].active) ? " ! " : " " << getObjectName(m_objects[i].objectNo) << "\t" << m_objects[i].id << " | ";
+		sout << L"=" << id+i << (m_objects[i].active) ? L" ! " : L" " << getObjectName(m_objects[i].objectNo) << L"\t" << m_objects[i].id << L" | ";
 	}
-	sout << " < ";
+	sout << L" < ";
 
 	id = 200;
 
-	sout << "Удалить > ";
+	sout << L"Удалить > ";
 	for (int i = 0; i < m_objects.size(); ++i) {
-		sout << "=" << id+i << " " << getObjectName(m_objects[i].objectNo) << "\t" << m_objects[i].id << " | ";
+		sout << L"=" << id+i << L" " << getObjectName(m_objects[i].objectNo) << L"\t" << m_objects[i].id << L" | ";
 	}
-	sout << " < ";
+	sout << L" < ";
 
-	sout << "Настройки > ";
+	sout << L"Настройки > ";
 	id = 400;
-	sout << "=" << id << (m_oneMsg4OneObj) ? " ! " : " " << "Одно сообщение - один объект";
-	sout << " < "
+	sout << L"=" << id << (m_oneMsg4OneObj) ? L" ! " : L" " << L"Одно сообщение - один объект";
+	sout << L" < "
 
 	id = 401;
 
-	sout << "=" << id << " " << "Выйти";
+	sout << L"=" << id << L" " << L"Выйти";
 
 	menu->makeMenu(sout.str(), false);
 }
@@ -620,7 +620,7 @@ bool ObjectsAllocator::onMessage(int32u messageNo, void* data) {
 //=============================================================================
 
 int main() {
-	WindowCtrl wnd(0, Point_i(0, 0), Point_i(640, 480), Point_i(-1, -1), Point_i(-1, -1), "Bezier Creator", WINDOW_STANDART);
+	WindowCtrl wnd(0, Point_i(0, 0), Point_i(640, 480), Point_i(-1, -1), Point_i(-1, -1), L"Bezier Creator", WINDOW_STANDART);
 
 	wnd.storage.pushCtrl(new MenuHandler(&wnd.storage));
 

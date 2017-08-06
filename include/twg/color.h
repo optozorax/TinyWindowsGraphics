@@ -20,10 +20,10 @@ namespace twg
 			   const int8u b, 
 			   const int8u a);
 
-	Color setAlpha(Color clr);
-	Color setRed(Color clr);
-	Color setGreen(Color clr);
-	Color setBlue(Color clr);
+	Color setAlpha(Color clr, int8u a);
+	Color setRed(Color clr, int8u r);
+	Color setGreen(Color clr, int8u g);
+	Color setBlue(Color clr, int8u b);
 
 	int8u getAlpha(Color clr);
 	int8u getRed(Color clr);
@@ -92,7 +92,10 @@ namespace twg
 inline Color rgb(const int8u r, 
 				 const int8u g, 
 				 const int8u b) {
-
+	return b   * 0x1 | 
+		   g   * 0x100 |
+		   r   * 0x10000 |
+		   255 * 0x1000000;
 }
 
 //-----------------------------------------------------------------------------
@@ -100,47 +103,50 @@ inline Color rgba(const int8u r,
 				  const int8u g, 
 				  const int8u b, 
 				  const int8u a) {
-
+	return b * 0x1 |
+		   g * 0x100 |
+		   r * 0x10000 |
+		   a * 0x1000000;
 }
 
 //-----------------------------------------------------------------------------
-inline Color setAlpha(Color clr) {
-
+inline Color setAlpha(Color clr, int8u a) {
+	(clr & ~getAlpha(clr)) | a * 0x1000000;
 }
 
 //-----------------------------------------------------------------------------
-inline Color setRed(Color clr) {
-
+inline Color setRed(Color clr, int8u r) {
+	(clr & ~getRed(clr)) | r * 0x10000;
 }
 
 //-----------------------------------------------------------------------------
-inline Color setGreen(Color clr) {
-
+inline Color setGreen(Color clr, int8u g) {
+	return (clr & ~getGreen(clr)) | g * 0x100;
 }
 
 //-----------------------------------------------------------------------------
-inline Color setBlue(Color clr) {
-
+inline Color setBlue(Color clr, int8u b) {
+	return (clr & ~getBlue(clr)) | b;
 }
 
 //-----------------------------------------------------------------------------
 inline int8u getAlpha(Color clr) {
-
+	return clr >> 24;
 }
 
 //-----------------------------------------------------------------------------
 inline int8u getRed(Color clr) {
-
+	return (clr << 8) >> 24;
 }
 
 //-----------------------------------------------------------------------------
 inline int8u getGreen(Color clr) {
-
+	return (clr << 16) >> 24;
 }
 
 //-----------------------------------------------------------------------------
 inline int8u getBlue(Color clr) {
-
+	return (clr << 24) >> 24;
 }
 	
 }
