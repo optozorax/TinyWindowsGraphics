@@ -23,25 +23,34 @@ namespace twg
 	class WindowObject
 	{
 	public:
-		WindowObject();
+		WindowObject() {}
+		~WindowObject();
 
 		HWND getHwnd(void);
-
-		virtual HWND create(void*) {}
-		virtual LRESULT wndProc(HWND hwnd, 
-								UINT msg,
-								WPARAM wParam, 
-								LPARAM lParam) {}
+		void waitForClose(void);
+		bool isClosed(void);
 
 		ImageWin 	canvas;
 	protected:
 		HWND 	m_hwnd;
 		HDC 	m_hdc;
+
+		void onStart();
+		virtual HWND create(void* wndProc) {}
+		virtual LRESULT wndProc(HWND hwnd, 
+								UINT msg,
+								WPARAM wParam, 
+								LPARAM lParam) {}
+
+		friend DWORD WINAPI 	makeWindow(LPVOID data);
+		friend LRESULT CALLBACK wndProc1(HWND hwnd, 
+										UINT msg, 
+										WPARAM wParam, 
+										LPARAM lParam);
 	};
 
 	//-------------------------------------------------------------------------
-	/* Класс для настройки внешнего вида окна. Так же имеет интерфейс таскбара.
-	 */
+	/* Класс для настройки внешнего вида окна. */
 	class WindowBase : public WindowObject
 	{
 	public:
@@ -58,7 +67,7 @@ namespace twg
 
 		void setClientSize(Point_i size);
 		void setWindowSize(Point_i size);
-		void setPos(Point_i size);
+		void setPos(Point_i pos);
 		void setMaxSize(Point_i maxSize);
 		void setMinSize(Point_i minSize);
 		void setCaption(std::string caption);
@@ -70,15 +79,17 @@ namespace twg
 		// void setTaskbarColor(TaskbarColor clr);
 		// void setTaskbarProgress(double progress);
 		// void setFullScreen(bool isFullScreen);
-
-		HWND 	create(void*);
-		LRESULT wndProc(HWND hwnd, 
-						UINT msg,
-						WPARAM wParam, 
-						LPARAM lParam);
 	protected:
 		Point_i		m_minSize;
 		Point_i		m_maxSize;
+		WindowType*	m_type;
+		std::string m_className;
+	
+		HWND 	create(void* wndProc) override;
+		LRESULT wndProc(HWND hwnd, 
+						UINT msg,
+						WPARAM wParam, 
+						LPARAM lParam) override;
 
 		// По умолчанию возвращает DefWindowProc(hwnd, msg, wParam, lParam);
 		virtual LRESULT wndProcNext(HWND hwnd, 
@@ -113,8 +124,6 @@ namespace twg
 		Point_i		maxSize;
 		std::string caption;
 		WindowStyle	style;
-	private:
-		void* 		m_thisWindow;
 	};
 
 	enum WindowStyle : int32u
@@ -126,13 +135,19 @@ namespace twg
 		WINDOW_POPUP 		= 3,
 		WINDOW_NO_BORDER 	= 4,
 
+		// Обозначает количество стилей окна
+		WINDOW_MAX_TYPE 	= 5,
+
+		//---------------------------------------------------------------------
 		// Стили далее могут объединяться через оператор |
-		WINDOW_DROP_SHADOW 	= 0x010,
-		WINDOW_ON_TOP 		= 0x020,
-		WINDOW_DISABLED 	= 0x040,
-		WINDOW_MAXIMIZED 	= 0x080,
-		WINDOW_MAX_BUTTON 	= 0x100,
-		WINDOW_MIN_BUTTON 	= 0x200
+		WINDOW_ON_TOP 		= 0x010,
+		WINDOW_DISABLED 	= 0x020,
+		WINDOW_MAXIMIZED 	= 0x040,
+		WINDOW_MAX_BUTTON 	= 0x080,
+		WINDOW_MIN_BUTTON 	= 0x100,
+
+		// Данный стиль можно задать только при создании окна
+		WINDOW_DROP_SHADOW 	= 0x200
 	};
 
 	// enum TaskbarColor

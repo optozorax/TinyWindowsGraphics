@@ -13,12 +13,13 @@ CXXFLAGS += -I include
 #CXXFLAGS += -I include/EasyBMP
 
 # Общие флаги
-CXXFLAGS += -O3 -fdiagnostics-color
+CXXFLAGS += -O3
 CXXFLAGS += -std=c++11
 CXXFLAGS += -w
 CXXFLAGS += -fpermissive
 CXXFLAGS += -static-libgcc
-CXXFLAGS += -mwindows -Wl,-subsystem,windows
+CXXFLAGS += -Wl,--subsystem,windows
+CXXFLAGS += -mwin32 -mconsole -mwindows
 
 # Библиотеки для линковки
 CXXFLAGS += -lgdi32 -lwinmm -lmsimg32 -lcomctl32 -lcomdlg32 -lole32     
@@ -32,6 +33,7 @@ CXXFLAGS += -fdata-sections -ffunction-sections
 CXXFLAGS += -ffast-math
 CXXFLAGS += -Wunused
 CXXFLAGS += -flto
+#CXXFLAGS += -g
 
 ###############################################################################
 
@@ -57,5 +59,5 @@ obj/%.o: examples/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	if exist "bin" rd bin /S
-	if exist "obj" rd obj /S
+	if exist "bin" rd bin /S Y
+	if exist "obj" rd obj /S Y

@@ -7,28 +7,39 @@ namespace twg
 
 //-----------------------------------------------------------------------------
 std::map<HWND, WindowObject*> WindowMap;
-LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) 
-{
+LRESULT CALLBACK wndProc1(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	WindowObject *curWin = WindowMap[hwnd];
 	if (msg == WM_CREATE) {
-		WindowObject *curWin = ((WindowObject*) 
-			((CREATESTRUCT*)lParam)->lpCreateParams);
+		curWin = ((WindowObject*) ((CREATESTRUCT*)lParam)->lpCreateParams);
 		WindowMap[hwnd] = curWin;
 	}
 
-	if (curWin != 0)
+	if (curWin != nullptr)
 		return curWin->wndProc(hwnd, msg, wParam, lParam);
 	else
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
 //-----------------------------------------------------------------------------
-DWORD WINAPI msgCycle(LPVOID hwnd)
-{
-	MSG msg;
-	bool bRet;
+bool waitForCreate = false;
+DWORD WINAPI makeWindow(LPVOID data) {
+	WindowObject* wnd = data;
+	HWND hwnd = wnd->create((void*)(&wndProc1));
 
-	while((bRet = GetMessage(&msg, (HWND)hwnd, 0, 0)) != 0) { 
+	wnd->m_hwnd = hwnd;
+	wnd->m_hdc = GetDC(hwnd);
+	wnd->canvas.assign(wnd->m_hdc);
+
+	UpdateWindow(hwnd);
+	ShowWindow(hwnd, SW_SHOW);
+
+	waitForCreate = true;
+
+	//-------------------------------------------------------------------------
+	MSG msg;
+	int32 bRet;
+
+	while((bRet = GetMessage(&msg, hwnd, 0, 0)) != 0) { 
 		if (bRet != -1) {
 			TranslateMessage(&msg); 
 			DispatchMessage(&msg); 
@@ -37,15 +48,36 @@ DWORD WINAPI msgCycle(LPVOID hwnd)
 }
 
 //-----------------------------------------------------------------------------
-WindowObject::WindowObject() 
-{
-	m_hwnd = create((void*)(&wndProc));
-	m_hdc = GetDC(m_hwnd);
+void WindowObject::onStart() {
+	CreateThread(NULL, 0, &makeWindow, this, 0, NULL);
+	while (!waitForCreate) {
+		sleep(1);
+	}
+	waitForCreate = false;
+}
 
-	UpdateWindow(m_hwnd);
-	ShowWindow(m_hwnd, SW_SHOW);
+//-----------------------------------------------------------------------------
+WindowObject::~WindowObject() {
+	if (!isClosed())
+		DestroyWindow(m_hwnd);
+	WindowMap[m_hwnd] = nullptr;
+}
 
-	CreateThread(NULL, 0, &msgCycle, m_hwnd, 0, NULL);
+//-----------------------------------------------------------------------------
+HWND WindowObject::getHwnd(void) {
+	return m_hwnd;
+}
+
+//-----------------------------------------------------------------------------
+void WindowObject::waitForClose(void) {
+	while (IsWindow(m_hwnd)) {
+		sleep(10);
+	}
+}
+
+//-----------------------------------------------------------------------------
+bool WindowObject::isClosed(void) {
+	return IsWindow(m_hwnd);
 }
 
 }

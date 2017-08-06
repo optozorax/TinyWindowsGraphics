@@ -30,8 +30,8 @@ namespace twg
 	double 	rad2deg(double rad);
 	double 	computeCycle(double pos, CycleType type);
 
-	void 	sleep(int32u);
-	bool 	isKeyDown(int16u);
+	void 	sleep(int32u time);
+	bool 	isKeyDown(int16u keyNo);
 	int32u 	timeGet(void);
 	void 	setCursor(CursorType type);
 
@@ -88,21 +88,6 @@ inline double deg2rad(double deg) {
 //-----------------------------------------------------------------------------
 inline double rad2deg(double rad) {
 	return rad * 180.0 / pi;
-}
-
-//-----------------------------------------------------------------------------
-inline void sleep(int32u) {
-
-}
-
-//-----------------------------------------------------------------------------
-inline bool isKeyDown(int16u) {
-
-}
-
-//-----------------------------------------------------------------------------
-inline int32u timeGet(void) {
-	return 0;
 }
 
 }

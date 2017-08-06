@@ -27,6 +27,7 @@ namespace twg
 					Point_i srcSize);
 
 		HDC 	getHdc(void);
+		void	assign(HDC hdc);
 	protected:
 		HDC		m_hdc;
 	};
