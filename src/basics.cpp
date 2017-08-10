@@ -27,11 +27,11 @@ double computeCycle(double pos, CycleType type) {
 		case CYCLE_NULL:
 			return (pos < 0) ? 0 : ((pos > 1) ? 1 : pos);
 		case CYCLE_SIN:
-			pos = fmod(abs(pos), 2.0);
+			pos = fmod(fabs(pos), 2.0);
 			pos = (pos > 1) ? 2-pos : pos;
 			return pos;
 		case CYCLE_TAN:
-			return fmod(abs(pos), 1.0);
+			return fmod(fabs(pos), 1.0);
 	}
 }
 
@@ -42,56 +42,64 @@ void setCursor(CursorType type) {
 			SetCursor(NULL);
 			break;
 		case CURSOR_STANDART:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_ARROW));
+			SetCursor(LoadCursor(NULL, IDC_ARROW));
 			break;
 		case CURSOR_CLICK:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_HAND));
+			SetCursor(LoadCursor(NULL, IDC_HAND));
 			break;
 		case CURSOR_WAIT:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_WAIT));
+			SetCursor(LoadCursor(NULL, IDC_WAIT));
 			break;
 		case CURSOR_CROSS:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_CROSS));
+			SetCursor(LoadCursor(NULL, IDC_CROSS));
 			break;
 		case CURSOR_HELP:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_HELP));
+			SetCursor(LoadCursor(NULL, IDC_HELP));
 			break;
 		case CURSOR_STANDART_WAIT:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_APPSTARTING));
+			SetCursor(LoadCursor(NULL, IDC_APPSTARTING));
 			break;
 		case CURSOR_TEXT:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_IBEAM));
+			SetCursor(LoadCursor(NULL, IDC_IBEAM));
 			break;
 		case CURSOR_FORBIDDEN:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_NO));
+			SetCursor(LoadCursor(NULL, IDC_NO));
 			break;
 		case CURSOR_MOVE:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_SIZEALL));
+			SetCursor(LoadCursor(NULL, IDC_SIZEALL));
 			break;
 		case CURSOR_UP:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_UPARROW));
+			SetCursor(LoadCursor(NULL, IDC_UPARROW));
 			break;
 		case CURSOR_SIZE_UP_DOWN:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_SIZENS));
+			SetCursor(LoadCursor(NULL, IDC_SIZENS));
 			break;
 		case CURSOR_SIZE_LEFT_RIGHT:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_SIZEWE));
+			SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 			break;
 		case CURSOR_SIZE_LEFT_DOWN_CORNER:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_SIZENESW));
+			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
 			break;
 		case CURSOR_SIZE_RIGHT_UP_CORNER:
-			SetCursor(LoadCursor(GetModuleHandle(NULL), IDC_SIZENWSE));
+			SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
 			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
 std::wstring str2wstr(std::string str) {
-	//std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	//return converter.from_bytes(str);
 	std::wstring ws(str.begin(), str.end());
 	return ws;
+}
+
+std::wstring key2wstr(KeyType key) {
+	wchar_t ws[5] = {};
+	BYTE kb[256];
+	GetKeyboardState(kb);
+	if (ToUnicode(key, MapVirtualKey(key, MAPVK_VK_TO_VSC), kb, ws, 4, 0) > 0) 
+	    return std::wstring(ws);
+	else
+		return std::wstring(L"");
 }
 
 //-----------------------------------------------------------------------------

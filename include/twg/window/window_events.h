@@ -11,16 +11,16 @@ namespace twg
 
 	class WindowEvents;
 	struct onMessageStruct;
+	enum WindowsMessages : int32u;
 
 	//-------------------------------------------------------------------------
 	class WindowEvents : public WindowBase, public EventsHandler
 	{
 	public:
-		WindowEvents(WindowType type) : 
+		WindowEvents(WindowType type, EventsBase* parent = nullptr) : 
 			WindowBase(type), 
-			EventsHandler(nullptr) {}
+			EventsHandler(parent) {}
 	protected:
-		// Эта функция посылает все необычные сообщения в onMessage
 		LRESULT wndProcNext(HWND hwnd, 
 							UINT msg,
 							WPARAM wParam, 
@@ -30,13 +30,24 @@ namespace twg
 	//-------------------------------------------------------------------------
 	struct onMessageStruct 
 	{
-		onMessageStruct(WPARAM wParam1, LPARAM lParam1) {
+		onMessageStruct(HWND hwnd1, UINT msg1, WPARAM wParam1, LPARAM lParam1, LRESULT lResult1 = 0) {
+			hwnd = hwnd1;
+			msg = msg1;
 			wParam = wParam1;
 			lParam = lParam1;
+			lResult = lResult1;
 		}
 
-		WPARAM wParam;
-		LPARAM lParam;
+		HWND 	hwnd;
+		UINT 	msg;
+		WPARAM 	wParam;
+		LPARAM 	lParam;
+		LRESULT lResult;
+	};
+
+	//-------------------------------------------------------------------------
+	enum WindowsMessages : int32u {
+		WINDOWS_MESSAGE = 1000
 	};
 	
 }

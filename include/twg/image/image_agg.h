@@ -24,7 +24,6 @@ namespace twg
 	typedef agg::renderer_scanline_aa_solid<renderer_base>	renderer_scanline;
 	typedef agg::rasterizer_scanline_aa<>					rasterizer_scanline;
 	typedef agg::scanline_u8								scanline;
-	/// @TODO: add many objects.
 
 	//-------------------------------------------------------------------------
 	class ImageAgg : public ImageBase
@@ -36,8 +35,8 @@ namespace twg
 		pixfmt 					pf;
 		renderer_base 			renBase;
 		renderer_scanline 		renSl;
-		rasterizer_scanline 	sl;
-		/// @TODO: add many objects.
+		rasterizer_scanline 	ras;
+		scanline 				sl;
 	};
 
 	//-------------------------------------------------------------------------
@@ -51,8 +50,8 @@ namespace twg
 		void addPoint(double x, double y);
 		void setIsPolygon(bool x);
 
-		void 		rewind(unsigned);
-		unsigned 	vertex(double* x, double* y);
+		void 	rewind(int32u);
+		int32u 	vertex(double* x, double* y);
 
 	private:
 		int32u	m_num;

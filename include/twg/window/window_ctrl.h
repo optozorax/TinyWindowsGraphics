@@ -12,6 +12,7 @@ namespace twg
 {
 
 	class 	WindowCtrl;
+	struct 	onMessageStruct;
 	enum 	WindowMessages : int32u;
 
 	//-------------------------------------------------------------------------
@@ -22,16 +23,17 @@ namespace twg
 	class WindowCtrl : public WindowEvents
 	{
 	public:
-		WindowCtrl(WindowType type) : 
-			WindowEvents(type), 
+		WindowCtrl(WindowType type, EventsBase* parent = nullptr) : 
+			WindowEvents(type, parent), 
 			storage(this), 
-			m_buffer(new ImageBase(Point_i(2000, 2000))) {}
+			m_buffer(new ImageBase(Point_i(1000, 1000))) {}
 
-		CtrlStorage 	storage;	
+		CtrlStorage 	storage;
+
+		bool redraw(bool returnType);	
 
 		//---------------------------------------------------------------------
 		bool onMessage(int32u messageNo, void* data);
-		// Здесь обрабатывается сообщение WINDOW_GET_HWND, а все остальное отправляется на onMessage хранилищу.
 		void* sendMessageUp(int32u messageNo, void* data);
 
 		bool onMouse(Point_i pos, MouseType type);
@@ -43,14 +45,18 @@ namespace twg
 		bool onMove(Point_i newPos);
 		bool onKillFocus(void);
 	private:
-		// В resize следить за размером окна, потому что может понадобиться ресайзить буфер.
 		ImageBase*		m_buffer;
+
+		LRESULT wndProcNext2(HWND hwnd, 
+							UINT msg,
+							WPARAM wParam, 
+							LPARAM lParam);
 	};
 
 	//-------------------------------------------------------------------------
 	enum WindowMessages : int32u
 	{
-		WINDOW_GET_POINTER = 1000
+		WINDOW_GET_POINTER = 1001
 	};
 	
 }

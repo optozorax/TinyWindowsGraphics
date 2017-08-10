@@ -6,7 +6,7 @@ using namespace twg;
 int main() {
 	WindowType type(-1,
 					Point_i(100, 0),
-					Point_i(300, 70), 
+					Point_i(300, 50), 
 					Point_i(-1, -1),
 					Point_i(-1, -1),
 					L"",
@@ -18,7 +18,7 @@ int main() {
 	WindowBase wnd1(type);
 
 	type.style = WINDOW_TOOL;
-	type.caption = L"Window tool おはよう µ² Unicode ┌──┘";
+	type.caption = L"Window tool"; // おはよう µ² Unicode ┌──┘
 	type.pos += Point_i(0, 100);
 	WindowBase wnd2(type);
 	
@@ -53,7 +53,7 @@ int main() {
 		pos.rotate(i/180.0 * pi, center);
 		wnd2.setPos(pos);
 		wnd3.setCaption(str2wstr(std::to_string(i)) + L" degrees of rotate");
-		wnd4.setWindowSize(Point_i(i/360.0 * 300, 70));
+		wnd4.setWindowSize(Point_i(i/360.0 * 300, 50));
 		wnd5.setStyle(k % WINDOW_MAX_TYPE);
 
 		sleep(30);

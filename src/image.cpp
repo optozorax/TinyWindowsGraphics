@@ -30,9 +30,25 @@ void ImageWin::copyTo(ImageWin* dst,
 }
 
 //-----------------------------------------------------------------------------
-HDC ImageWin::getHdc(void) {
-	return m_hdc;
+void ImageWin::drawTo(ImageWin* dst, 
+					  Point_i dstStart, 
+					  Point_i srcStart,
+					  Point_i srcSize) {
+	BLENDFUNCTION blendFn = {};
+	blendFn.BlendOp = AC_SRC_OVER;
+	blendFn.BlendFlags = 0;
+	blendFn.SourceConstantAlpha = 255;
+	blendFn.AlphaFormat = 0x1;
+
+	AlphaBlend(dst->m_hdc, 
+			   dstStart.x, dstStart.y,
+			   srcSize.x, srcSize.y,
+			   m_hdc,
+			   srcStart.x, srcStart.y,
+			   srcSize.x, srcSize.y,
+			   blendFn);
 }
+
 
 //-----------------------------------------------------------------------------
 void ImageWin::assign(HDC hdc) {
@@ -44,16 +60,6 @@ void ImageWin::assign(HDC hdc) {
 void ImageWin::assignScreen(void) {
 	if (m_hdc != 0) DeleteDC(m_hdc);
 	m_hdc = CreateDC(L"DISPLAY", NULL, NULL, NULL);
-}
-
-//-----------------------------------------------------------------------------
-int32u ImageWin::width(void) {
-	return size().x;
-}
-
-//-----------------------------------------------------------------------------
-int32u ImageWin::height(void) {
-	return size().y;
 }
 
 //-----------------------------------------------------------------------------
@@ -69,59 +75,65 @@ Point_i ImageWin::size(void) {
 
 //-----------------------------------------------------------------------------
 ImageBase::ImageBase(Point_i sz) : m_hbmp(0) {
+	m_assigned = nullptr;
 	resize(sz);
 }
 
 //-----------------------------------------------------------------------------
+ImageBase::ImageBase(const ImageBase& img) : m_hbmp(0) {
+	m_assigned = nullptr;
+	resize(img.size());
+	img.copyTo(this, Point_i(0, 0), Point_i(0, 0), img.size());
+}
+
+//-----------------------------------------------------------------------------
 ImageBase::~ImageBase() {
+	if (m_assigned == nullptr) {
+		DeleteObject(m_hbmp);
+		DeleteDC(m_hdc);
+	}
+}
+
+//-----------------------------------------------------------------------------
+void ImageBase::assign(ImageBase* img) {
 	DeleteObject(m_hbmp);
 	DeleteDC(m_hdc);
+	m_assigned = img;
+	m_buf = img->m_buf;
+	m_width = img->m_width;
+	m_height = img->m_height;
+	m_hbmp = img->m_hbmp;
+	m_hdc = img->m_hdc;	
 }
 
 //-----------------------------------------------------------------------------
 void ImageBase::resize(Point_i newSize) {
-	DeleteObject(m_hbmp);
-	DeleteDC(m_hdc);
+	if (m_assigned != nullptr)
+		m_assigned->resize(newSize);
+	else {
+		DeleteObject(m_hbmp);
+		DeleteDC(m_hdc);
 
-	m_width = newSize.x;
-	m_height = newSize.y;
+		m_width = newSize.x;
+		m_height = newSize.y;
 
-	BITMAPINFO bmi = {};
-	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 
-	bmi.bmiHeader.biWidth = newSize.x;
-	bmi.bmiHeader.biHeight = -newSize.y;
-	bmi.bmiHeader.biPlanes = 1;
-	bmi.bmiHeader.biBitCount = 32;
-	bmi.bmiHeader.biCompression = BI_RGB;
-	bmi.bmiHeader.biSizeImage = newSize.x * newSize.y * 4;
-	
-	VOID *pvBits;
-	m_hdc = CreateCompatibleDC(NULL);
-	m_hbmp = CreateDIBSection(m_hdc, &bmi, DIB_RGB_COLORS, &pvBits, nullptr, 0);
-	SetGraphicsMode(m_hdc, GM_ADVANCED);
-	
-	m_buf = (Color*)(pvBits);
-	DeleteObject(SelectObject(m_hdc, m_hbmp));
-}
-
-//-----------------------------------------------------------------------------
-Color* ImageBase::buf(void) {
-	return m_buf;
-}
-
-//-----------------------------------------------------------------------------
-int32u ImageBase::width(void) {
-	return m_width;
-}
-
-//-----------------------------------------------------------------------------
-int32u ImageBase::height(void) {
-	return m_height;
-}
-
-//-----------------------------------------------------------------------------
-Point_i ImageBase::size(void) {
-	return Point_i(m_width, m_height);
+		BITMAPINFO bmi = {};
+		bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 
+		bmi.bmiHeader.biWidth = newSize.x;
+		bmi.bmiHeader.biHeight = -newSize.y;
+		bmi.bmiHeader.biPlanes = 1;
+		bmi.bmiHeader.biBitCount = 32;
+		bmi.bmiHeader.biCompression = BI_RGB;
+		bmi.bmiHeader.biSizeImage = newSize.x * newSize.y * 4;
+		
+		VOID *pvBits;
+		m_hdc = CreateCompatibleDC(NULL);
+		m_hbmp = CreateDIBSection(m_hdc, &bmi, DIB_RGB_COLORS, &pvBits, nullptr, 0);
+		SetGraphicsMode(m_hdc, GM_ADVANCED);
+		
+		m_buf = (Color*)(pvBits);
+		DeleteObject(SelectObject(m_hdc, m_hbmp));
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -131,20 +143,6 @@ void ImageBase::clear(Color bk) {
 			m_buf[i + m_width * j] = bk;
 		}
 	}
-}
-
-//-----------------------------------------------------------------------------
-Color& ImageBase::getPixel(int32 x, int32 y) {
-	if (x > m_width || x < 0 || y > m_height || y < 0)
-		// Вызвать исключение
-		return *m_buf;
-	else
-		return m_buf[x + m_width * y];
-}
-
-//-----------------------------------------------------------------------------
-Color& ImageBase::operator[](Point_i pos) {
-	return m_buf[pos.x + m_width * pos.y];
 }
 
 //-----------------------------------------------------------------------------

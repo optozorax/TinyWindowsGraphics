@@ -45,12 +45,12 @@ namespace twg
 	{
 	public:
 		TextStyle() : width(12), name(L"Consolas"), flags(0) {}
-		TextStyle(int8u width, std::wstring name, TextFlag  flags) :
+		TextStyle(int32 width, std::wstring name, TextFlag  flags) :
 			width(width), name(name), flags(flags) {};
 
-		int8u		width;
+		int32			width;
 		std::wstring	name;
-		TextFlag 	flags;
+		TextFlag 		flags;
 	};
 
 	enum TextFlag : int32u
@@ -66,25 +66,18 @@ namespace twg
 	class Polygon_d
 	{
 	public:
-		Polygon_d() : m_array(3) {}
-		Polygon_d(std::vector<Point_d> array) : m_array(array) {}
+		Polygon_d() {}
+		Polygon_d(std::vector<Point_d> array) : array(array) {}
 
-		std::vector<Point_d> getArray();
-		void setArray(std::vector<Point_d> array);
+		std::vector<Point_d> array;
 
 		Polygon_d& move(Point_d diff);
-		Polygon_d& rotate(double angle);
+		Polygon_d& rotate(double angle, Point_d center);
 		Polygon_d& scale(Point_d scale);
-		Polygon_d& toCoords(Point_d newOX, Point_d newOY);
-		Polygon_d& fromCoords(Point_d oldOX, Point_d oldOY);
+		Polygon_d& toBasis(Point_d newOX, Point_d newOY);
+		Polygon_d& fromBasis(Point_d oldOX, Point_d oldOY);
 
 		Polygon_d& flipAxis(Point_d axis); // You can mirror coords by OX(1, 0)
-
-		Polygon_d& pushPointsBack(Polygon_d a);
-		Polygon_d& pushPointsForward(Polygon_d a);
-
-	private:
-		std::vector<Point_d> m_array;
 	};
 
 	Polygon_d computeEllipse(Point_d radius);
@@ -106,20 +99,15 @@ namespace twg
 	{
 	public:
 		ImageDrawing(Point_i size) : ImageBase(size) {}
+
 		virtual ~ImageDrawing() {}
 
 		virtual void setPen(Pen pen) {}
 		virtual void setBrush(Brush brush) {}
-		virtual void setTextStyle(int8u width, 
-								  std::wstring name, 
-								  TextFlag flags = TEXT_NONE) {}
+		virtual void setTextStyle(TextStyle style) {}
 
-		virtual void drawTo(ImageWin* dst, 
-							Point_i dstStart, 
-							Point_i srcStart,
-							Point_i srcSize) {} // Used AlphaBlend.
 			// Rectangular drawing
-		virtual void drawTo(ImageBase* dst, Polygon_d rect) {} // ONLY 4 POINTS
+		virtual void drawPTo(ImageBase* dst, Polygon_d rect) {} // ONLY 4 POINTS
 			// You can rotate, move, scale, and another transformations of points
 			// Рисует 
 
@@ -129,11 +117,10 @@ namespace twg
 		virtual Point_d 	getTextSize(std::wstring) {}
 
 		virtual void drawPolygon(Polygon_d points) {}
-		virtual void drawPolyline(Polygon_d points, 
-								  bool isRoundJoin) {}
+		virtual void drawPolyline(Polygon_d points, bool isRoundJoin) {}
 		virtual void drawLine(Point_d a, Point_d b) {}
 
-		virtual void fillFlood(Point_d pos) {}
+		// virtual void fillFlood(Point_d pos) {}
 
 		virtual void drawText(Point_d pos, std::wstring text) {}
 	protected:
@@ -146,18 +133,14 @@ namespace twg
 	{
 	public:
 		ImageDrawing_aa(Point_i size) : ImageDrawing(size) {}
+		ImageDrawing_aa(ImageBase* img);
+		~ImageDrawing_aa();
 
 		void setPen(Pen pen);
 		void setBrush(Brush brush);
-		void setTextStyle(int8u width, 
-						  std::wstring name, 
-						  TextFlag flags = TEXT_NONE);
+		void setTextStyle(TextStyle style);
 
-		void drawTo(ImageWin* dst, 
-					Point_i dstStart, 
-					Point_i srcStart,
-					Point_i srcSize);
-		void drawTo(ImageBase* dst, Polygon_d rect);
+		void drawPTo(ImageBase* dst, Polygon_d rect);
 
 		Pen 		getPen(void);
 		Brush 		getBrush(void);
@@ -168,7 +151,7 @@ namespace twg
 		void drawPolyline(Polygon_d points, bool isRoundJoin);
 		void drawLine(Point_d a, Point_d b);
 
-		void fillFlood(Point_d pos);
+		// void fillFlood(Point_d pos);
 
 		void drawText(Point_d pos, std::wstring text);
 	};
@@ -176,19 +159,15 @@ namespace twg
 	class ImageDrawing_win : public ImageDrawing 
 	{
 	public:
-		ImageDrawing_win(Point_i size) : ImageDrawing(size) {}
+		ImageDrawing_win(Point_i size);
+		ImageDrawing_win(ImageBase* img);
+		~ImageDrawing_win();
 
 		void setPen(Pen pen);
 		void setBrush(Brush brush);
-		void setTextStyle(int8u width, 
-						  std::wstring name, 
-						  TextFlag flags = TEXT_NONE);
+		void setTextStyle(TextStyle style);
 
-		void drawTo(ImageWin* dst, 
-					Point_i dstStart, 
-					Point_i srcStart,
-					Point_i srcSize);
-		void drawTo(ImageBase* dst, Polygon_d rect);
+		void drawPTo(ImageBase* dst, Polygon_d rect);
 
 		Pen 		getPen(void);
 		Brush 		getBrush(void);
@@ -199,9 +178,19 @@ namespace twg
 		void drawPolyline(Polygon_d points, bool isRoundJoin);
 		void drawLine(Point_d a, Point_d b);
 
-		void fillFlood(Point_d pos);
+		// void fillFlood(Point_d pos);
 
 		void drawText(Point_d pos, std::wstring text);
+	private:
+		HGDIOBJ	m_lastPen;
+		HGDIOBJ	m_lastBrush;
+		HGDIOBJ	m_lastFont;
+
+		void saveObjects(void);
+
+		TextStyle 	m_text;
+		Pen 		m_pen;
+		Brush 		m_brush;
 	};
 	
 }

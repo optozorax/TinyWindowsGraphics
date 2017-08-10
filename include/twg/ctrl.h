@@ -16,41 +16,27 @@ namespace twg
 	class 	CtrlStorage;
 
 	//-------------------------------------------------------------------------
-	enum CtrlMessages : int32u
-	{
-		CTRL_GET_POINTER = 1001,
-		CTRL_GET_UNIQUE_ID = 1002
-	};
-
-	//-------------------------------------------------------------------------
 	class CtrlBase : public EventsHandler
 	{
 	public:
-		CtrlBase(EventsBase* parent) : 
-			EventsHandler(parent) {
-			int32u* idp = sendMessageUp(CTRL_GET_UNIQUE_ID, nullptr);
-			id = *idp;
-			delete idp;
-		}
+		CtrlBase(EventsBase* parent) : EventsHandler(parent) { }
 
 		virtual ~CtrlBase() {}
 
 		virtual void draw(ImageBase* buffer) {}
-	public:
-		int32u	id;
 	};
 
 	//-------------------------------------------------------------------------
-	class CtrlStorage : CtrlBase
+	class CtrlStorage : public CtrlBase
 	{
 	public:
-		CtrlStorage(EventsBase* parent) : 
-			CtrlBase(m_parent) {}
+		CtrlStorage(EventsBase* parent) : CtrlBase(parent), OMFOC(false) {}
 		~CtrlStorage() {}
 
-		int32u getUniqueId(void);
-		std::vector<CtrlBase*>	array;
+		int32u getId(CtrlBase* ctrl);
+		void deleteMe(CtrlBase* ctrl);
 
+		std::vector<CtrlBase*>	array;
 		bool 					OMFOC; // One Message For One Ctrl
 
 		//---------------------------------------------------------------------
@@ -66,9 +52,16 @@ namespace twg
 		bool onMessage(int32u messageNo, void* data);
 		void* sendMessageUp(int32u messageNo, void* data);
 	private:
-		std::vector<int32u> 	m_ids;
+		std::vector<CtrlBase*>	m_toDelete;
+
+		void deleteCtrls(void);
 	};
 
+	//-------------------------------------------------------------------------
+	enum CtrlMessages : int32u
+	{
+		CTRL_GET_POINTER = 1002
+	};
 }
 
 #endif // TWG_CTRL_INCLUDED

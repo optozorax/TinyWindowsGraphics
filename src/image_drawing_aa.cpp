@@ -4,6 +4,16 @@ namespace twg
 {
 
 //-----------------------------------------------------------------------------
+ImageDrawing_aa::ImageDrawing_aa(ImageBase* img) : ImageDrawing(Point_i(1, 1)) {
+	
+}
+
+//-----------------------------------------------------------------------------
+ImageDrawing_aa::~ImageDrawing_aa() {
+
+}
+
+//-----------------------------------------------------------------------------
 void ImageDrawing_aa::setPen(Pen pen) {
 
 }
@@ -14,21 +24,11 @@ void ImageDrawing_aa::setBrush(Brush brush) {
 }
 
 //-----------------------------------------------------------------------------
-void ImageDrawing_aa::setTextStyle(int8u width, 
-								   std::wstring name, 
-								   TextFlag flags = TEXT_NONE) {
+void ImageDrawing_aa::setTextStyle(TextStyle style) {
 }
 
 //-----------------------------------------------------------------------------
-void ImageDrawing_aa::drawTo(ImageWin* dst, 
-							 Point_i dstStart, 
-							 Point_i srcStart,
-							 Point_i srcSize) {
-
-}
-
-//-----------------------------------------------------------------------------
-void ImageDrawing_aa::drawTo(ImageBase* dst, Polygon_d rect) {
+void ImageDrawing_aa::drawPTo(ImageBase* dst, Polygon_d rect) {
 
 }
 
@@ -68,9 +68,9 @@ void ImageDrawing_aa::drawLine(Point_d a, Point_d b) {
 }
 
 //-----------------------------------------------------------------------------
-void ImageDrawing_aa::fillFlood(Point_d pos) {
+// void ImageDrawing_aa::fillFlood(Point_d pos) {
 
-}
+// }
 
 //-----------------------------------------------------------------------------
 void ImageDrawing_aa::drawText(Point_d pos, std::wstring text) {

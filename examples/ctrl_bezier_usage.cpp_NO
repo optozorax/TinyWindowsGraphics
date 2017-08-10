@@ -17,7 +17,7 @@ public:
 	//-------------------------------------------------------------------------
 	bool onMouse(Point_i pos, MouseType type) final;
 	bool onKeyboard(int32 key, bool isDown) final;
-	bool draw(ImageBase* buffer) final;
+	bool ddraw(ImageBase* buffer) final;
 protected:
 	virtual bool isInside(Point_i pos) = 0;
 	virtual void move(Point_i diff) = 0;
@@ -227,7 +227,7 @@ bool BezierCtrl::sendMessageUp(int32u messageNo, void* data) {
 	return false;
 };
 
-void BezierCtrl::draw(ImageBase* buffer) {
+void BezierCtrl::ddraw(ImageBase* buffer) {
 	ImageDrawing_aa img(buffer);
 
 	img.setBrush(setAlpha(White, 128));
@@ -480,7 +480,7 @@ bool MovableCtrl::onKeyboard(int32 key, bool isDown)
 	return false;
 }
 
-void MovableCtrl::draw(ImageBase* buffer) {
+void MovableCtrl::ddraw(ImageBase* buffer) {
 	switch (m_state) {
 		case STATE_DEFAULT:
 			drawDefault(buffer);

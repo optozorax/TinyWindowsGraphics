@@ -7,6 +7,7 @@
 
 namespace twg
 {
+	union ColorUnion;
 
 	typedef int32u Color_order_bgra_32;
 	typedef Color_order_bgra_32 Color;
@@ -30,19 +31,13 @@ namespace twg
 	int8u getGreen(Color clr);
 	int8u getBlue(Color clr);
 
-	Color getColorBetween(double pos,
-						  Color clr1, 
-						  Color clr2,
-						  CycleType cycle = CYCLE_NULL);
-	Color getGrayHue(double hue, CycleType cycle = CYCLE_NULL);
-	Color getRainbow(double pos, CycleType cycle = CYCLE_NULL);
+	Color getColorBetween(double pos, Color clr1,  Color clr2);
+	Color getGrayHue(double hue);
+	Color getRainbow(double pos);
+	Color getGradient(double pos, std::vector<Color> colors);
 	Color getGradient(double pos, 
-					  std::vector<Color> colors,
-					  CycleType cycle = CYCLE_NULL);
-	Color getGradient(double pos, 
-					  std::vector<Color>& colors, 
-					  std::vector<double>& sizes,
-					  CycleType cycle = CYCLE_NULL);
+					  std::vector<Color> colors, 
+					  std::vector<double> sizes);
 
 	Color computeOverlay(Color upper, Color lower);
 
@@ -84,6 +79,18 @@ namespace twg
 	const Color Pink 			= rgb(0xF9, 0x26, 0x72);
 	const Color GreenYellow 	= rgb(0xAD, 0xFF, 0x2F);
 
+	//-------------------------------------------------------------------------
+	union ColorUnion {
+		struct ColorStruct { 
+			ColorStruct(const int8u r, const int8u g, const int8u b, const int8u a) : r(r), g(g), b(b), a(a) {}
+			int8u b, g, r, a; 
+		} rgba;
+		Color color;
+
+		ColorUnion(const Color& color) : color(color) {}
+		ColorUnion(const int8u r, const int8u g, const int8u b, const int8u a) : rgba(r, g, b, a) {}
+	};
+
 //=============================================================================
 //=============================================================================
 //=============================================================================
@@ -92,10 +99,7 @@ namespace twg
 inline Color rgb(const int8u r, 
 				 const int8u g, 
 				 const int8u b) {
-	return b   * 0x1 | 
-		   g   * 0x100 |
-		   r   * 0x10000 |
-		   255 * 0x1000000;
+	return rgba(r, g, b, 255);
 }
 
 //-----------------------------------------------------------------------------
@@ -111,22 +115,22 @@ inline Color rgba(const int8u r,
 
 //-----------------------------------------------------------------------------
 inline Color setAlpha(Color clr, int8u a) {
-	(clr & ~getAlpha(clr)) | a * 0x1000000;
+	return (clr & ~(getAlpha(clr) * 0x1000000)) | (a * 0x1000000);
 }
 
 //-----------------------------------------------------------------------------
 inline Color setRed(Color clr, int8u r) {
-	(clr & ~getRed(clr)) | r * 0x10000;
+	return (clr & ~(getRed(clr) * 0x10000)) | (r * 0x10000);
 }
 
 //-----------------------------------------------------------------------------
 inline Color setGreen(Color clr, int8u g) {
-	return (clr & ~getGreen(clr)) | g * 0x100;
+	return (clr & ~(getGreen(clr) * 0x100)) | (g * 0x100);
 }
 
 //-----------------------------------------------------------------------------
 inline Color setBlue(Color clr, int8u b) {
-	return (clr & ~getBlue(clr)) | b;
+	return (clr & ~(getBlue(clr) * 0x1)) | (b * 0x1);
 }
 
 //-----------------------------------------------------------------------------
@@ -147,6 +151,27 @@ inline int8u getGreen(Color clr) {
 //-----------------------------------------------------------------------------
 inline int8u getBlue(Color clr) {
 	return (clr << 24) >> 24;
+}
+
+//-----------------------------------------------------------------------------
+inline Color computeOverlay(Color upper, Color lower) {
+	ColorUnion up = { .color = upper };
+	ColorUnion low = { .color = lower};
+
+	int32u upr = up.rgba.r;
+	int32u upg = up.rgba.g;
+	int32u upb = up.rgba.b;
+	int32u upa = up.rgba.a;
+
+	int32u lowr = low.rgba.r;
+	int32u lowg = low.rgba.g;
+	int32u lowb = low.rgba.b;
+	int32u lowa = low.rgba.a;
+
+    return rgba((int8u)(((upr - lowr) * upa + (lowr << 8)) >> 8),
+				(int8u)(((upg - lowg) * upa + (lowg << 8)) >> 8),
+				(int8u)(((upb - lowb) * upa + (lowb << 8)) >> 8),
+				(int8u)((upa + lowa) - ((lowa * upa + 255) >> 8)));
 }
 	
 }

@@ -7,11 +7,13 @@
 
 namespace twg
 {
+	#define TWG_max(a,b) ((a)>(b) ? (a) : (b))
+	#define TWG_min(a,b) ((a)<(b) ? (a) : (b))
 
-	typedef int8_t	int8;
-	typedef int16_t	int16;
-	typedef int32_t	int32; 
-	typedef int64_t	int64;
+	typedef int8_t		int8;
+	typedef int16_t		int16;
+	typedef int32_t		int32; 
+	typedef int64_t		int64;
 	
 	typedef uint8_t		int8u;
 	typedef uint16_t	int16u;
@@ -24,9 +26,9 @@ namespace twg
 	enum MessageType : int32u;
 	enum MessageReturnType : int32u;
 
-	//-------------------------------------------------------------------------
 	const double pi = 3.14159265358979323846;
 
+	//-------------------------------------------------------------------------
 	double 	deg2rad(double deg);
 	double 	rad2deg(double rad);
 	double 	computeCycle(double pos, CycleType type);
@@ -37,6 +39,7 @@ namespace twg
 	void 	setCursor(CursorType type);
 
 	std::wstring str2wstr(std::string str);
+	std::wstring key2wstr(KeyType key);
 
 	MessageReturnType messageBox(std::wstring text, 
 								 std::wstring caption,
@@ -48,6 +51,65 @@ namespace twg
 		CYCLE_NULL, // Обрезается на нуле и на единице
 		CYCLE_SIN, // y=x на промежутке [0, 1] повторяется как sin
 		CYCLE_TAN // y=x на промежутке [0, 1] повторяется как tg
+	};
+
+	enum CursorType : int32u
+	{
+		CURSOR_NULL,
+		CURSOR_STANDART,
+		CURSOR_CLICK,
+		CURSOR_WAIT,
+		CURSOR_STANDART_WAIT,
+		CURSOR_CROSS,
+		CURSOR_HELP,
+		CURSOR_TEXT,
+		CURSOR_FORBIDDEN,
+		CURSOR_MOVE,
+		CURSOR_UP,
+
+		CURSOR_SIZE_UP_DOWN,
+		CURSOR_SIZE_LEFT_RIGHT,
+		CURSOR_SIZE_LEFT_DOWN_CORNER,
+		CURSOR_SIZE_RIGHT_UP_CORNER
+	};
+
+	enum MessageType : int32u
+	{
+		// Типы кнопок
+		MESSAGE_ABORT_RETRY_IGNORE 	= 0x1,
+		MESSAGE_CANCEL_TRY_CONTINUE = 0x2,
+		MESSAGE_HELP				= 0x3,
+		MESSAGE_OK 					= 0x4,
+		MESSAGE_OK_CANCEL 			= 0x5,
+		MESSAGE_RETRY_CANCEL 		= 0x6,
+		MESSAGE_YES_NO 				= 0x7,
+		MESSAGE_YES_NO_CANCEL 		= 0x8,
+
+		// Иконка
+		MESSAGE_ICON_WARNING 		= 0x010,
+		MESSAGE_ICON_INFORMATION	= 0x020,
+		MESSAGE_ICON_QUESTION		= 0x030,
+		MESSAGE_ICON_ERROR			= 0x040,
+
+		// Расположение текста
+		MESSAGE_ALIGN_RIGHT_TEXT 	= 0x100,
+		MESSAGE_ALIGN_RIGHT_ALL		= 0x200,
+
+		// Общие стили
+		MESSAGE_STYLE_TOPMOST 		= 0x400
+	};
+
+	enum MessageReturnType : int32u
+	{
+		CLICK_ABORT,
+		CLICK_CANCEL,
+		CLICK_CONTINUE,
+		CLICK_IGNORE,
+		CLICK_NO,
+		CLICK_OK,
+		CLICK_RETRY,
+		CLICK_TRYAGAIN,
+		CLICK_YES
 	};
 
 	enum KeyType : int32u
@@ -215,65 +277,6 @@ namespace twg
 		KEY_NONAME = VK_NONAME,
 		KEY_PA1 = VK_PA1,
 		KEY_OEM_CLEAR = VK_OEM_CLEAR
-	};
-
-	enum CursorType : int32u
-	{
-		CURSOR_NULL,
-		CURSOR_STANDART,
-		CURSOR_CLICK,
-		CURSOR_WAIT,
-		CURSOR_STANDART_WAIT,
-		CURSOR_CROSS,
-		CURSOR_HELP,
-		CURSOR_TEXT,
-		CURSOR_FORBIDDEN,
-		CURSOR_MOVE,
-		CURSOR_UP,
-
-		CURSOR_SIZE_UP_DOWN,
-		CURSOR_SIZE_LEFT_RIGHT,
-		CURSOR_SIZE_LEFT_DOWN_CORNER,
-		CURSOR_SIZE_RIGHT_UP_CORNER
-	};
-
-	enum MessageType : int32u
-	{
-		// Типы кнопок
-		MESSAGE_ABORT_RETRY_IGNORE 	= 0x1,
-		MESSAGE_CANCEL_TRY_CONTINUE = 0x2,
-		MESSAGE_HELP				= 0x3,
-		MESSAGE_OK 					= 0x4,
-		MESSAGE_OK_CANCEL 			= 0x5,
-		MESSAGE_RETRY_CANCEL 		= 0x6,
-		MESSAGE_YES_NO 				= 0x7,
-		MESSAGE_YES_NO_CANCEL 		= 0x8,
-
-		// Иконка
-		MESSAGE_ICON_WARNING 		= 0x010,
-		MESSAGE_ICON_INFORMATION	= 0x020,
-		MESSAGE_ICON_QUESTION		= 0x030,
-		MESSAGE_ICON_ERROR			= 0x040,
-
-		// Расположение текста
-		MESSAGE_ALIGN_RIGHT_TEXT 	= 0x100,
-		MESSAGE_ALIGN_RIGHT_ALL		= 0x200,
-
-		// Общие стили
-		MESSAGE_STYLE_TOPMOST 		= 0x400
-	};
-
-	enum MessageReturnType : int32u
-	{
-		CLICK_ABORT,
-		CLICK_CANCEL,
-		CLICK_CONTINUE,
-		CLICK_IGNORE,
-		CLICK_NO,
-		CLICK_OK,
-		CLICK_RETRY,
-		CLICK_TRYAGAIN,
-		CLICK_YES
 	};
 
 //=============================================================================

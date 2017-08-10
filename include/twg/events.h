@@ -23,7 +23,6 @@ namespace twg
 
 		/** Получение сообщения от предка, если это контрол. 
 			Если это хранилище, то после каждого полученного сообщения в onMessage необходимо вызывать с тем же самым сообщением всех потомков.
-			Сюда могут приходить сообщения от Windows. От них отнимается WM_USER, получается они очень большие числа. Всего их может быть 1024. Так что получается, что их ранг - от (max<int32u>-WM_USER) до max<int32u>. Эти сообщения нельзя использовать пользователю, иначе работа будет непредсказуемой.
 		 */
 		virtual bool onMessage(int32u messageNo, void* data) { return false; }
 
@@ -36,8 +35,10 @@ namespace twg
 		virtual void* sendMessageUp(int32u messageNo, void* data) {
 			if (m_parent != nullptr)
 				return m_parent->sendMessageUp(messageNo, data);
-			else
+			else {
+				onMessage(messageNo, data);
 				return nullptr;
+			}
 		}
 	protected:
 		EventsBase*	m_parent;
@@ -85,7 +86,11 @@ namespace twg
 		SIZING_BOTTOM_LEFT,
 		SIZING_BOTTOM_RIGHT,
 		SIZING_TOP_LEFT,
-		SIZING_TOP_RIGHT
+		SIZING_TOP_RIGHT,
+
+		SIZING_MAXIMIZED,
+		SIZING_MINIMIZED,
+		SIZING_RESTORED
 	};
 
 }

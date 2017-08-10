@@ -10,28 +10,30 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 								  LPARAM lParam) {
 	switch (msg) {
 		//---------------------------------------------------------------------
-		case WM_COMMAND: {
-			onMessageStruct* data = new onMessageStruct(wParam, lParam);
-			if (onMessage(int32u(-msg), data))
-				return 0;
-			} break;
-
-		// case WM_DEADCHAR:
-		// case WM_UNICHAR:
-		// case WM_KEYDOWN: { 
-		// 	wchar_t ws[5] = {};
-		// 	BYTE kb[256];
-  //   		GetKeyboardState(kb);
-		// 	if (ToUnicode(wParam, MapVirtualKey(wParam, MAPVK_VK_TO_VSC), kb, ws, 4, 0) >= 1) 
-		// 	    setCaption(getCaption() + std::wstring(ws));
-		// 	} break;
-
-		//---------------------------------------------------------------------
 		case WM_MOVING: {
 			RECT* rect = lParam;
 			Point_i pos(rect->left, rect->top);
 			if (onMove(pos))
 				return TRUE;
+			} break;
+
+		//---------------------------------------------------------------------
+		case WM_SIZE: { 
+			SizingType type = 0;
+			switch (wParam) {
+				case SIZE_MAXIMIZED:
+					type = SIZING_MAXIMIZED;
+					break;
+				case SIZE_MINIMIZED:
+					type = SIZING_MINIMIZED;
+					break;
+				case SIZE_RESTORED:
+					type = SIZING_RESTORED;
+					break;
+			}
+			if (type != 0)
+				if (onResize(getWindowSize(), getPos(), type))
+					return 0;
 			} break;
 
 		//---------------------------------------------------------------------
@@ -71,6 +73,8 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 			} break;
 
 		//---------------------------------------------------------------------
+		// case WM_DEADCHAR:
+		// case WM_UNICHAR:
 		case WM_KEYUP:
 		case WM_KEYDOWN: {
 			if (onKeyboard(wParam, msg == WM_KEYDOWN))
@@ -145,13 +149,14 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 			if (onKillFocus())
 				return 0;
 			} break;		
-
-		//---------------------------------------------------------------------
-		case WM_NCHITTEST:
-			break;
 	}
 
-	return DefWindowProc(hwnd, msg, wParam, lParam);
+	// Все необычные сообщения посылаются в onMessage.
+	onMessageStruct data(hwnd, msg, wParam, lParam);
+	if (onMessage(WINDOWS_MESSAGE, &data))
+		return data.lResult;
+	else
+		return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
 }

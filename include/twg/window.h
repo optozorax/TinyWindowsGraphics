@@ -55,7 +55,7 @@ namespace twg
 	{
 	public:
 		WindowBase(WindowType type);
-		~WindowBase();  // Окно автоматически закрывается, здесь вызывается функция по закрытия окна.
+		~WindowBase();
 
 		Point_i 	 getClientSize(void);
 		Point_i 	 getWindowSize(void);
@@ -94,7 +94,6 @@ namespace twg
 						WPARAM wParam, 
 						LPARAM lParam) override;
 
-		// По умолчанию возвращает DefWindowProc(hwnd, msg, wParam, lParam);
 		virtual LRESULT wndProcNext(HWND hwnd, 
 									UINT msg,
 									WPARAM wParam, 
