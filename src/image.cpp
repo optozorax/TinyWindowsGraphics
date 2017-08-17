@@ -138,11 +138,8 @@ void ImageBase::resize(Point_i newSize) {
 
 //-----------------------------------------------------------------------------
 void ImageBase::clear(Color bk) {
-	for (int32u i = 0; i < m_width; ++i) {
-		for (int32u j = 0; j < m_height; ++j) {
-			m_buf[i + m_width * j] = bk;
-		}
-	}
+	for (int32u i = 0; i < m_width*m_height; ++i)
+			m_buf[i] = bk;
 }
 
 //-----------------------------------------------------------------------------

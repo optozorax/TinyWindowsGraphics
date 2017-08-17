@@ -77,6 +77,7 @@ namespace twg
 		Point_i client2global(Point_i clientPos);
 
 		void invalidateScreen(void);
+		bool updateImage(ImageBase& img);
 
 		// Надо ли? Это вносит лишь лишних костылей, а пользы немного.
 		// void setTaskbarColor(TaskbarColor clr);
@@ -136,9 +137,10 @@ namespace twg
 		WINDOW_CAPTION 		= 2,
 		WINDOW_POPUP 		= 3,
 		WINDOW_NO_BORDER 	= 4,
+		WINDOW_IMAGE32 		= 5,
 
-		// Обозначает количество стилей окна
-		WINDOW_MAX_TYPE 	= 5,
+		// Чтобы получить верхнии стили надо WindowStyle % WINDOW_MAX_TYPE
+		WINDOW_MAX_TYPE 	= 0x010,
 
 		//---------------------------------------------------------------------
 		// Стили далее могут объединяться через оператор |

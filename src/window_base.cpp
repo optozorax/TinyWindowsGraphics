@@ -77,6 +77,8 @@ WindowStyle WindowBase::getStyle(void) {
 		style |= WINDOW_POPUP;
 	else if (EX_Style & WS_EX_TOOLWINDOW)
 		style |= WINDOW_CAPTION;
+	else if (EX_Style & WS_EX_LAYERED)
+		style |= WINDOW_IMAGE32;
 	else
 		style |= WINDOW_NO_BORDER;
 
@@ -146,6 +148,10 @@ void getEX_WS_Styles(WindowStyle style, DWORD& EX_Style, DWORD& WS_Style) {
 		case WINDOW_NO_BORDER:
 			WS_Style |= WS_POPUP;
 			break;
+		case WINDOW_IMAGE32:
+			WS_Style |= WS_POPUP;
+			EX_Style |= WS_EX_LAYERED;
+			break;
 	}
 }
 
@@ -174,6 +180,22 @@ Point_i WindowBase::client2global(Point_i clientPos) {
 //-----------------------------------------------------------------------------
 void WindowBase::invalidateScreen(void) {
 	InvalidateRect(m_hwnd, NULL, TRUE);
+}
+
+//-----------------------------------------------------------------------------
+bool WindowBase::updateImage(ImageBase& img) {
+	if (getStyle() % WINDOW_MAX_TYPE == WINDOW_IMAGE32) {
+		POINT pptDest = {0, 0};
+		Point_i size(getWindowSize());
+		size.x = TWG_min(size.x, img.width());
+		size.y = TWG_min(size.y, img.height());
+		SIZE client = {size.x, size.y};
+		BLENDFUNCTION blendFn = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+		UpdateLayeredWindow(m_hwnd, GetDC(m_hwnd), NULL, &client,
+			img.getHdc(), &pptDest, 0, &blendFn, ULW_ALPHA);
+		return true;
+	}
+	return false;
 }
 
 //-----------------------------------------------------------------------------

@@ -134,7 +134,9 @@ typename PointBase<T, T1>::ComputeConst PointBase<T, T1>::computeAngle(SelfConst
 //-----------------------------------------------------------------------------
 template<class T, class T1> 
 inline bool PointBase<T, T1>::inRectangle(SelfConst& p1, SelfConst& p2) {
-	return false;
+	SelfConst p3(TWG_min(p1.x, p2.x), TWG_min(p1.y, p2.y));
+	SelfConst p4(TWG_max(p1.x, p2.x), TWG_max(p1.y, p2.y));
+	return (x <= p4.x && x >= p3.x && y <= p4.y && y >= p3.y);
 }
 
 //-----------------------------------------------------------------------------

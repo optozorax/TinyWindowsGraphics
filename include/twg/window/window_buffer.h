@@ -21,10 +21,12 @@ namespace twg
 			buffer(startSize) {}
 
 		void redraw() {
-			canvas.copyTo(&buffer, 
-						  Point_i(0, 0), 
-						  Point_i(0, 0), 
-						  buffer.size());
+			if (!updateImage(buffer)) {
+				buffer.copyTo(&canvas, 
+							  Point_i(0, 0), 
+							  Point_i(0, 0), 
+							  buffer.size());
+			}
 		}
 
 		ImageClass buffer;

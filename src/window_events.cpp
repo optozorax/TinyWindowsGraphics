@@ -21,15 +21,9 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 		case WM_SIZE: { 
 			SizingType type = 0;
 			switch (wParam) {
-				case SIZE_MAXIMIZED:
-					type = SIZING_MAXIMIZED;
-					break;
-				case SIZE_MINIMIZED:
-					type = SIZING_MINIMIZED;
-					break;
-				case SIZE_RESTORED:
-					type = SIZING_RESTORED;
-					break;
+				case SIZE_MAXIMIZED:	type = SIZING_MAXIMIZED; 	break;
+				case SIZE_MINIMIZED:	type = SIZING_MINIMIZED; 	break;
+				case SIZE_RESTORED: 	type = SIZING_RESTORED;		break;
 			}
 			if (type != 0)
 				if (onResize(getWindowSize(), getPos(), type))
@@ -40,30 +34,14 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 		case WM_SIZING: {
 			SizingType type;
 			switch (wParam) {
-				case WMSZ_BOTTOM:
-					type = SIZING_BOTTOM;
-					break;
-				case WMSZ_BOTTOMLEFT:
-					type = SIZING_BOTTOM_LEFT;
-					break;
-				case WMSZ_BOTTOMRIGHT:
-					type = SIZING_BOTTOM_RIGHT;
-					break;
-				case WMSZ_LEFT:
-					type = SIZING_LEFT;
-					break;
-				case WMSZ_RIGHT:
-					type = SIZING_RIGHT;
-					break;
-				case WMSZ_TOP:
-					type = SIZING_TOP;
-					break;
-				case WMSZ_TOPLEFT:
-					type = SIZING_TOP_LEFT;
-					break;
-				case WMSZ_TOPRIGHT:
-					type = SIZING_TOP_RIGHT;
-					break;
+				case WMSZ_BOTTOM:		type = SIZING_BOTTOM;		break;
+				case WMSZ_BOTTOMLEFT:	type = SIZING_BOTTOM_LEFT;	break;
+				case WMSZ_BOTTOMRIGHT:	type = SIZING_BOTTOM_RIGHT;	break;
+				case WMSZ_LEFT:			type = SIZING_LEFT;			break;
+				case WMSZ_RIGHT:		type = SIZING_RIGHT;		break;
+				case WMSZ_TOP:			type = SIZING_TOP;			break;
+				case WMSZ_TOPLEFT:		type = SIZING_TOP_LEFT;		break;
+				case WMSZ_TOPRIGHT:		type = SIZING_TOP_RIGHT;	break;
 			}
 			RECT* rect = lParam;
 			Point_i newSize(rect->right-rect->left, rect->bottom-rect->top);

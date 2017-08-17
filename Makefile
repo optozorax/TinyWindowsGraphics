@@ -8,14 +8,6 @@ CXXFLAGS += -DWINVER=0x0501
 CXXFLAGS += -D_WIN32_WINNT=0x501
 CXXFLAGS += -DUNICODE
 
-# Библиотеки для линковки, они у меня почему-то не работаеют, поэтому линкую напрямую .a файлы
-# CXXFLAGS += -lgdi32 -lwinmm -lmsimg32 -lcomctl32 -lcomdlg32 -lole32
-
-CXXFLAGS += -lstdc++
-
-# Эти надо компилировать самому
-CXXFLAGS += -lagg
-
 # Каталоги .h файлов
 CXXFLAGS += -I include
 
@@ -24,26 +16,31 @@ CXXFLAGS += -I include
 #CXXFLAGS += -I include/EasyBMP
 
 # Общие флаги
-CXXFLAGS += -O3
+CXXFLAGS += -Os
 CXXFLAGS += -std=gnu++11
 CXXFLAGS += -w
 CXXFLAGS += -fpermissive
+#CXXFLAGS += -g
 
 # Сильно увеличивает размер, но делает проги независимыми на чужом компе
-# CXXFLAGS += -static-libgcc -static-libstdc++
+LINKFLAGS += -static-libgcc -static-libstdc++
 
 # Если эту опцию поместить перед mwindows, то получится консоль с окном
-# CXXFLAGS += -mconsole 
-
-CXXFLAGS += -mwindows
+# LINKFLAGS += -mconsole 
+LINKFLAGS += -mwindows
 
 # Оптимизация размера
-CXXFLAGS += -s -Wl,--gc-sections -Wl,--strip-all 
-CXXFLAGS += -fdata-sections -ffunction-sections
-CXXFLAGS += -ffast-math
-CXXFLAGS += -Wunused
-CXXFLAGS += -flto
-#CXXFLAGS += -g
+LINKFLAGS += -s -Wl,--gc-sections -Wl,--strip-all 
+LINKFLAGS += -fdata-sections -ffunction-sections
+LINKFLAGS += -ffast-math
+LINKFLAGS += -Wunused
+LINKFLAGS += -flto
+
+# Библиотеки для линковки, они у меня почему-то не работаеют, поэтому линкую напрямую .a файлы
+# LINKFLAGS += -lgdi32 -lwinmm -lmsimg32 -lcomctl32 -lcomdlg32 -lole32
+LINKFLAGS += -lstdc++
+# Эти надо компилировать самому
+LINKFLAGS += -lagg
 
 ###############################################################################
 
@@ -66,7 +63,7 @@ dirs:
 	if not exist "obj" mkdir obj
 
 bin/%.exe: $(OBJECTS) obj/%.o
-	$(CXX) $(CXXFLAGS) $(OBJECTS) $(patsubst bin/%.exe, obj/%.o, $@) -o $@ $(ALIBS)
+	$(CXX) $(LINKFLAGS) $(CXXFLAGS) $(OBJECTS) $(patsubst bin/%.exe, obj/%.o, $@) -o $@ $(ALIBS)
 
 obj/%.o: src/%.cpp $(INCLUDES)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
