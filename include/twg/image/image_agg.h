@@ -14,6 +14,7 @@
 #include <agg_renderer_scanline.h>
 #include <agg_ellipse.h>
 #include <agg_basics.h>
+#include "agg_font_win32_tt.h"
 
 namespace twg
 {
@@ -24,12 +25,17 @@ namespace twg
 	typedef agg::renderer_scanline_aa_solid<renderer_base>	renderer_scanline;
 	typedef agg::rasterizer_scanline_aa<>					rasterizer_scanline;
 	typedef agg::scanline_u8								scanline;
+	typedef agg::font_engine_win32_tt_int32 				font_engine_type;
+	typedef agg::font_cache_manager<font_engine_type> 		font_manager_type;
 
 	//-------------------------------------------------------------------------
-	class ImageAgg : public ImageBase
+	class ImageAgg : virtual public ImageBase
 	{
 	public:
 		ImageAgg(Point_i size);
+		virtual ~ImageAgg() {}
+
+		void resize(Point_i newSize);
 
 		rendering_buffer 		rbuf;
 		pixfmt 					pf;
@@ -37,6 +43,11 @@ namespace twg
 		renderer_scanline 		renSl;
 		rasterizer_scanline 	ras;
 		scanline 				sl;
+
+		font_engine_type		fEng;
+		font_manager_type		fMan;
+	protected:
+		void assignBuffers();
 	};
 
 	//-------------------------------------------------------------------------
@@ -47,10 +58,10 @@ namespace twg
 		~VertexSrc();
 
 		void reset(void);
-		void addPoint(double x, double y);
+		void addPoint(Point_d x);
 		void setIsPolygon(bool x);
 
-		void 	rewind(int32u);
+		void 	rewind(int32u no);
 		int32u 	vertex(double* x, double* y);
 
 	private:

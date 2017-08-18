@@ -1,5 +1,6 @@
 #include <sstream>
 #include "twg/twg.h"
+#include "twg/image/image_drawing.h"
 
 using namespace twg;
 
@@ -138,12 +139,17 @@ void test5() {
 	saveToBmp(&img, L"test5.bmp");
 }
 
+void test6() {
+	// add test of image drawing
+}
+
 int main() {
 	test1();
 	test2();
 	test3();
 	test4();
 	test5();
+	test6();
 
 	messageBox(std::wstring(L"Это тестирование классов ImageWin и ImageBase, а так же функций сохранения изображения и методов для цвета.\nВ результате работы программы были созданы изображения:\n\ttest1.bmp\n\ttest2.bmp\n\ttest4.bmp\n\ttest5.bmp"), std::wstring(L"Тест изображений"), MESSAGE_OK | MESSAGE_ICON_INFORMATION);
 	return 0;

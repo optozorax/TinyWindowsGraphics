@@ -54,7 +54,7 @@ int main() {
 		wnd2.setPos(pos);
 		wnd3.setCaption(str2wstr(std::to_string(i)) + L" degrees of rotate");
 		wnd4.setWindowSize(Point_i(i/360.0 * 300, 50));
-		wnd5.setStyle(k % WINDOW_MAX_TYPE);
+		wnd5.setStyle(k % (WINDOW_IMAGE32 + 1));
 
 		sleep(30);
 	}

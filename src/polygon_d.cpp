@@ -45,7 +45,17 @@ Polygon_d& Polygon_d::flipAxis(Point_d axis) {
 
 //-----------------------------------------------------------------------------
 Polygon_d computeEllipse(Point_d radius) {
-	
+	Polygon_d poly;
+	double maxr = TWG_max(radius.x, radius.y);
+	int32u count = pi*maxr*maxr + 30;
+	for (int i = 0; i < count; ++i) {
+		double angle = 2.0*pi * double(i) / count;
+		double x = cos(angle);
+		double y = sin(angle);
+		poly.array.push_back(Point_d(x, y));
+	}
+	poly.scale(radius);
+	return poly;
 }
 
 //-----------------------------------------------------------------------------

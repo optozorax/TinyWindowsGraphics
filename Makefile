@@ -16,31 +16,32 @@ CXXFLAGS += -I include
 #CXXFLAGS += -I include/EasyBMP
 
 # Общие флаги
-CXXFLAGS += -Os
+CXXFLAGS += -O3
 CXXFLAGS += -std=gnu++11
 CXXFLAGS += -w
 CXXFLAGS += -fpermissive
 #CXXFLAGS += -g
 
 # Сильно увеличивает размер, но делает проги независимыми на чужом компе
-LINKFLAGS += -static-libgcc -static-libstdc++
+# LINKFLAGS += -static-libgcc -static-libstdc++
 
 # Если эту опцию поместить перед mwindows, то получится консоль с окном
 # LINKFLAGS += -mconsole 
 LINKFLAGS += -mwindows
 
 # Оптимизация размера
-LINKFLAGS += -s -Wl,--gc-sections -Wl,--strip-all 
-LINKFLAGS += -fdata-sections -ffunction-sections
-LINKFLAGS += -ffast-math
-LINKFLAGS += -Wunused
-LINKFLAGS += -flto
+LINKFLAGS += -s 
+SIZEFLAGS += -Wl,--gc-sections -Wl,--strip-all 
+SIZEFLAGS += -fdata-sections -ffunction-sections
+SIZEFLAGS += -ffast-math
+SIZEFLAGS += -Wunused
+SIZEFLAGS += -flto
 
 # Библиотеки для линковки, они у меня почему-то не работаеют, поэтому линкую напрямую .a файлы
-# LINKFLAGS += -lgdi32 -lwinmm -lmsimg32 -lcomctl32 -lcomdlg32 -lole32
-LINKFLAGS += -lstdc++
+LIBFLAGS += -lgdi32 -lwinmm -lmsimg32 -lcomctl32 -lcomdlg32 -lole32
+#LIBFLAGS += -lstdc++
 # Эти надо компилировать самому
-LINKFLAGS += -lagg
+LIBFLAGS += -lagg
 
 ###############################################################################
 
@@ -52,7 +53,7 @@ INCLUDES += $(wildcard include/image/*.h)
 INCLUDES += $(wildcard include/window/*.h)
 EXAMPLES = $(patsubst examples/%.cpp, obj/%.o,$(wildcard examples/*.cpp))
 EXES = $(patsubst examples/%.cpp, bin/%.exe,$(wildcard examples/*.cpp))
-ALIBS = $(patsubst -l%, D:/ProgFiles/MinGW/lib/lib%.a, -lgdi32 -lwinmm -lmsimg32 -lcomctl32 -lcomdlg32 -lole32)
+ALIBS = $(patsubst -l%, D:/ProgFiles/MinGW/lib/lib%.a, $(LIBFLAGS))
 
 ###############################################################################
 
@@ -63,13 +64,13 @@ dirs:
 	if not exist "obj" mkdir obj
 
 bin/%.exe: $(OBJECTS) obj/%.o
-	$(CXX) $(LINKFLAGS) $(CXXFLAGS) $(OBJECTS) $(patsubst bin/%.exe, obj/%.o, $@) -o $@ $(ALIBS)
+	$(CXX) $(LINKFLAGS) $(SIZEFLAGS) $(CXXFLAGS) $(OBJECTS) $(patsubst bin/%.exe, obj/%.o, $@) -o $@ $(ALIBS)
 
 obj/%.o: src/%.cpp $(INCLUDES)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(SIZEFLAGS) $(CXXFLAGS) -c $< -o $@
 
 obj/%.o: examples/%.cpp $(INCLUDES)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(SIZEFLAGS) $(CXXFLAGS) -c $< -o $@
 
 # obj/%.o: examples/%.rc
 #	windres $< $@

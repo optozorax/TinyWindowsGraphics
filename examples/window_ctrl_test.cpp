@@ -69,9 +69,9 @@ private:
 	static int32u 			m_maxRadius;
 
 	static bool				m_drawed;
-	static ImageDrawing_win m_imgMove;
-	static ImageDrawing_win m_imgHover;
-	static ImageDrawing_win m_imgDefault;
+	static ImageDrawing_aa  m_imgMove;
+	static ImageDrawing_aa  m_imgHover;
+	static ImageDrawing_aa  m_imgDefault;
 
 	void redrawBuffers();
 
@@ -94,44 +94,37 @@ private:
 //-----------------------------------------------------------------------------
 
 extern int32u 			PointCtrl::m_radius(5);
-extern int32u			PointCtrl::m_minRadius(2);
-extern int32u 			PointCtrl::m_maxRadius(300);
+extern int32u			PointCtrl::m_minRadius(3);
+extern int32u 			PointCtrl::m_maxRadius(30);
 
-extern ImageDrawing_win PointCtrl::m_imgDefault(Point_i(1, 1));
-extern ImageDrawing_win PointCtrl::m_imgHover(Point_i(1, 1));
-extern ImageDrawing_win PointCtrl::m_imgMove(Point_i(1, 1));
+extern ImageDrawing_aa  PointCtrl::m_imgDefault(Point_i(10, 10));
+extern ImageDrawing_aa  PointCtrl::m_imgHover(Point_i(10, 10));
+extern ImageDrawing_aa  PointCtrl::m_imgMove(Point_i(10, 10));
 extern bool 			PointCtrl::m_drawed(false);
 
 void PointCtrl::redrawBuffers() {
-	m_imgMove.resize(Point_i(m_radius, m_radius)*2 + Point_i(1, 1));
-	m_imgHover.resize(Point_i(m_radius, m_radius)*2 + Point_i(1, 1));
-	m_imgDefault.resize(Point_i(m_radius, m_radius)*2 + Point_i(1, 1));
+	Point_d r(m_radius, m_radius);
+	m_imgMove.resize(Point_i(r*2 + Point_d(6, 6)));
+	m_imgHover.resize(Point_i(r*2 + Point_d(6, 6)));
+	m_imgDefault.resize(Point_i(r*2 + Point_d(6, 6)));
+
+	Polygon_d poly = computeEllipse(r);
+	poly.move(r + Point_d(3, 3));
 
 	m_imgDefault.clear(Transparent);
 	m_imgHover.clear(Transparent);
 	m_imgMove.clear(Transparent);
 
-	m_imgDefault.setBrush(White);
+	m_imgDefault.setBrush(Brush(setAlpha(White, 128)));
 	m_imgDefault.setPen(Pen(1, Red));
-	Ellipse(m_imgDefault.getHdc(), 0, 0, m_radius * 2, m_radius * 2);
+	m_imgDefault.drawPolygon(poly);
+	m_imgDefault.drawPolyline(poly);
 
-	m_imgHover.setBrush(Orange);
-	m_imgHover.setPen(Pen(1, Transparent));
-	Ellipse(m_imgHover.getHdc(), 0, 0, m_radius * 2, m_radius * 2);
+	m_imgHover.setBrush(Brush(setAlpha(Orange, 128)));
+	m_imgHover.drawPolygon(poly);
 
-	m_imgMove.setBrush(getColorBetween(0.5, Orange, White));
-	m_imgMove.setPen(Pen(1, Transparent));
-	Ellipse(m_imgMove.getHdc(), 0, 0, m_radius * 2, m_radius * 2);
-
-	PointIterator<Point_i> i(Point_i(0, 0), m_imgMove.size() - Point_i(1, 1));
-	for (i.onStart(); !i.isEnd(); ++i) {
-		if (m_imgMove[*i] != 0)
-			m_imgMove[*i] = setAlpha(m_imgMove[*i], 255);
-		if (m_imgHover[*i] != 0)
-			m_imgHover[*i] = setAlpha(m_imgHover[*i], 255);
-		if (m_imgDefault[*i] != 0)
-			m_imgDefault[*i] = setAlpha(m_imgDefault[*i], 255);
-	}
+	m_imgMove.setBrush(Brush(setAlpha(Orange, 50)));
+	m_imgMove.drawPolygon(poly);
 
 	m_drawed = true;
 }
@@ -145,12 +138,6 @@ bool PointCtrl::isInside(Point_i pos) {
 }
 
 bool PointCtrl::onRMouse(Point_i pos) {
-	// CtrlStorage** parent = sendMessageUp(CTRL_GET_POINTER, nullptr);
-	// (*parent)->deleteMe(this);
-	// delete parent;
-	// return true;
-	
-
 	std::wstringstream sout;
 	sout << L"=" << (*m_storageParent)->getId(this) << L" Удалить точку | --- | ~ Координаты: (" << m_pos.x << L", " << m_pos.y << L") | ~ Радиус: " << m_radius;
 	
@@ -187,15 +174,15 @@ bool PointCtrl::onWheel(Point_i pos, MouseType wheel) {
 }
 
 void PointCtrl::drawDefault(ImageBase* buffer) {
-	m_imgDefault.drawTo(buffer, m_pos - Point_i(m_radius, m_radius), Point_i(0, 0), m_imgDefault.size());	
+	m_imgDefault.drawTo(buffer, m_pos - Point_i(m_radius+3, m_radius+3), Point_i(0, 0), m_imgDefault.size());	
 }
 
 void PointCtrl::drawHover(ImageBase* buffer) {
-	m_imgHover.drawTo(buffer, m_pos - Point_i(m_radius, m_radius), Point_i(0, 0), m_imgHover.size());	
+	m_imgHover.drawTo(buffer, m_pos - Point_i(m_radius+3, m_radius+3), Point_i(0, 0), m_imgHover.size());	
 }
 
 void PointCtrl::drawWhenMove(ImageBase* buffer) {
-	m_imgMove.drawTo(buffer, m_pos - Point_i(m_radius, m_radius), Point_i(0, 0), m_imgMove.size());	
+	m_imgMove.drawTo(buffer, m_pos - Point_i(m_radius+3, m_radius+3), Point_i(0, 0), m_imgMove.size());	
 }
 
 //-----------------------------------------------------------------------------
@@ -320,8 +307,6 @@ int main() {
 	}
 
 	wnd.storage.array.push_back(new Menu(L"Файл > =1 #1 Новый\tCtrl+N | =2 #2 Открыть\tCtrl+O | =3 #3 Сохранить\tCtrl+S | --- | Последние > =4 ! 1.c | =5 2.c | =6 $ 3.c | =7 \t4.c | =8 ~ 5.c < --- | =9 #5 Выход\tAlt+F4 < Правка > =10 ... <", false, Point_i(0, 0), &wnd.storage));
-
-	// 
 
 	wnd.redraw(true);
 

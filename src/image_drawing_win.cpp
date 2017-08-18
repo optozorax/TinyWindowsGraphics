@@ -5,12 +5,12 @@ namespace twg
 {
 
 //-----------------------------------------------------------------------------
-ImageDrawing_win::ImageDrawing_win(Point_i size) : ImageDrawing(size) {
+ImageDrawing_win::ImageDrawing_win(Point_i size) : ImageBase(size), ImageDrawing(size) {
 	saveObjects();
 }
 
 //-----------------------------------------------------------------------------
-ImageDrawing_win::ImageDrawing_win(ImageBase* img) : ImageDrawing(Point_i(1, 1)) {
+ImageDrawing_win::ImageDrawing_win(ImageBase* img) : ImageBase(Point_i(1, 1)), ImageDrawing(Point_i(1, 1)) {
 	assign(img);
 	saveObjects();
 }
@@ -97,6 +97,7 @@ void ImageDrawing_win::setTextStyle(TextStyle style) {
 
 //-----------------------------------------------------------------------------
 void ImageDrawing_win::drawPTo(ImageBase* dst, Polygon_d rect) {
+	//ImageDrawing_aa* img = new ImageDrawing_aa(this);
 	ImageDrawing_aa img(this);
 	img.drawPTo(dst, rect);
 }
@@ -137,7 +138,7 @@ Point_d ImageDrawing_win::getTextSize(std::wstring text) {
 }
 
 //-----------------------------------------------------------------------------
-void ImageDrawing_win::drawPolygon(Polygon_d points) {
+void ImageDrawing_win::drawPolygon(Polygon_d& points) {
 	Pen pen = getPen();
 	setPen(Pen(0, Transparent));
 	std::vector<Point_d> ps = points.array;
@@ -151,7 +152,7 @@ void ImageDrawing_win::drawPolygon(Polygon_d points) {
 }
 
 //-----------------------------------------------------------------------------
-void ImageDrawing_win::drawPolyline(Polygon_d points, bool isRoundJoin) {
+void ImageDrawing_win::drawPolyline(Polygon_d& points, bool isRoundJoin) {
 	std::vector<Point_d> ps = points.array;
 	POINT *mas1 = new POINT[ps.size()];
 	for (int i = 0; i < ps.size(); i++) {
@@ -166,11 +167,6 @@ void ImageDrawing_win::drawLine(Point_d a, Point_d b) {
 	MoveToEx(getHdc(), a.x, a.y, NULL);
 	LineTo(getHdc(), b.x, b.y);
 }
-
-//-----------------------------------------------------------------------------
-// void ImageDrawing_win::fillFlood(Point_d pos) {
-
-// }
 
 //-----------------------------------------------------------------------------
 void ImageDrawing_win::drawText(Point_d pos, std::wstring text) {

@@ -3,6 +3,7 @@
 
 #include "twg/basics.h"
 #include "twg/image.h"
+#include "twg/image/image_agg.h"
 
 namespace twg
 {
@@ -95,7 +96,7 @@ namespace twg
 	Polygon_d computeRegularPolygon(int32u n, double radius);
 
 	//-------------------------------------------------------------------------
-	class ImageDrawing : public ImageBase
+	class ImageDrawing : virtual public ImageBase
 	{
 	public:
 		ImageDrawing(Point_i size) : ImageBase(size) {}
@@ -114,13 +115,11 @@ namespace twg
 		virtual Pen 		getPen(void) {}
 		virtual Brush 		getBrush(void) {}
 		virtual TextStyle 	getTextStyle(void) {}
-		virtual Point_d 	getTextSize(std::wstring) {}
+		virtual Point_d 	getTextSize(std::wstring text) {}
 
-		virtual void drawPolygon(Polygon_d points) {}
-		virtual void drawPolyline(Polygon_d points, bool isRoundJoin) {}
+		virtual void drawPolygon(Polygon_d& points) {}
+		virtual void drawPolyline(Polygon_d& points, bool isRoundJoin = false) {}
 		virtual void drawLine(Point_d a, Point_d b) {}
-
-		// virtual void fillFlood(Point_d pos) {}
 
 		virtual void drawText(Point_d pos, std::wstring text) {}
 	protected:
@@ -129,12 +128,12 @@ namespace twg
 		TextStyle 	m_textStyle;
 	};
 
-	class ImageDrawing_aa : public ImageDrawing 
+	class ImageDrawing_aa : public ImageDrawing, public ImageAgg
 	{
 	public:
-		ImageDrawing_aa(Point_i size) : ImageDrawing(size) {}
+		ImageDrawing_aa(Point_i size);
 		ImageDrawing_aa(ImageBase* img);
-		~ImageDrawing_aa();
+		virtual ~ImageDrawing_aa();
 
 		void setPen(Pen pen);
 		void setBrush(Brush brush);
@@ -145,15 +144,19 @@ namespace twg
 		Pen 		getPen(void);
 		Brush 		getBrush(void);
 		TextStyle 	getTextStyle(void);
-		Point_d 	getTextSize(std::wstring);
+		Point_d 	getTextSize(std::wstring text);
 
-		void drawPolygon(Polygon_d points);
-		void drawPolyline(Polygon_d points, bool isRoundJoin);
+		void drawPolygon(Polygon_d& points);
+		void drawPolyline(Polygon_d& points, bool isRoundJoin = false);
 		void drawLine(Point_d a, Point_d b);
 
-		// void fillFlood(Point_d pos);
-
 		void drawText(Point_d pos, std::wstring text);
+
+		using ImageAgg::resize;
+	private:
+		TextStyle 	m_text;
+		Pen 		m_pen;
+		Brush 		m_brush;
 	};
 
 	class ImageDrawing_win : public ImageDrawing 
@@ -161,7 +164,7 @@ namespace twg
 	public:
 		ImageDrawing_win(Point_i size);
 		ImageDrawing_win(ImageBase* img);
-		~ImageDrawing_win();
+		virtual ~ImageDrawing_win();
 
 		void setPen(Pen pen);
 		void setBrush(Brush brush);
@@ -172,13 +175,11 @@ namespace twg
 		Pen 		getPen(void);
 		Brush 		getBrush(void);
 		TextStyle 	getTextStyle(void);
-		Point_d 	getTextSize(std::wstring);
+		Point_d 	getTextSize(std::wstring text);
 
-		void drawPolygon(Polygon_d points);
-		void drawPolyline(Polygon_d points, bool isRoundJoin);
+		void drawPolygon(Polygon_d& points);
+		void drawPolyline(Polygon_d& points, bool isRoundJoin = false);
 		void drawLine(Point_d a, Point_d b);
-
-		// void fillFlood(Point_d pos);
 
 		void drawText(Point_d pos, std::wstring text);
 	private:

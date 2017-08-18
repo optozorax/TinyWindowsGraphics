@@ -92,6 +92,7 @@ ImageBase::~ImageBase() {
 		DeleteObject(m_hbmp);
 		DeleteDC(m_hdc);
 	}
+	m_hdc = 0;
 }
 
 //-----------------------------------------------------------------------------

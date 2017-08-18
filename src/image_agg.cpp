@@ -4,8 +4,21 @@ namespace twg
 {
 
 //-----------------------------------------------------------------------------
-ImageAgg::ImageAgg(Point_i size) : ImageBase(size), rbuf((int8u*) buf(), width(), height(), width()*4), pf(rbuf), renBase(pf), renSl(renBase) {
+ImageAgg::ImageAgg(Point_i size) : ImageBase(size), rbuf((int8u*) buf(), width(), height(), width()*4), pf(rbuf), renBase(pf), renSl(renBase), fEng(GetDC(0)), fMan(fEng) {
 
+}
+
+void ImageAgg::resize(Point_i newSize) {
+	ImageBase::resize(newSize);
+	assignBuffers();
+}
+
+//-----------------------------------------------------------------------------
+void ImageAgg::assignBuffers() {
+	rbuf.attach((int8u*) buf(), width(), height(), width()*4);
+	pf.attach(rbuf); 
+	renBase.attach(pf); 
+	renSl.attach(renBase);
 }
 
 //-----------------------------------------------------------------------------
@@ -28,9 +41,9 @@ void VertexSrc::reset(void) {
 }
 
 //-----------------------------------------------------------------------------
-void VertexSrc::addPoint(double x, double y) {
-	m_x[m_num] = x;
-	m_y[m_num] = y;
+void VertexSrc::addPoint(Point_d x) {
+	m_x[m_num] = x.x;
+	m_y[m_num] = x.y;
 	m_num++;
 }
 
@@ -40,7 +53,7 @@ void VertexSrc::setIsPolygon(bool x) {
 }
 
 //-----------------------------------------------------------------------------
-void VertexSrc::rewind(unsigned) {
+void VertexSrc::rewind(int32u no) {
 	m_count = 0;
 }
 
