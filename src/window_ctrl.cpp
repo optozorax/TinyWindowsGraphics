@@ -42,6 +42,8 @@ bool WindowCtrl::onMessage(int32u messageNo, void* data) {
 void* WindowCtrl::sendMessageUp(int32u messageNo, void* data) {
 	if (messageNo == WINDOW_GET_POINTER)
 		return new WindowCtrl*(this);
+	else if (messageNo == CTRL_GET_POINTER) // Хранилище пошлет такое сообщение, а так как окно не является хранилищем, то и возвращать надо такое
+		return nullptr;
 	else
 		return EventsBase::sendMessageUp(messageNo, data);
 	

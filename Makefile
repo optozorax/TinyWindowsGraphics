@@ -16,11 +16,11 @@ CXXFLAGS += -I include
 #CXXFLAGS += -I include/EasyBMP
 
 # Общие флаги
-CXXFLAGS += -O3
+# CXXFLAGS += -O3
 CXXFLAGS += -std=gnu++11
 CXXFLAGS += -w
 CXXFLAGS += -fpermissive
-#CXXFLAGS += -g
+CXXFLAGS += -g
 
 # Сильно увеличивает размер, но делает проги независимыми на чужом компе
 # LINKFLAGS += -static-libgcc -static-libstdc++
@@ -30,12 +30,12 @@ CXXFLAGS += -fpermissive
 LINKFLAGS += -mwindows
 
 # Оптимизация размера
-LINKFLAGS += -s 
-SIZEFLAGS += -Wl,--gc-sections -Wl,--strip-all 
-SIZEFLAGS += -fdata-sections -ffunction-sections
-SIZEFLAGS += -ffast-math
-SIZEFLAGS += -Wunused
-SIZEFLAGS += -flto
+# LINKFLAGS += -s 
+# SIZEFLAGS += -Wl,--gc-sections -Wl,--strip-all 
+# SIZEFLAGS += -fdata-sections -ffunction-sections
+# SIZEFLAGS += -ffast-math
+# SIZEFLAGS += -Wunused
+# SIZEFLAGS += -flto
 
 # Библиотеки для линковки, они у меня почему-то не работаеют, поэтому линкую напрямую .a файлы
 LIBFLAGS += -lgdi32 -lwinmm -lmsimg32 -lcomctl32 -lcomdlg32 -lole32

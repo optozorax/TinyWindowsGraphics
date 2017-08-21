@@ -30,7 +30,7 @@ namespace twg
 
 		CtrlStorage 	storage;
 
-		bool redraw(bool returnType);	
+		bool redraw(bool returnType = true);	
 
 		//---------------------------------------------------------------------
 		bool onMessage(int32u messageNo, void* data);
@@ -46,11 +46,6 @@ namespace twg
 		bool onKillFocus(void);
 	private:
 		ImageBase*		m_buffer;
-
-		LRESULT wndProcNext2(HWND hwnd, 
-							UINT msg,
-							WPARAM wParam, 
-							LPARAM lParam);
 	};
 
 	//-------------------------------------------------------------------------

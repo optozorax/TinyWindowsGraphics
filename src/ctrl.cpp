@@ -4,7 +4,63 @@ namespace twg
 {
 
 //-----------------------------------------------------------------------------
+CtrlBase::CtrlBase(EventsBase* parent) : EventsHandler(parent), m_storage(nullptr), id(0) {
+	CtrlStorage** storage = sendMessageUp(CTRL_GET_POINTER, nullptr);
+	if (storage != nullptr) {
+		m_storage = *storage;
+		delete storage;
+		id = m_storage->getId(this);
+	}
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+int32u CtrlStorage::IdDistributor::getId(void* pointer) {
+	// Находим, есть ли указатель в массиве
+	for (i : m_ids)
+		if (i.first == pointer)
+			return i.second;
+
+	// Если его нет, выделяем ему айди из раннее освободившихся
+	if (!m_freeId.empty()) {
+		int32u id = m_freeId.back();
+		m_ids.push_back(std::pair<void*, int32u>(pointer, id));
+		m_freeId.pop_back();
+		return id;
+	}
+
+	// И только когда ни то, ни другое, создаем новое айди
+	int32u id = m_ids.size();
+	m_ids.push_back(std::pair<void*, int32u>(pointer, id));
+	return id;
+}
+
+//-----------------------------------------------------------------------------
+void CtrlStorage::IdDistributor::deleteId(void* pointer) {
+	int32u pos = int32u(-1);
+	for (auto i = m_ids.begin(); i != m_ids.end(); ++i)
+		if (i->first == pointer)
+			pos = i - m_ids.begin();
+	if (pos == int32u(-1)) return;
+	int32u id = m_ids[pos].second;
+	m_freeId.push_back(id);
+	m_ids.erase(m_ids.begin() + pos);
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 int32u CtrlStorage::getId(CtrlBase* ctrl) {
+	return m_distributor.getId(ctrl);
+}
+
+//-----------------------------------------------------------------------------
+int32u CtrlStorage::getPos(CtrlBase* ctrl) {
 	for (int i = 0; i < array.size(); ++i)
 		if (array[i] == ctrl)
 			return i;
@@ -13,16 +69,23 @@ int32u CtrlStorage::getId(CtrlBase* ctrl) {
 
 //-----------------------------------------------------------------------------
 void CtrlStorage::deleteMe(CtrlBase* ctrl) {
-	int32u id = getId(ctrl);
-	if (id != int32u(-1))
-		m_toDelete.push_back(ctrl);
+	int32u pos = getPos(ctrl);
+	if (pos != int32u(-1)) {
+		pos = int32u(-1);
+		for (int i = 0; i < m_toDelete.size(); ++i)
+			if (m_toDelete[i] == ctrl)
+				pos = i;
+		if (pos == int32u(-1))
+			m_toDelete.push_back(ctrl);
+	}
 }
 
 //-----------------------------------------------------------------------------
 void CtrlStorage::deleteCtrls(void) {
 	while (m_toDelete.size() != 0) {
 		auto ctrl = m_toDelete.back();
-		int32u id = getId(ctrl);
+		m_distributor.deleteId(ctrl);
+		int32u id = getPos(ctrl);
 		auto position = array.begin() + id;
 		array.erase(position);
 		delete m_toDelete.back();
@@ -32,58 +95,71 @@ void CtrlStorage::deleteCtrls(void) {
 
 //-----------------------------------------------------------------------------
 void CtrlStorage::draw(ImageBase* buffer) {
-	deleteCtrls();
-	
 	for (auto i = array.rbegin(); i != array.rend(); ++i)
 		(*i)->draw(buffer);
 }
 
 //-----------------------------------------------------------------------------
-bool CtrlStorage::onMouse(Point_i pos, MouseType type) {
-	for (i : array)
-		if (i->onMouse(pos, type) && OMFOC)
+template<class Function>
+bool CtrlStorage::sendMessage(Function f) {
+	/* Это функция, которая посылает всем контролам какое-то сообщение, заданное функцией f. Она написана таким образом, чтобы учесть случаи, когда массив контролов модифицируется во время вызова сообщения. m_messageDepth нужно для того, чтобы контролы удалялись только к полному выходу из отправки сообщений. Иначе может случиться так, что на глубине, например, 2, мы удалили почти весь массив контролов, и когда будет на глубине 1, то мы будем обращаться к указателям на эти удаленные контролы и произойдет ошибка сегментации. */
+	m_messageDepth++;
+	std::vector<CtrlBase*> arrayCopy(array.begin(), array.end());
+	bool isOneTrue = false;
+	for (i : arrayCopy) {
+		bool returned = f(i);
+		isOneTrue |= returned;
+		if (returned && OMFOC) {
+			m_messageDepth--;
+			if (m_messageDepth == 0) deleteCtrls();
 			return true;
-	return false;
+		}
+	}
+	m_messageDepth--;
+	if (m_messageDepth == 0) deleteCtrls();
+	return isOneTrue;
+}
+
+//-----------------------------------------------------------------------------
+bool CtrlStorage::onMouse(Point_i pos, MouseType type) {
+	return sendMessage([&] (CtrlBase* i) -> bool { 
+		return i->onMouse(pos, type); 
+	});
 }
 
 //-----------------------------------------------------------------------------
 bool CtrlStorage::onKeyboard(KeyType key, bool isDown) {
-	for (i : array)
-		if (i->onKeyboard(key, isDown) && OMFOC)
-			return true;
-	return false;
+	return sendMessage([&] (CtrlBase* i) -> bool { 
+		return i->onKeyboard(key, isDown); 
+	});
 }
 
 //-----------------------------------------------------------------------------
 bool CtrlStorage::onResize(Point_i newSize, Point_i pos, SizingType type) {
-	for (i : array)
-		if (i->onResize(newSize, pos, type) && OMFOC)
-			return true;
-	return false;
+	return sendMessage([&] (CtrlBase* i) -> bool { 
+		return i->onResize(newSize, pos, type); 
+	});
 }
 
 //-----------------------------------------------------------------------------
 bool CtrlStorage::onMove(Point_i newPos) {
-	for (i : array)
-		if (i->onMove(newPos) && OMFOC)
-			return true;
-	return false;
+	return sendMessage([&] (CtrlBase* i) -> bool { 
+		return i->onMove(newPos); 
+	});
 }
 
 //-----------------------------------------------------------------------------
 bool CtrlStorage::onKillFocus(void) {
-	for (i : array)
-		if (i->onKillFocus() && OMFOC)
-			return true;
-	return false;
+	return sendMessage([&] (CtrlBase* i) -> bool { 
+		return i->onKillFocus(); 
+	});
 }
 
 //-----------------------------------------------------------------------------
 bool CtrlStorage::onMessage(int32u messageNo, void* data) {
-	for (i : array)
-		if (i->onMessage(messageNo, data) && OMFOC)
-			return true;
-	return false;
+	return sendMessage([&] (CtrlBase* i) -> bool { 
+		return i->onMessage(messageNo, data); 
+	});
 }
 
 //-----------------------------------------------------------------------------

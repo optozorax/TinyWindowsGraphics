@@ -7,31 +7,32 @@ namespace twg
 {
 
 //-----------------------------------------------------------------------------
-Menu::Menu(std::wstring str, bool isPopup, Point_i pos, EventsBase* parent) : 
-	CtrlBase(parent) {
+namespace MenuParser 
+{
 
-	WindowCtrl** wnd = sendMessageUp(WINDOW_GET_POINTER, nullptr);
-	m_hwnd = (*wnd)->getHwnd();
-	pos = (*wnd)->client2global(pos);
-	delete wnd;
+void parseMenu(std::wstring str, HMENU menu);
 
-	m_hmenu = 0;
-	makeMenu(str, isPopup);
+void deleteSpaces(std::wstring& str);
+void parseMenuItem(std::wstring str, HMENU menu, bool isPopup = false, HMENU popupMenu = 0);
+void parseMenuPopupItem(std::wstring str, std::wstring str2, HMENU menu);
+void parseMenuNoRight(std::wstring str, HMENU menu);
+void parseMenuNoUp(std::wstring str, HMENU menu);
+HBITMAP icon2bmp(HICON hicon);
 
-
-	if (isPopup)
-		TrackPopupMenuEx(m_hmenu, TPM_LEFTALIGN | TPM_TOPALIGN, 
-		pos.x, pos.y, m_hwnd, NULL);
 }
 
+//=============================================================================
+//=============================================================================
+//=============================================================================
+
 //-----------------------------------------------------------------------------
-void Menu::deleteSpaces(std::wstring& str) {
+void MenuParser::deleteSpaces(std::wstring& str) {
 	while (str[str.size()-1] == L' ') str.erase(str.size()-1, 1);
 	while (str[0] == L' ') str.erase(0, 1);
 }
 
 //-----------------------------------------------------------------------------
-void Menu::parseMenuItem(std::wstring str, HMENU menu, bool isPopup = false, HMENU popupMenu = 0) {
+void MenuParser::parseMenuItem(std::wstring str, HMENU menu, bool isPopup = false, HMENU popupMenu = 0) {
 	deleteSpaces(str);
 
 	// Узнать, сепаратор ли это
@@ -44,7 +45,7 @@ void Menu::parseMenuItem(std::wstring str, HMENU menu, bool isPopup = false, HME
 	if (posEqual != std::wstring::npos) {
 		size_t posSpace = str.find(L" ");
 		std::wstring num = str.substr(posEqual+1, posSpace-posEqual-1);
-		id = stoi(num);
+		id = stoull(num);
 		str.erase(0, posSpace+1);
 	}
 
@@ -55,7 +56,7 @@ void Menu::parseMenuItem(std::wstring str, HMENU menu, bool isPopup = false, HME
 	if (posSharp != std::wstring::npos) {
 		size_t posSpace = str.find(L" ");
 		std::wstring num = str.substr(posSharp+1, posSpace-posSharp-1);
-		pictureNo = stoi(num);
+		pictureNo = stoull(num);
 		str.erase(0, posSpace+1);
 	}
 
@@ -110,7 +111,7 @@ void Menu::parseMenuItem(std::wstring str, HMENU menu, bool isPopup = false, HME
 }
 
 //-----------------------------------------------------------------------------
-void Menu::parseMenuPopupItem(std::wstring str, std::wstring str2, HMENU menu) {
+void MenuParser::parseMenuPopupItem(std::wstring str, std::wstring str2, HMENU menu) {
 	deleteSpaces(str);
 	HMENU popupMenu = CreatePopupMenu();
 	parseMenu(str2, popupMenu);
@@ -118,7 +119,7 @@ void Menu::parseMenuPopupItem(std::wstring str, std::wstring str2, HMENU menu) {
 }
 
 //-----------------------------------------------------------------------------
-void Menu::parseMenuNoRight(std::wstring str, HMENU menu) {
+void MenuParser::parseMenuNoRight(std::wstring str, HMENU menu) {
 	size_t posUp = str.find(L"|");
 	std::wstring strItem = str.substr(0, posUp);
 	parseMenuItem(strItem, menu);
@@ -128,7 +129,7 @@ void Menu::parseMenuNoRight(std::wstring str, HMENU menu) {
 }
 
 //-----------------------------------------------------------------------------
-void Menu::parseMenuNoUp(std::wstring str, HMENU menu) {
+void MenuParser::parseMenuNoUp(std::wstring str, HMENU menu) {
 	size_t posRight = str.find(L">");
 	int32 count = 0;
 	int32u posLeft = 0;
@@ -149,7 +150,7 @@ void Menu::parseMenuNoUp(std::wstring str, HMENU menu) {
 }
 
 //-----------------------------------------------------------------------------
-void Menu::parseMenu(std::wstring str, HMENU menu) {
+void MenuParser::parseMenu(std::wstring str, HMENU menu) {
 	size_t posRight = str.find(L">");
 	size_t posUp = str.find(L"|");
 
@@ -170,81 +171,119 @@ void Menu::parseMenu(std::wstring str, HMENU menu) {
 }
 
 //-----------------------------------------------------------------------------
-void Menu::makeMenu(std::wstring str, bool isPopup) {
-	if (m_hmenu != 0)
-		DestroyMenu(m_hmenu);
-	
-	if (isPopup)
-		m_hmenu = CreatePopupMenu();
-	else
-		m_hmenu = CreateMenu();
-
-	parseMenu(str, m_hmenu);
-
-	if (!isPopup)
-		SetMenu(m_hwnd, m_hmenu);
-}
-
-//-----------------------------------------------------------------------------
-Menu::~Menu() {
-	DestroyMenu(m_hmenu);
-}
-
-//-----------------------------------------------------------------------------
-bool Menu::onMessage(int32u messageNo, void* data) {
-	if (messageNo == WINDOWS_MESSAGE) {
-		onMessageStruct* msg = data;
-		switch (msg->msg) {
-			case WM_COMMAND: {
-				onClick(LOWORD(msg->wParam));
-				msg->lResult = 0;
-				return true;
-				} break;
-			case WM_UNINITMENUPOPUP: {
-				if (msg->wParam == m_hmenu) {
-					CtrlStorage** storage = sendMessageUp(CTRL_GET_POINTER, nullptr);
-					(*storage)->deleteMe(this);
-					delete storage;
-					msg->lResult = 0;
-					return true;
-				}
-				} break;
-		}
-	}
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-HBITMAP icon2bmp(HICON hicon) {
-	/* Преобразует иконку hicon в формат точечного рисунка, причем рисунок имеет размеры 18x18, и его фон такой же, как и у пункта меню. */
+HBITMAP MenuParser::icon2bmp(HICON hicon) {
+	/* Преобразует иконку hicon в формат точечного рисунка, причем рисунок имеет размеры 18x18 пикселей, и его фон такой же, как и у пункта меню. */
 	HBITMAP hbmp;
 	HDC hdcBmp;
 	HBRUSH menuBrush;
 	MENUITEMINFO minf;        
 
-	/* Создание дексриптора для рисунка. */
 	hdcBmp = CreateCompatibleDC(GetDC(NULL));
 
-	/* Создание кисти. */
 	menuBrush = CreateSolidBrush(GetSysColor(COLOR_MENU));
 	SelectObject(hdcBmp, menuBrush); 
-
-	/* Создание самого рисунка. */
+	
 	hbmp = CreateCompatibleBitmap(GetDC(NULL), 18, 18); 
 	SelectObject(hdcBmp, hbmp);
 
-	/* Закраска фона цветом меню. */
 	ExtFloodFill(hdcBmp, 0, 0, GetSysColor(COLOR_MENU), FLOODFILLBORDER); 
 
-	/* Рисование иконки. */
 	SelectObject(hdcBmp, hbmp); 
 	DrawIconEx(hdcBmp, 1,1, hicon, 16,16, NULL, CreateSolidBrush( GetSysColor(COLOR_MENU) ), DI_NORMAL | DI_COMPAT);
 
-	/* Очищение памяти. */
 	DeleteDC(hdcBmp);
 
-	/* Возвращение рисунка. */
 	return hbmp;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+StaticMenu::StaticMenu(std::wstring str, EventsBase* parent) : CtrlBase(parent), m_hmenu(0) {
+	WindowCtrl** wnd = sendMessageUp(WINDOW_GET_POINTER, nullptr);
+	m_wnd = *wnd;
+	delete wnd;	
+
+	change(str);
+}
+
+//-----------------------------------------------------------------------------
+StaticMenu::~StaticMenu() {
+	DestroyMenu(m_hmenu);
+};
+
+//-----------------------------------------------------------------------------
+void StaticMenu::change(std::wstring str) {
+	if (m_hmenu != 0)
+		DestroyMenu(m_hmenu);
+
+	m_hmenu = CreateMenu();
+	MenuParser::parseMenu(str, m_hmenu);
+	SetMenu(m_wnd->getHwnd(), m_hmenu);
+}
+
+//-----------------------------------------------------------------------------
+void StaticMenu::onClick(int32u id) {
+	sendMessageUp(MENU_CLICK, &id);
+}
+
+//-----------------------------------------------------------------------------
+bool StaticMenu::onMessage(int32u messageNo, void* data) {
+	if (messageNo == WINDOWS_MESSAGE) {
+		onMessageStruct* msg = data;
+		if (msg->msg == WM_COMMAND) {
+			onClick(LOWORD(msg->wParam));
+			m_wnd->redraw();
+		}
+
+	}
+
+	// Всегда возвращается false - для того, чтобы другие Popup меню могли получить сообщение. Это костыль
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+PopupMenu::PopupMenu(EventsBase* parent) : CtrlBase(parent), m_hmenu(0) {
+	WindowCtrl** wnd = sendMessageUp(WINDOW_GET_POINTER, nullptr);
+	m_wnd = *wnd;
+	delete wnd;	
+}
+
+//-----------------------------------------------------------------------------
+int32u PopupMenu::show(std::wstring str, Point_i pos) {
+	m_hmenu = CreatePopupMenu();
+	MenuParser::parseMenu(str, m_hmenu);
+	pos = m_wnd->client2global(pos);
+	return TrackPopupMenuEx(m_hmenu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD | TPM_NONOTIFY, pos.x, pos.y, m_wnd->getHwnd(), NULL);
+}
+
+//-----------------------------------------------------------------------------
+bool PopupMenu::onMessage(int32u messageNo, void* data) {
+	if (messageNo == WINDOWS_MESSAGE) {
+		onMessageStruct* msg = data;
+		switch (msg->msg) {
+			// Обрабатываем эти сообщения, чтобы во время разрушения меню, оно могло само себя удалить
+			case WM_UNINITMENUPOPUP:
+				if (msg->wParam == m_hmenu) {
+					m_storage->deleteMe(this);
+					m_hmenu = 0;
+					msg->lResult = 0;
+					return true;
+				} break;
+			case WM_INITMENUPOPUP:
+				if (msg->wParam == m_hmenu) {
+					msg->lResult = 0;
+					return true;
+				} break;
+		}
+	}
+	return false;	
 }
 
 }
