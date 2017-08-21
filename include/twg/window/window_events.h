@@ -2,6 +2,7 @@
 #define TWG_WINDOW_EVENTS_INCLUDED
 
 #include "twg/events.h"
+#include "twg/ctrl.h"
 #include "twg/window.h"
 #include "twg/basics.h"
 #include "twg/point.h"
@@ -14,12 +15,12 @@ namespace twg
 	enum WindowsMessages : int32u;
 
 	//-------------------------------------------------------------------------
-	class WindowEvents : public WindowBase, public EventsHandler
+	class WindowEvents : public WindowBase, public CtrlBase
 	{
 	public:
 		WindowEvents(WindowType type, EventsBase* parent = nullptr) : 
 			WindowBase(type), 
-			EventsHandler(parent) {}
+			CtrlBase(parent) {}
 	protected:
 		LRESULT wndProcNext(HWND hwnd, 
 							UINT msg,
