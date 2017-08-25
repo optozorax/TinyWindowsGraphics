@@ -7,7 +7,7 @@
 
 using namespace twg;
 
-class MovableCtrl : CtrlBase 
+class MovableCtrl : public CtrlBase 
 {
 public:
 	MovableCtrl(EventsBase* parent) : 
@@ -16,14 +16,14 @@ public:
 
 	//-------------------------------------------------------------------------
 	bool onMouse(Point_i pos, MouseType type) final;
-	bool onKeyboard(int32 key, bool isDown) final;
-	bool ddraw(ImageBase* buffer) final;
+	bool onKeyboard(KeyType key, bool isDown) final;
+	void draw(ImageBase* buffer) final;
 protected:
 	virtual bool isInside(Point_i pos) = 0;
 	virtual void move(Point_i diff) = 0;
 
-	virtual void onRMouse(Point_i pos) {};
-	virtual void onWheel(MouseType wheel) {};
+	virtual bool onRMouse(Point_i pos) {};
+	virtual bool onWheel(Point_ri pos, MouseType wheel) {};
 
 	virtual void drawDefault(ImageBase* buffer) {};
 	virtual void drawHover(ImageBase* buffer) { drawDefault(buffer); };
@@ -40,7 +40,6 @@ private:
 	MyState			m_current;
 	Point_i 		m_lastPos;
 };
-
 //-----------------------------------------------------------------------------
 
 enum BezierMessages {
@@ -402,38 +401,50 @@ void BezierLineCtrl::drawDefault(ImageBase* buffer) {
 
 bool MovableCtrl::onMouse(Point_i pos, MouseType type) 
 {
+	bool isHandle = false;
 	bool on = isInside(pos);
 
 	if (m_current == STATE_HOVER) {
 		switch (type) {
 			case MOUSE_R_UP:
-				onRMouse(pos);
+				isHandle |= onRMouse(pos);
 				break;
 			case MOUSE_WHEEL_UP:
 			case MOUSE_WHEEL_DOWN:
-				onWheel(pos, type);
+				isHandle |= onWheel(pos, type);
 				break;
 		}
 	}
 
-	if (m_current == POINT_MOVE && type == MOUSE_MOVE) {
+	if (m_current == STATE_MOVE && type == MOUSE_MOVE) {
 		move(pos-m_lastPos);
 		m_lastPos = pos;
+		isHandle |= true;
 	}
 
 	switch (type) {
 		case MOUSE_MOVE:
-			if (on && !(m_current == STATE_MOVE))
+			if (on && !(m_current == STATE_MOVE)) {
 				m_current = STATE_HOVER;
+				isHandle |= true;
+			}
+			if (!on && (m_current != STATE_MOVE) && (m_current != STATE_DEFAULT)) {
+				m_current = STATE_DEFAULT;
+				isHandle |= true;
+			}
 			break;
 		case MOUSE_L_DOWN:
-			if (on)
+			if (on) {
 				m_lastPos = pos;
 				m_current = STATE_MOVE;
+				isHandle |= true;
+			}
 			break;
 		case MOUSE_L_UP:
-			if (m_current == STATE_MOVE)
-				m_current = STATE_DEFAULT;
+			if (m_current == STATE_MOVE) {
+				m_current = STATE_HOVER;
+				isHandle |= true;
+			}
 			break;
 	}
 	
@@ -442,46 +453,40 @@ bool MovableCtrl::onMouse(Point_i pos, MouseType type)
 			setCursor(CURSOR_CLICK);
 			break;
 		case STATE_MOVE:
-			setCursor(CURSOR_MOVE);
+			setCursor(CURSOR_CLICK);
 			break;
-
-		// Родитель обязан каждый раз при вызове onMouse ставить обычный курсор, затем вызываь onMouse потомков
 	}
 
-	return on;
+	return isHandle;
 };
 
-bool MovableCtrl::onKeyboard(int32 key, bool isDown) 
+bool MovableCtrl::onKeyboard(KeyType key, bool isDown) 
 {
 	if (isDown && (m_current == STATE_MOVE || m_current == STATE_HOVER))
 	switch (key) {
 		case VK_UP:
 			move(Point_i(0, -1));
 			m_lastPos += Point_i(0, -1);
-			m_current = STATE_MOVE;
 			return true;
 		case VK_DOWN:
 			move(Point_i(0, 1));
 			m_lastPos += Point_i(0, 1);
-			m_current = STATE_MOVE;
 			return true;
 		case VK_LEFT:
 			move(Point_i(-1, 0));
 			m_lastPos += Point_i(-1, 0);
-			m_current = STATE_MOVE;
 			return true;
 		case VK_RIGHT:
 			move(Point_i(1, 0));
 			m_lastPos += Point_i(1, 0);
-			m_current = STATE_MOVE;
 			return true;
 	}
 
 	return false;
 }
 
-void MovableCtrl::ddraw(ImageBase* buffer) {
-	switch (m_state) {
+void MovableCtrl::draw(ImageBase* buffer) {
+	switch (m_current) {
 		case STATE_DEFAULT:
 			drawDefault(buffer);
 			break;
@@ -643,7 +648,7 @@ int main() {
 			Далее этот буфер рисуется с половинной прозрачнотью в основной буфер
 			Потом в основной рисуются основные кривые
 		Неактивная кривая Безье:
-			[ ] Не получает сообщений.
+			[x] Не получает сообщений.
 			[ ] Активация какой-либо кривой Безье - только из меню
 	Общее окно:
 		[ ] Меню, где можно:
@@ -654,9 +659,4 @@ int main() {
 			[ ] Удалить текущую кривую
 		[ ] Показывать номер текущей кривой
 		[ ] Показывать количество точек текущей кривой 
-	---------------------------------------------------------------------------
-	Косметический характер:
-		[x] Переписать все события на bool
-		[x] Написать все закомментированные методы
-		[x] Написать класс Menu для Windows Menu
  */
