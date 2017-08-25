@@ -54,9 +54,11 @@ namespace twg
 	class WindowBase : public WindowObject
 	{
 	public:
+		WindowBase() {}
 		WindowBase(WindowType type);
 		~WindowBase();
 
+		Rect 		 getRect(void);
 		Point_i 	 getClientSize(void);
 		Point_i 	 getWindowSize(void);
 		Point_i 	 getPos(void);
@@ -65,6 +67,7 @@ namespace twg
 		std::wstring getCaption(void);
 		WindowStyle  getStyle(void);
 
+		void setRect(Rect rect);
 		void setClientSize(Point_i size);
 		void setWindowSize(Point_i size);
 		void setPos(Point_i pos);
@@ -89,11 +92,11 @@ namespace twg
 		WindowType*	 m_type;
 		std::wstring m_className;
 	
-		HWND 	create(void* wndProc) override;
+		HWND 	create(void* wndProc);
 		LRESULT wndProc(HWND hwnd, 
 						UINT msg,
 						WPARAM wParam, 
-						LPARAM lParam) override;
+						LPARAM lParam);
 
 		virtual LRESULT wndProcNext(HWND hwnd, 
 									UINT msg,

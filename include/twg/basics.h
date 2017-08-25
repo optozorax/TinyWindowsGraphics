@@ -20,6 +20,7 @@ namespace twg
 	typedef uint32_t	int32u;
 	typedef uint64_t	int64u;
 
+	struct Rect;
 	enum CycleType : int32u;
 	enum KeyType : int32u;
 	enum CursorType : int32u;
@@ -27,6 +28,18 @@ namespace twg
 	enum MessageReturnType : int32u;
 
 	const double pi = 3.14159265358979323846;
+
+	//-------------------------------------------------------------------------
+	struct Rect {
+		int32 ax, ay, bx, by;
+
+		Rect(int32 ax, int32 ay, int32 bx, int32 by) : 
+			ax(ax), ay(ay), bx(bx), by(by) {}
+		Rect() : ax(0), ay(0), bx(0), by(0) {}
+
+		int32 x(void) { return bx-ax; }
+		int32 y(void) { return by-ay; }
+	};
 
 	//-------------------------------------------------------------------------
 	double 	deg2rad(double deg);

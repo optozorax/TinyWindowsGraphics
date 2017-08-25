@@ -20,7 +20,7 @@ public:
 	//-------------------------------------------------------------------------
 	bool onMouse(Point_i pos, MouseType type);
 	bool onKeyboard(KeyType key, bool isDown);
-	bool onResize(Point_i newSize, Point_i pos, SizingType type);
+	bool onResize(Rect* rect, SizingType type);
 	bool onMove(Point_i newPos);
 	bool onKillFocus(void);
 	bool onMessage(int32u messageNo, void* data);
@@ -150,8 +150,11 @@ bool MyWindow::onKeyboard(KeyType key, bool isDown) {
 }
 
 //-----------------------------------------------------------------------------
-bool MyWindow::onResize(Point_i newSize, Point_i pos, SizingType type) {
+bool MyWindow::onResize(Rect* rect, SizingType type) {
 	std::wstringstream sout;
+
+	Point_i newSize(rect->bx - rect->ax, rect->by - rect->ay); 
+	Point_i pos(rect->ax, rect->ay);
 
 	sout << "Resize type: ";
 	switch (type) {
@@ -210,7 +213,7 @@ int main() {
 	WindowType type(-1,
 		Point_i(100, 0),
 		Point_i(300, 300), 
-		Point_i(-1, -1),
+		Point_i(100, 100),
 		Point_i(-1, -1),
 		L"Test events of WindowEvents class.",
 		WINDOW_STANDART);	

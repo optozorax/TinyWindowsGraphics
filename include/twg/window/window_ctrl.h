@@ -23,6 +23,7 @@ namespace twg
 	class WindowCtrl : public WindowEvents
 	{
 	public:
+		WindowCtrl(EventsBase* parent = nullptr) : WindowEvents(parent), storage(this), m_buffer(nullptr) {}
 		WindowCtrl(WindowType type, EventsBase* parent = nullptr) : 
 			WindowEvents(type, parent), 
 			storage(this), 
@@ -39,9 +40,7 @@ namespace twg
 		bool onMouse(Point_i pos, MouseType type);
 		bool onKeyboard(KeyType key, bool isDown);
 
-		bool onResize(Point_i newSize, 
-					  Point_i pos, 
-					  SizingType type);
+		bool onResize(Rect* rect, SizingType type);
 		bool onMove(Point_i newPos);
 		bool onKillFocus(void);
 	private:

@@ -25,8 +25,9 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 				case SIZE_MINIMIZED:	type = SIZING_MINIMIZED; 	break;
 				case SIZE_RESTORED: 	type = SIZING_RESTORED;		break;
 			}
+			Rect rect = getRect();
 			if (type != 0)
-				if (onResize(getWindowSize(), getPos(), type))
+				if (onResize(&rect, type))
 					return 0;
 			} break;
 
@@ -43,10 +44,8 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 				case WMSZ_TOPLEFT:		type = SIZING_TOP_LEFT;		break;
 				case WMSZ_TOPRIGHT:		type = SIZING_TOP_RIGHT;	break;
 			}
-			RECT* rect = lParam;
-			Point_i newSize(rect->right-rect->left, rect->bottom-rect->top);
-			Point_i pos(rect->left, rect->top);
-			if (onResize(newSize, pos, type))
+			Rect* rect = lParam;
+			if (onResize(rect, type))
 				return TRUE;
 			} break;
 

@@ -48,7 +48,7 @@ public:
 
 	bool onKeyboard(KeyType key, bool isDown);
 
-	bool onResize(Point_i newSize, Point_i pos, SizingType type);
+	bool onResize(Rect* rect, SizingType type);
 	bool onMessage(int32u messageNo, void* data);
 };
 
@@ -112,7 +112,9 @@ bool MyWindow::onKeyboard(KeyType key, bool isDown) {
 		SendMessage(m_hwnd, WM_CLOSE, 0, 0);
 }
 
-bool MyWindow::onResize(Point_i newSize, Point_i pos, SizingType type) {
+bool MyWindow::onResize(Rect* rect, SizingType type) {
+	Point_i newSize(rect->bx - rect->ax, rect->by - rect->ay); 
+	Point_i pos(rect->ax, rect->ay);
 	redrawWindow(*this, newSize);
 }
 

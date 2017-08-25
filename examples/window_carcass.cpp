@@ -15,7 +15,7 @@ class CtrlWindow : public WindowEvents
 {
 public:
 	CtrlWindow(WindowType type, EventsBase* parent);
-	bool onResize(Point_i newSize, Point_i pos, SizingType type);
+	bool onResize(Rect* rect, SizingType type);
 	bool onMove(Point_i newPos);
 };
 
@@ -30,8 +30,7 @@ enum WindowCarcassMessages : int32u
 //-----------------------------------------------------------------------------
 struct WhenResize {
 	CtrlWindow* pointer;
-	Point_i newSize;
-	Point_i pos;
+	Rect* rect;
 	SizingType type;
 };
 
@@ -68,10 +67,10 @@ CtrlWindow::CtrlWindow(WindowType type, EventsBase* parent) : WindowEvents(type,
 }
 
 //-----------------------------------------------------------------------------
-bool CtrlWindow::onResize(Point_i newSize, Point_i pos, SizingType type) {
-	WhenResize data = {this, newSize, pos, type};
+bool CtrlWindow::onResize(Rect* rect, SizingType type) {
+	WhenResize data = {this, rect, type};
 	sendMessageUp(WINDOW_RESIZE, &data);
-	WindowEvents::onResize(newSize, pos, type);
+	WindowEvents::onResize(rect, type);
 }
 
 //-----------------------------------------------------------------------------
@@ -112,8 +111,8 @@ void* WindowCarcass::sendMessageUp(int32u messageNo, void* data) {
 			WindowEvents* wnd = data1->pointer;
 			Point_d A = m_positions[wnd];
 			Point_d B = A + m_sizes[wnd];
-			Point_d A1 = data1->pos;
-			Point_d B1 = A1 + data1->newSize;
+			Point_d A1 = Point_i(data1->rect->ax, data1->rect->ay);
+			Point_d B1 = Point_i(data1->rect->bx, data1->rect->by);
 			Point_d apos(
 				(A.x-min.x)/(max.x-min.x),
 				(A.y-min.y)/(max.y-min.y));

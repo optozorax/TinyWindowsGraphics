@@ -10,12 +10,23 @@ WindowBase::WindowBase(WindowType type) :
 	m_type(new WindowType(type)), 
 	m_minSize(type.minSize),
 	m_maxSize(type.maxSize) {
+	if (m_maxSize.x == -1) m_maxSize.x = 20000;
+	if (m_maxSize.y == -1) m_maxSize.y = 20000;
+	if (m_minSize.x == -1) m_minSize.x = 0;
+	if (m_minSize.y == -1) m_minSize.y = 0;
 	onStart();
 }
 
 //-----------------------------------------------------------------------------
 WindowBase::~WindowBase() {
 	UnregisterClass(m_className.c_str(), GetModuleHandle(NULL));
+}
+
+//-----------------------------------------------------------------------------
+Rect WindowBase::getRect(void) {
+	Point_i size = getWindowSize();
+	Point_i pos = getPos();
+	return Rect(pos.x, pos.y, pos.x + size.x, pos.y + size.y);
 }
 
 //-----------------------------------------------------------------------------
@@ -83,6 +94,11 @@ WindowStyle WindowBase::getStyle(void) {
 		style |= WINDOW_NO_BORDER;
 
 	return style;
+}
+
+//-----------------------------------------------------------------------------
+void WindowBase::setRect(Rect rect) {
+	MoveWindow(m_hwnd, rect.ax, rect.ay, rect.x(), rect.y(), TRUE);
 }
 
 //-----------------------------------------------------------------------------
