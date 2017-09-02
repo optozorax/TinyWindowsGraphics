@@ -71,7 +71,7 @@ std::wstring WindowBase::getCaption(void) {
 WindowStyle WindowBase::getStyle(void) {
 	DWORD EX_Style = GetWindowLong(m_hwnd, GWL_EXSTYLE);
 	DWORD WS_Style = GetWindowLong(m_hwnd, GWL_STYLE);
-	WindowStyle style = 0;
+	int32u style = 0;
 
 	if (EX_Style & WS_EX_TOPMOST)	style |= WINDOW_ON_TOP;
 	if (WS_Style & WS_DISABLED)		style |= WINDOW_DISABLED;
@@ -93,7 +93,7 @@ WindowStyle WindowBase::getStyle(void) {
 	else
 		style |= WINDOW_NO_BORDER;
 
-	return style;
+	return WindowStyle(style);
 }
 
 //-----------------------------------------------------------------------------
@@ -227,7 +227,7 @@ HWND WindowBase::create(void* data) {
 			   CS_PARENTDC | 
 			   CS_SAVEBITS | 
 			   CS_DBLCLKS;
-	wc.lpfnWndProc = data;
+	wc.lpfnWndProc = (WNDPROC)data;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;

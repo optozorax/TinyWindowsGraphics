@@ -437,7 +437,10 @@ bool BMP::WriteToFile( const wchar_t* FileName )
   return false; 
  }
  
- FILE* fp = _wfopen( FileName, L"wb" );
+ //FILE* fp = _wfopen( FileName, L"wb" );
+ std::wstring wstr(FileName);
+ std::string str(wstr.begin(), wstr.end());
+ FILE* fp = fopen( str.c_str(), "wb" );
  if( fp == NULL )
  {
   if( EasyBMPwarnings )
@@ -681,7 +684,10 @@ bool BMP::ReadFromFile( const wchar_t* FileName )
   return false; 
  }
 
- FILE* fp = _wfopen( FileName, L"rb" );
+ std::wstring wstr(FileName);
+ std::string str(wstr.begin(), wstr.end());
+ FILE* fp = fopen( str.c_str(), "rb" );
+ //FILE* fp = _wfopen( FileName, L"rb" );
  if( fp == NULL )
  {
   if( EasyBMPwarnings )
@@ -1306,8 +1312,11 @@ BMFH GetBMFH( const wchar_t* szFileNameIn )
  using namespace std;
  BMFH bmfh;
 
- FILE* fp;
- fp = _wfopen( szFileNameIn, L"rb");
+ //FILE* fp;
+ //fp = _wfopen( szFileNameIn, L"rb");
+ std::wstring wstr(szFileNameIn);
+ std::string str(wstr.begin(), wstr.end());
+ FILE* fp = fopen( str.c_str(), "rb" );
  
  if( !fp  )
  {
@@ -1342,8 +1351,11 @@ BMIH GetBMIH( const wchar_t* szFileNameIn )
  BMFH bmfh;
  BMIH bmih;
 
- FILE* fp;
- fp = _wfopen( szFileNameIn,L"rb");
+ // FILE* fp;
+ // fp = _wfopen( szFileNameIn,L"rb");
+ std::wstring wstr(szFileNameIn);
+ std::string str(wstr.begin(), wstr.end());
+ FILE* fp = fopen( str.c_str(), "rb" );
 
  if( !fp  )
  {
@@ -1391,8 +1403,11 @@ BMIH GetBMIH( const wchar_t* szFileNameIn )
 void DisplayBitmapInfo( const wchar_t* szFileNameIn )
 {
  using namespace std;
- FILE* fp;
- fp = _wfopen( szFileNameIn,L"rb");
+ // FILE* fp;
+ // fp = _wfopen( szFileNameIn,L"rb");
+ std::wstring wstr(szFileNameIn);
+ std::string str(wstr.begin(), wstr.end());
+ FILE* fp = fopen( str.c_str(), "rb" );
  
  if( !fp  )
  {

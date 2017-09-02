@@ -5,42 +5,48 @@ namespace twg
 
 //-----------------------------------------------------------------------------
 Polygon_d& Polygon_d::move(Point_d diff) {
-	for (i : array)
+	for (auto& i : array)
 		i += diff;
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
 Polygon_d& Polygon_d::rotate(double angle, Point_d center) {
-	for (i : array)
+	for (auto& i : array)
 		i.rotate(angle, center);
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
 Polygon_d& Polygon_d::scale(Point_d scale) {
-	for (i: array) {
+	for (auto& i: array) {
 		i.x *= scale.x;
 		i.y *= scale.y;
 	}
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
 Polygon_d& Polygon_d::toBasis(Point_d newOX, Point_d newOY) {
-	for (i : array)
+	for (auto& i : array)
 		i.toBasis(newOX, newOY);
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
 Polygon_d& Polygon_d::fromBasis(Point_d oldOX, Point_d oldOY) {
-	for (i : array)
+	for (auto& i : array)
 		i.fromBasis(oldOX, oldOY);
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
 Polygon_d& Polygon_d::flipAxis(Point_d axis) {
-	for (i : array) {
+	for (auto& i : array) {
 		double t = (axis.x*i.x + axis.y*i.y)/(axis.x*axis.x + axis.y*axis.y);
 		i = axis*2.0*t - i;
 	}
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
@@ -62,7 +68,7 @@ Polygon_d computeEllipse(Point_d radius) {
 Polygon_d computeArc(double radius, 
 					 double startAngle,
 					 double endAngle) {
-
+	return Polygon_d();
 }
 
 //-----------------------------------------------------------------------------
@@ -81,7 +87,7 @@ Polygon_d computeRoundRect(Point_d size,
 						   double rRU,
 						   double rRD,
 						   double rLD) {
-
+	return Polygon_d();
 }
 
 //-----------------------------------------------------------------------------

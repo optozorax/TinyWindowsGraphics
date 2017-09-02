@@ -11,7 +11,7 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 	switch (msg) {
 		//---------------------------------------------------------------------
 		case WM_MOVING: {
-			RECT* rect = lParam;
+			RECT* rect = (RECT*)(lParam);
 			Point_i pos(rect->left, rect->top);
 			if (onMove(pos))
 				return TRUE;
@@ -19,7 +19,7 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 
 		//---------------------------------------------------------------------
 		case WM_SIZE: { 
-			SizingType type = 0;
+			SizingType type = SizingType(0);
 			switch (wParam) {
 				case SIZE_MAXIMIZED:	type = SIZING_MAXIMIZED; 	break;
 				case SIZE_MINIMIZED:	type = SIZING_MINIMIZED; 	break;
@@ -44,7 +44,7 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 				case WMSZ_TOPLEFT:		type = SIZING_TOP_LEFT;		break;
 				case WMSZ_TOPRIGHT:		type = SIZING_TOP_RIGHT;	break;
 			}
-			Rect* rect = lParam;
+			Rect* rect = (Rect*)(lParam);
 			if (onResize(rect, type))
 				return TRUE;
 			} break;
@@ -54,7 +54,7 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 		// case WM_UNICHAR:
 		case WM_KEYUP:
 		case WM_KEYDOWN: {
-			if (onKeyboard(wParam, msg == WM_KEYDOWN))
+			if (onKeyboard(KeyType(wParam), msg == WM_KEYDOWN))
 				return 0;
 			} break;
 
@@ -62,7 +62,7 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 		case WM_LBUTTONDBLCLK:	case WM_LBUTTONDOWN:	case WM_LBUTTONUP:
 		case WM_MBUTTONDBLCLK:	case WM_MBUTTONDOWN:	case WM_MBUTTONUP:
 		case WM_RBUTTONDBLCLK:	case WM_RBUTTONDOWN:	case WM_RBUTTONUP: {
-			MouseType type = 0;
+			MouseType type = MouseType(0);
 			switch (msg) {
 				case WM_LBUTTONDBLCLK: 	type = MOUSE_L_DBL;		break;
 				case WM_LBUTTONDOWN:	type = MOUSE_L_DOWN;	break;
@@ -85,7 +85,7 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 		case WM_XBUTTONDBLCLK:
 		case WM_XBUTTONDOWN:
 		case WM_XBUTTONUP: {
-			MouseType type = 0;
+			MouseType type = MouseType(0);
 			switch (msg) {
 				case WM_XBUTTONDBLCLK: 
 					if (HIWORD(wParam) == XBUTTON1) type = MOUSE_X1_DBL;

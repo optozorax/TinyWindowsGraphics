@@ -25,7 +25,7 @@ ImageWin::~ImageWin() {
 void ImageWin::copyTo(ImageWin* dst, 
 					  Point_i dstStart, 
 					  Point_i srcStart,
-					  Point_i srcSize) {
+					  Point_i srcSize) const {
 	BitBlt(dst->m_hdc, dstStart.x, dstStart.y, srcSize.x, srcSize.y, m_hdc, srcStart.x, srcStart.y, SRCCOPY);
 }
 
@@ -33,7 +33,7 @@ void ImageWin::copyTo(ImageWin* dst,
 void ImageWin::drawTo(ImageWin* dst, 
 					  Point_i dstStart, 
 					  Point_i srcStart,
-					  Point_i srcSize) {
+					  Point_i srcSize) const {
 	BLENDFUNCTION blendFn = {};
 	blendFn.BlendOp = AC_SRC_OVER;
 	blendFn.BlendFlags = 0;
@@ -63,7 +63,7 @@ void ImageWin::assignScreen(void) {
 }
 
 //-----------------------------------------------------------------------------
-Point_i ImageWin::size(void) {
+Point_i ImageWin::size(void) const {
 	BITMAP hbmp;
 	memset(&hbmp, 0, sizeof(BITMAP));
 

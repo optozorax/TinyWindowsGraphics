@@ -16,7 +16,7 @@ bool WindowCtrl::redraw(bool returnType) {
 //-----------------------------------------------------------------------------
 bool WindowCtrl::onMessage(int32u messageNo, void* data) {
 	if (messageNo == WINDOWS_MESSAGE) {
-		onMessageStruct* msg = data;
+		onMessageStruct* msg = (onMessageStruct*)data;
 		switch (msg->msg) {
 			case WM_PAINT: {
 				PAINTSTRUCT ps;

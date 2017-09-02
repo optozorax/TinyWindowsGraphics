@@ -155,8 +155,8 @@ inline int8u getBlue(Color clr) {
 
 //-----------------------------------------------------------------------------
 inline Color computeOverlay(Color upper, Color lower) {
-	ColorUnion up = { .color = upper };
-	ColorUnion low = { .color = lower};
+	ColorUnion up(upper);
+	ColorUnion low(lower);
 
 	int32u upr = up.rgba.r;
 	int32u upg = up.rgba.g;

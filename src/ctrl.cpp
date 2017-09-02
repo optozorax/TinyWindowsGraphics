@@ -5,7 +5,7 @@ namespace twg
 
 //-----------------------------------------------------------------------------
 CtrlBase::CtrlBase(EventsBase* parent) : EventsHandler(parent), m_storage(nullptr), id(0) {
-	CtrlStorage** storage = sendMessageUp(CTRL_GET_POINTER, nullptr);
+	CtrlStorage** storage = (CtrlStorage**)sendMessageUp(CTRL_GET_POINTER, nullptr);
 	if (storage != nullptr) {
 		m_storage = *storage;
 		delete storage;
@@ -20,7 +20,7 @@ CtrlBase::CtrlBase(EventsBase* parent) : EventsHandler(parent), m_storage(nullpt
 //-----------------------------------------------------------------------------
 int32u CtrlStorage::IdDistributor::getId(void* pointer) {
 	// Находим, есть ли указатель в массиве
-	for (i : m_ids)
+	for (auto& i : m_ids)
 		if (i.first == pointer)
 			return i.second;
 
@@ -106,7 +106,7 @@ bool CtrlStorage::sendMessage(Function f) {
 	m_messageDepth++;
 	std::vector<CtrlBase*> arrayCopy(array.begin(), array.end());
 	bool isOneTrue = false;
-	for (i : arrayCopy) {
+	for (auto& i : arrayCopy) {
 		bool returned = f(i);
 		isOneTrue |= returned;
 		if (returned && OMFOC) {

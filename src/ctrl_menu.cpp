@@ -32,7 +32,7 @@ void MenuParser::deleteSpaces(std::wstring& str) {
 }
 
 //-----------------------------------------------------------------------------
-void MenuParser::parseMenuItem(std::wstring str, HMENU menu, bool isPopup = false, HMENU popupMenu = 0) {
+void MenuParser::parseMenuItem(std::wstring str, HMENU menu, bool isPopup, HMENU popupMenu) {
 	deleteSpaces(str);
 
 	// Узнать, сепаратор ли это
@@ -84,6 +84,8 @@ void MenuParser::parseMenuItem(std::wstring str, HMENU menu, bool isPopup = fals
 		str.erase(0, 1);
 	}
 
+	wchar_t name[100] = {};
+	wcscpy(name, str.c_str());
 	MENUITEMINFO minfo = {};
 	minfo.cbSize = sizeof(MENUITEMINFO);
 	minfo.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING; 
@@ -102,7 +104,7 @@ void MenuParser::parseMenuItem(std::wstring str, HMENU menu, bool isPopup = fals
 	minfo.wID = id;
 	if (isPopup)
 		minfo.hSubMenu = popupMenu;
-	minfo.dwTypeData = str.c_str();
+	minfo.dwTypeData = name;
 	minfo.cch = str.size();
 	if (pictureNo != -1)
 		minfo.hbmpItem = icon2bmp(LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(pictureNo)));
@@ -202,7 +204,7 @@ HBITMAP MenuParser::icon2bmp(HICON hicon) {
 
 //-----------------------------------------------------------------------------
 StaticMenu::StaticMenu(std::wstring str, EventsBase* parent) : CtrlBase(parent), m_hmenu(0) {
-	WindowCtrl** wnd = sendMessageUp(WINDOW_GET_POINTER, nullptr);
+	WindowCtrl** wnd = (WindowCtrl**)sendMessageUp(WINDOW_GET_POINTER, nullptr);
 	m_wnd = *wnd;
 	delete wnd;	
 
@@ -232,7 +234,7 @@ void StaticMenu::onClick(int32u id) {
 //-----------------------------------------------------------------------------
 bool StaticMenu::onMessage(int32u messageNo, void* data) {
 	if (messageNo == WINDOWS_MESSAGE) {
-		onMessageStruct* msg = data;
+		onMessageStruct* msg = (onMessageStruct*)data;
 		if (msg->msg == WM_COMMAND) {
 			onClick(LOWORD(msg->wParam));
 			m_wnd->redraw();
@@ -250,7 +252,7 @@ bool StaticMenu::onMessage(int32u messageNo, void* data) {
 
 //-----------------------------------------------------------------------------
 PopupMenu::PopupMenu(EventsBase* parent) : CtrlBase(parent), m_hmenu(0) {
-	WindowCtrl** wnd = sendMessageUp(WINDOW_GET_POINTER, nullptr);
+	WindowCtrl** wnd = (WindowCtrl**)sendMessageUp(WINDOW_GET_POINTER, nullptr);
 	m_wnd = *wnd;
 	delete wnd;	
 }
@@ -266,18 +268,18 @@ int32u PopupMenu::show(std::wstring str, Point_i pos) {
 //-----------------------------------------------------------------------------
 bool PopupMenu::onMessage(int32u messageNo, void* data) {
 	if (messageNo == WINDOWS_MESSAGE) {
-		onMessageStruct* msg = data;
+		onMessageStruct* msg = (onMessageStruct*)data;
 		switch (msg->msg) {
 			// Обрабатываем эти сообщения, чтобы во время разрушения меню, оно могло само себя удалить
 			case WM_UNINITMENUPOPUP:
-				if (msg->wParam == m_hmenu) {
+				if (HMENU(msg->wParam) == m_hmenu) {
 					m_storage->deleteMe(this);
 					m_hmenu = 0;
 					msg->lResult = 0;
 					return true;
 				} break;
 			case WM_INITMENUPOPUP:
-				if (msg->wParam == m_hmenu) {
+				if (HMENU(msg->wParam) == m_hmenu) {
 					msg->lResult = 0;
 					return true;
 				} break;

@@ -45,8 +45,8 @@ namespace twg
 	class TextStyle
 	{
 	public:
-		TextStyle() : width(12), name(L"Consolas"), flags(0) {}
-		TextStyle(int32 width, std::wstring name, TextFlag  flags) :
+		TextStyle() : width(12), name(L"Consolas"), flags(TextFlag(0)) {}
+		TextStyle(int32 width, std::wstring name, TextFlag flags) :
 			width(width), name(name), flags(flags) {};
 
 		int32			width;
@@ -103,25 +103,25 @@ namespace twg
 
 		virtual ~ImageDrawing() {}
 
-		virtual void setPen(Pen pen) {}
-		virtual void setBrush(Brush brush) {}
-		virtual void setTextStyle(TextStyle style) {}
+		virtual void setPen(Pen pen) = 0;
+		virtual void setBrush(Brush brush) = 0;
+		virtual void setTextStyle(TextStyle style) = 0;
 
 			// Rectangular drawing
-		virtual void drawPTo(ImageBase* dst, Polygon_d rect) {} // ONLY 4 POINTS
+		virtual void drawPTo(ImageBase* dst, Polygon_d rect) = 0; // ONLY 4 POINTS
 			// You can rotate, move, scale, and another transformations of points
 			// Рисует 
 
-		virtual Pen 		getPen(void) {}
-		virtual Brush 		getBrush(void) {}
-		virtual TextStyle 	getTextStyle(void) {}
-		virtual Point_d 	getTextSize(std::wstring text) {}
+		virtual Pen 		getPen(void) = 0;
+		virtual Brush 		getBrush(void) = 0;
+		virtual TextStyle 	getTextStyle(void) = 0;
+		virtual Point_d 	getTextSize(std::wstring text) = 0;
 
-		virtual void drawPolygon(Polygon_d& points) {}
-		virtual void drawPolyline(Polygon_d& points, bool isRoundJoin = false) {}
-		virtual void drawLine(Point_d a, Point_d b) {}
+		virtual void drawPolygon(Polygon_d& points) = 0;
+		virtual void drawPolyline(Polygon_d& points, bool isRoundJoin = false) = 0;
+		virtual void drawLine(Point_d a, Point_d b) = 0;
 
-		virtual void drawText(Point_d pos, std::wstring text) {}
+		virtual void drawText(Point_d pos, std::wstring text) = 0;
 	protected:
 		Pen 		m_pen;
 		Brush 		m_brush;

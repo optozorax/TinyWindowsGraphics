@@ -75,7 +75,7 @@ bool MyWindow::onMouse(Point_i pos, MouseType type) {
 bool MyWindow::onKeyboard(KeyType key, bool isDown) {
 	std::wstringstream sout;
 	sout << "Pressed ";
-	#define write(A) if (key == A) sout << #A; else
+	#define write(A) if (key == A) sout << #A;
 	write(KEY_A) write(KEY_B) write(KEY_C) write(KEY_D) write(KEY_E) 
 	write(KEY_F) write(KEY_G) write(KEY_H) write(KEY_I) write(KEY_J) 
 	write(KEY_K) write(KEY_L) write(KEY_M) write(KEY_N) write(KEY_O) 
@@ -198,7 +198,7 @@ bool MyWindow::onKillFocus(void) {
 //-----------------------------------------------------------------------------
 bool MyWindow::onMessage(int32u messageNo, void* data) {
 	if (messageNo == WM_ERASEBKGND)	{
-		onMessageStruct* msg = data;
+		onMessageStruct* msg = (onMessageStruct*)data;
 		msg->lResult = TRUE;
 		return true;
 	}
@@ -209,6 +209,7 @@ bool MyWindow::onMessage(int32u messageNo, void* data) {
 //=============================================================================
 //=============================================================================
 
+//int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 int main() {
 	WindowType type(-1,
 		Point_i(100, 0),

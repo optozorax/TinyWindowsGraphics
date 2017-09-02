@@ -126,7 +126,7 @@ void* WindowCarcass::sendMessageUp(int32u messageNo, void* data) {
 				(B1.x*apos.x-A1.x*bpos.x)/(apos.x-bpos.x), 
 				(B1.y*apos.y-A1.y*bpos.y)/(apos.y-bpos.y));
 
-			for (i : array)
+			for (auto& i : array)
 				if (i != wnd) {
 					Point_d C = m_positions[i];
 					Point_d D = C + m_sizes[i];
@@ -157,7 +157,7 @@ void* WindowCarcass::sendMessageUp(int32u messageNo, void* data) {
 			WhenMove* data1 = data;
 			WindowEvents* wnd = data1->pointer;
 			Point_i diff = data1->newPos - m_positions[wnd];
-			for (i : array)
+			for (auto& i : array)
 				if (i != wnd) {
 					i->setPos(i->getPos() + diff);
 					m_positions[i] = m_positions[i] + diff;

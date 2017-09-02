@@ -25,19 +25,19 @@ namespace twg
 		void assign(HDC hdc);
 		void assignScreen(void);
 
-		virtual int32u width(void);
-		virtual int32u height(void);
-		virtual Point_i size(void);
+		virtual int32u width(void) const;
+		virtual int32u height(void) const;
+		virtual Point_i size(void) const;
 
 		void copyTo(ImageWin *dst, 
 					Point_i dstStart, 
 					Point_i srcStart,
-					Point_i srcSize);
+					Point_i srcSize) const;
 
 		void drawTo(ImageWin* dst, 
 					Point_i dstStart, 
 					Point_i srcStart,
-					Point_i srcSize);
+					Point_i srcSize) const;
 	protected:
 		HDC		m_hdc;
 	};
@@ -55,9 +55,9 @@ namespace twg
 		virtual void resize(Point_i newSize);
 	
 		Color* buf(void);
-		int32u width(void);
-		int32u height(void);
-		Point_i size(void);
+		int32u width(void) const;
+		int32u height(void) const;
+		Point_i size(void) const;
 
 		void clear(Color bk = White);
 		
@@ -88,12 +88,12 @@ inline HDC ImageWin::getHdc(void) {
 }
 
 //-----------------------------------------------------------------------------
-inline int32u ImageWin::width(void) {
+inline int32u ImageWin::width(void) const {
 	return size().x;
 }
 
 //-----------------------------------------------------------------------------
-inline int32u ImageWin::height(void) {
+inline int32u ImageWin::height(void) const {
 	return size().y;
 }
 
@@ -117,17 +117,17 @@ inline Color* ImageBase::buf(void) {
 }
 
 //-----------------------------------------------------------------------------
-inline int32u ImageBase::width(void) {
+inline int32u ImageBase::width(void) const {
 	return m_width;
 }
 
 //-----------------------------------------------------------------------------
-inline int32u ImageBase::height(void) {
+inline int32u ImageBase::height(void) const {
 	return m_height;
 }
 
 //-----------------------------------------------------------------------------
-inline Point_i ImageBase::size(void) {
+inline Point_i ImageBase::size(void) const {
 	return Point_i(m_width, m_height);
 }
 	

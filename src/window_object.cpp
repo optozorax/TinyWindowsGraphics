@@ -23,7 +23,7 @@ LRESULT CALLBACK wndProc1(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 //-----------------------------------------------------------------------------
 bool waitForCreate = false;
 DWORD WINAPI makeWindow(LPVOID data) {
-	WindowObject* wnd = data;
+	WindowObject* wnd = (WindowObject*)data;
 	HWND hwnd = wnd->create((void*)(&wndProc1));
 
 	wnd->m_hwnd = hwnd;
@@ -45,6 +45,8 @@ DWORD WINAPI makeWindow(LPVOID data) {
 			DispatchMessage(&msg); 
 		}
 	}
+
+	return 0;
 }
 
 //-----------------------------------------------------------------------------

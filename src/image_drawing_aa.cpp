@@ -125,7 +125,7 @@ Point_d ImageDrawing_aa::getTextSize(std::wstring text) {
 	Point_i x(0, 0);
 
 	do {
-		first = text.substr(0, text.find("\n"));
+		first = text.substr(0, text.find(L"\n"));
 		GetTextExtentPoint32(fEng.getHdc(), first.c_str(), first.size(), sz);
 		x = Point_i(TWG_max(x.x, sz->cx), TWG_max(x.y, sz->cy));
 		text.erase(0, first.size()+1);
@@ -142,7 +142,7 @@ void ImageDrawing_aa::drawPolygon(Polygon_d& points) {
 		poly.addPoint(points.array[i]);
 	}
 
-	ColorUnion clr = { .color = m_brush.clr };
+	ColorUnion clr(m_brush.clr);
 	renSl.color(agg::rgba8(clr.rgba.r, clr.rgba.g, clr.rgba.b, clr.rgba.a));
 
 	ras.reset();
@@ -162,7 +162,7 @@ void ImageDrawing_aa::drawPolyline(Polygon_d& points, bool isRoundJoin) {
 	stroke.line_join(agg::round_join);
 	stroke.width(m_pen.thick);
 
-	ColorUnion clr = { .color = m_pen.clr };
+	ColorUnion clr(m_pen.clr);
 	renSl.color(agg::rgba8(clr.rgba.r, clr.rgba.g, clr.rgba.b, clr.rgba.a));
 
 	ras.reset();
@@ -181,7 +181,7 @@ void ImageDrawing_aa::drawLine(Point_d a, Point_d b) {
 	stroke.line_join(agg::round_join);
 	stroke.width(m_pen.thick);
 
-	ColorUnion clr = { .color = m_pen.clr };
+	ColorUnion clr(m_pen.clr);
 	renSl.color(agg::rgba8(clr.rgba.r, clr.rgba.g, clr.rgba.b, clr.rgba.a));
 
 	ras.reset();
@@ -194,16 +194,16 @@ void ImageDrawing_aa::drawText(Point_d pos, std::wstring text) {
 	while (text.find(L"\t") != std::string::npos)
 		text.replace(text.find(L"\t"), 1, L"        ");
 
-	ColorUnion clr = { .color = m_pen.clr };
+	ColorUnion clr(m_pen.clr);
 	renSl.color(agg::rgba8(clr.rgba.r, clr.rgba.g, clr.rgba.b, clr.rgba.a));
 
 	double x = pos.x;
 	double y = pos.y + getTextSize(L"\n").y;
-	wchar_t* p = text.c_str();
+	const wchar_t* p = text.c_str();
 
 	const agg::glyph_cache* glyph;
 	while(*p) {
-		agg::glyph_cache* glyph = fMan.glyph(*p);
+		const agg::glyph_cache* glyph = fMan.glyph(*p);
 		if(glyph) {
 			fMan.add_kerning(&x, &y);
 			fMan.init_embedded_adaptors(glyph, x, y);

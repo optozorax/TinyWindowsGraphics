@@ -36,11 +36,11 @@ namespace twg
 		HDC 	m_hdc;
 
 		void onStart();
-		virtual HWND create(void* wndProc) {}
+		virtual HWND create(void* wndProc) = 0;
 		virtual LRESULT wndProc(HWND hwnd, 
 								UINT msg,
 								WPARAM wParam, 
-								LPARAM lParam) {}
+								LPARAM lParam) = 0;
 
 		friend DWORD WINAPI 	makeWindow(LPVOID data);
 		friend LRESULT CALLBACK wndProc1(HWND hwnd, 
