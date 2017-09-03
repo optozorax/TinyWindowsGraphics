@@ -7,7 +7,6 @@ using namespace twg;
 enum CarcassMessages : int32u;
 struct WhenResize;
 struct WhenMove;
-class WindowCarcass;
 
 //-----------------------------------------------------------------------------
 /**
@@ -17,21 +16,19 @@ template<class Win>
 class CarcassWindow : public Win
 {
 public: 
-	CarcassWindow(EventsBase* parent) : Win(parent) {}
-	CarcassWindow(WindowType type, EventsBase* parent) : Win(type, parent) {}
+	CarcassWindow(EventsBase* parent) : Win(parent), isNowResize(false), currentRect(nullptr) {}
+	CarcassWindow(WindowType type, EventsBase* parent) : Win(type, parent), isNowResize(false), currentRect(nullptr) {}
 
 	bool onResize(Rect* rect, SizingType type);
 	bool onMove(Point_i newPos);
 
-	// virtual Rect 	getRect(void);
-	// virtual Point_i getMaxSize(void);
-	// virtual Point_i getMinSize(void);
+	void setRect(Rect rect);
 
-	// virtual void 	setRect(Rect rect);
+	bool isLeft;
+	bool isNowResize;
+
+	Rect* currentRect;
 };
-
-//typedef CarcassWindow<WindowEvents> HalfWindow;
-typedef WindowEvents HalfWindow;
 
 //-----------------------------------------------------------------------------
 enum CarcassMessages : int32u
@@ -42,14 +39,14 @@ enum CarcassMessages : int32u
 
 //-----------------------------------------------------------------------------
 struct WhenResize {
-	HalfWindow* pointer;
+	bool isLeft;
 	Rect* rect;
 	SizingType type;
 };
 
 //-----------------------------------------------------------------------------
 struct WhenMove {
-	HalfWindow* pointer;
+	bool isLeft;
 	Point_i newPos;
 };
 
@@ -59,35 +56,46 @@ struct WhenMove {
 	При их ресайзинге учитываются их минимальные и максимальные размеры. 
 	Сам является окном в смысле событий, но третьего лишнего окна не создает.
  */
-class WindowCarcass : public HalfWindow
+template<class Wnd1, class Wnd2>
+class WindowCarcass : public WindowEvents
 {
 public:
 	WindowCarcass(EventsBase* parent) : 
-		HalfWindow(parent) {}
+		WindowEvents(parent) {
+		isSetRect = false;
+		notResize = false;
+		anotResize = false;
+	}
 
-	void assign(HalfWindow* _wnd1, HalfWindow* _wnd2, bool isVertical);
+	void assign(Wnd1* _wnd1, Wnd2* _wnd2, bool isVertical);
+
+	void waitForClose();
+
+	Rect 		 getRect(void);
+	Point_i 	 getPos(void);
+	Point_i 	 getMaxSize(void);
+	Point_i 	 getMinSize(void);
+
+	void setRect(Rect rect);
+
 	void* sendMessageUp(int32u messageNo, void* data);
 
-	// void setRect(Rect rect);
-	// Rect getRect(void);
-
-	void waitForClose() {
-		wnd1->waitForClose();
-		wnd2->waitForClose();
-	};
-
+	bool isLeft;
 private:
-	HalfWindow* wnd1;
-	HalfWindow* wnd2;
+	Wnd1* wnd1;
+	Wnd2* wnd2;
 
-	bool isVertical;
+	bool 		isVertical;
+	bool		isSetRect;
 
+	// Параметры первого окна
 	bool 		notResize;
 	Point_i 	max;
 	Point_i 	min;
 	Rect 		rect;
 	double 		alpha;
 
+	// Параметры второго окна
 	bool 		anotResize;
 	Point_i 	amax;
 	Point_i 	amin;
@@ -102,46 +110,32 @@ private:
 //-----------------------------------------------------------------------------
 template<class Win>
 bool CarcassWindow<Win>::onResize(Rect* rect, SizingType type) {
+	currentRect = rect;
+	isNowResize = true;
 	bool returned = Win::onResize(rect, type);
-	WhenResize when = {this, rect, type};
+	WhenResize when = {isLeft, rect, type};
 	sendMessageUp(CARCASS_RESIZE, &when);
-	//return returned;
-	return true;
+	isNowResize = false;
+	return returned;
 }
 
 //-----------------------------------------------------------------------------
 template<class Win>
 bool CarcassWindow<Win>::onMove(Point_i newPos) {
 	bool returned = Win::onMove(newPos);
-	WhenMove when = {this, newPos};
+	WhenMove when = {isLeft, newPos};
 	sendMessageUp(CARCASS_MOVE, &when);	
-	//return returned;
-	return true;
+	return returned;
 }
 
-// //-----------------------------------------------------------------------------
-// template<class Win>
-// Rect CarcassWindow<Win>::getRect(void) {
-// 	return Win::getRect();
-// }
-
-// //-----------------------------------------------------------------------------
-// template<class Win>
-// Point_i CarcassWindow<Win>::getMaxSize(void) {
-// 	return Win::getMaxSize();
-// }
-
-// //-----------------------------------------------------------------------------
-// template<class Win>
-// Point_i CarcassWindow<Win>::getMinSize(void) {
-// 	return Win::getMinSize();
-// }
-
-// //-----------------------------------------------------------------------------
-// template<class Win>
-// void CarcassWindow<Win>::setRect(Rect rect) {
-// 	Win::setRect(rect);
-// }
+//-----------------------------------------------------------------------------
+template<class Win>
+void CarcassWindow<Win>::setRect(Rect rect) {
+	if (isNowResize) 
+		*currentRect = rect;
+	else
+		Win::setRect(rect);
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -182,6 +176,21 @@ Point_i sizing2sizing2(SizingType type) {
 	}
 
 	return Point_i(0, 0);
+}
+
+//-----------------------------------------------------------------------------
+SizingType sizing22sizing(Point_i type) {
+	if (type == Sizing2::Left) return SIZING_LEFT;
+	if (type == Sizing2::Right) return SIZING_RIGHT;
+	if (type == Sizing2::Bottom) return SIZING_BOTTOM;
+	if (type == Sizing2::Top) return SIZING_TOP;
+
+	if (type == Sizing2::BottomLeft) return SIZING_BOTTOM_LEFT;
+	if (type == Sizing2::BottomRight) return SIZING_BOTTOM_RIGHT;
+	if (type == Sizing2::TopLeft) return SIZING_TOP_LEFT;
+	if (type == Sizing2::TopRight) return SIZING_TOP_RIGHT;
+
+	return SIZING_RESTORED;
 }
 
 //-----------------------------------------------------------------------------
@@ -280,7 +289,7 @@ void rLeftSide(Rect& rect, Rect& arect,
 
 	// При естественном ресайзинге
 	// Это костыль, потому что когда у левого окна установлены мин и макс размеры, не передается событие о ресайзинге, выходящем за рамки этих размеров. А нам это надо, чтобы этот избыток или недостаток переправить на второе окно. Когда же левое окно ресайзят насильно, через потомка сверху, то этот костыль не нужен, и он не сработает.
-	if (rect.x() == min.x && arect.x() != amin.x) {
+	/*if (rect.x() == min.x && arect.x() != amin.x) {
 		rect.ax++;
 		rect.bx++;
 		updateAlpha;
@@ -289,7 +298,7 @@ void rLeftSide(Rect& rect, Rect& arect,
 		rect.ax--;
 		rect.bx--;
 		updateAlpha;
-	}
+	}*/
 
 	arect.ax = rect.bx;
 
@@ -353,43 +362,19 @@ void resize(Point_i type,
 			Rect& rect, Rect& arect,
 			Point_i min, Point_i max,
 			Point_i amin, Point_i amax,
-			double& alpha, double& aalpha,
-			bool isLeft) {
-
+			double& alpha, double& aalpha) {
 	// Два окна всегда должны быть одной высоты и на одной высоте
 	arect.ay = rect.ay;
 	arect.by = arect.ay + rect.y();
-
-	// Если это правое окно, преобразуем координаты так, чтобы оно стало левым
-	if (!isLeft) {
-		changeX(type);
-		changeX(rect);
-		changeX(arect);
-	}
 
 	// Рассматриваем два типа ресайзинга левого окна
 	if (type.x < 0)
 		rLeftSide(rect, arect, min, max, amin, amax, alpha, aalpha);
 	else if (type.x > 0)
 		rRightSide(rect, arect, min, max, amin, amax, alpha, aalpha);
-	
-	// Если это правое окно, возвращаем координаты так, чтобы оно снова было правым
-	if (!isLeft) {
-		changeX(type);
-		changeX(rect);
-		changeX(arect);
-	}
 
 	if (type.y > 0)
 		rUpSide(rect, arect, min, max, amin, amax);
-	else if (type.y < 0) {
-		// Изменяем координаты так, чтобы низ стал верхом
-		changeY(rect);
-		changeY(arect);
-		rUpSide(rect, arect, min, max, amin, amax);
-		changeY(rect);
-		changeY(arect);
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -397,12 +382,13 @@ void resize(Point_i type,
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-void WindowCarcass::assign(HalfWindow* _wnd1, HalfWindow* _wnd2, bool _isVertical) {
+template<class Wnd1, class Wnd2>
+void WindowCarcass<Wnd1, Wnd2>::assign(Wnd1* _wnd1, Wnd2* _wnd2, bool _isVertical) {
 	wnd1 = _wnd1;
 	wnd2 = _wnd2;
 
-	notResize = true;
-	anotResize = true;
+	notResize = false;
+	anotResize = false;
 	isVertical = _isVertical;
 
 	min = wnd1->getMinSize();
@@ -436,6 +422,9 @@ void WindowCarcass::assign(HalfWindow* _wnd1, HalfWindow* _wnd2, bool _isVertica
 		changeXY(amax);
 	}
 
+	wnd1->isLeft = true;
+	wnd2->isLeft = false;
+
 	wnd1->setRect(rect);
 	wnd2->setRect(arect);
 }
@@ -448,13 +437,15 @@ void  resizeWnd(bool& notResize, bool& anotResize,
 				Point_i min, Point_i max,
 				Point_i amin, Point_i amax,
 				double& alpha, double& aalpha,
-				Rect& origRect,
-				HalfWindow* awnd) {
+				Rect& origRect) {
+	bool isBottom = (type.y < 0 && !isVertical) || (type.x > 0 && isVertical);
 	if (!notResize) {
 		anotResize = true;
 
+		// Если два окна вертикальные, то меняем координаты так, чтобы они стали горизонатльными
 		if (isVertical) {
 			changeXY(type);
+			changeY(type);
 			changeX(type);
 			changeXY(rect);
 			changeXY(arect);
@@ -464,15 +455,46 @@ void  resizeWnd(bool& notResize, bool& anotResize,
 			changeXY(amax);
 		}
 
+		// Если это правое окно, преобразуем координаты так, чтобы оно стало левым
+		if (!isLeft) {
+			changeX(type);
+			changeX(rect);
+			changeX(arect);
+		}
+
+		// Если ресайзится низ то изменяем координаты так, чтобы низ стал верхом
+		if (isBottom) {
+			changeY(type);
+			changeY(rect);
+			changeY(arect);
+		}
+
+		// Рассчитываем ресайзинг левого окна горизонтального каркаса окон, где может ресайзиться только левая, правая и верхняя сторона
 		::resize(type, 
 				 rect, arect, 
 				 min, max, 
 				 amin, amax, 
-				 alpha, aalpha, 
-				 isLeft);
+				 alpha, aalpha);
 
+		// Меняем местами обратно верх с низом
+		if (isBottom) {
+			changeY(type);
+			changeY(rect);
+			changeY(arect);
+		}
+
+		// Если это правое окно, возвращаем координаты так, чтобы оно снова было правым
+		if (!isLeft) {
+			changeX(type);
+			changeX(rect);
+			changeX(arect);
+		}
+
+		// Возвращаем горизонтальные координаты снова к вертикальным, если это вертикальные окна
 		if (isVertical) {
 			changeXY(type);
+			changeY(type);
+			changeX(type);
 			changeXY(rect);
 			changeXY(arect);
 			changeXY(min);
@@ -482,23 +504,42 @@ void  resizeWnd(bool& notResize, bool& anotResize,
 		}
 
 		origRect = rect;
-		awnd->setRect(arect);
 	}
 	notResize = false;
 }
 
 //-----------------------------------------------------------------------------
-void* WindowCarcass::sendMessageUp(int32u messageNo, void* data) {
+template<class Wnd1, class Wnd2>
+void* WindowCarcass<Wnd1, Wnd2>::sendMessageUp(int32u messageNo, void* data) {
 	if (messageNo == CARCASS_RESIZE) {
-		WhenResize* when = data;
-		if (when->pointer == wnd1) {
+		WhenResize* when = (WhenResize*)data;
+		Point_i type2 = sizing2sizing2(when->type);
+		if (when->isLeft) {
 			resizeWnd(notResize, anotResize,
 					  true, isVertical,
-					  sizing2sizing2(when->type),
+					  type2,
 					  *(when->rect), arect,
 					  min, max, amin, amax,
 					  alpha, aalpha,
-					  rect, wnd2);
+					  rect);
+			bool haveParent = m_parent != nullptr;
+			bool isNotInsideResize = ((type2.x < 0 || type2.y != 0) && !isVertical) ||
+				((type2.y > 0 || type2.x != 0) && isVertical);
+			if (haveParent && !isSetRect && isNotInsideResize) {
+				if (isVertical)
+					if (type2.y < 0) type2.y = 0;
+					else ;
+				else
+					if (type2.x > 0) type2.x = 0;
+					else ;
+				SizingType type = sizing22sizing(type2);
+				Rect newRect = getRect();
+				WhenResize when = {isLeft, &newRect, type};
+				m_parent->sendMessageUp(CARCASS_RESIZE, &when);
+			} else {
+				wnd1->setRect(rect);
+				wnd2->setRect(arect);
+			}
 		} else {
 			resizeWnd(anotResize, notResize,
 					  false, isVertical,
@@ -506,13 +547,31 @@ void* WindowCarcass::sendMessageUp(int32u messageNo, void* data) {
 					  *(when->rect), rect,
 					  amin, amax, min, max,
 					  aalpha, alpha,
-					  arect, wnd1);
+					  arect);
+			bool haveParent = m_parent != nullptr;
+			bool isNotInsideResize = ((type2.x > 0 || type2.y != 0) && !isVertical) ||
+				((type2.y < 0 || type2.x != 0) && isVertical);
+			if (haveParent && !isSetRect && isNotInsideResize) {
+				if (isVertical)
+					if (type2.y > 0) type2.y = 0;
+					else ;
+				else
+					if (type2.x < 0) type2.x = 0;
+					else ;
+				SizingType type = sizing22sizing(type2);
+				Rect newRect = getRect();
+				WhenResize when = {isLeft, &newRect, type};
+				m_parent->sendMessageUp(CARCASS_RESIZE, &when);
+			} else {
+				wnd1->setRect(rect);
+				wnd2->setRect(arect);
+			}
 		}
 	} else 
 	if (messageNo == CARCASS_MOVE) {
-		WhenMove* when = data;
-		if (when->pointer == wnd1) {
-			anotResize = true;
+		WhenMove* when = (WhenMove*)data;
+		if (when->isLeft) {
+			/*anotResize = true;
 			Rect newRect(when->newPos.x, when->newPos.y, when->newPos.x + rect.x(), when->newPos.y + rect.y());
 			arect.ax += newRect.ax - rect.ax;
 			arect.ay += newRect.ay - rect.ay;
@@ -520,46 +579,214 @@ void* WindowCarcass::sendMessageUp(int32u messageNo, void* data) {
 			arect.by += newRect.by - rect.by;
 			wnd2->setRect(arect);
 			rect = newRect;
+			if (m_parent != nullptr && !isSetRect) {
+				Rect newRect = getRect();
+				WhenMove when = {isLeft, Point_i(newRect.ax, newRect.ay)};
+				m_parent->sendMessageUp(CARCASS_MOVE, &when);
+			}*/
+			anotResize = true;
+			Point_i diff(when->newPos.x - rect.ax, when->newPos.y - rect.ay);
+			rect.ax += diff.x;
+			rect.ay += diff.y;
+			rect.bx += diff.x;
+			rect.by += diff.y;
+			arect.ax += diff.x;
+			arect.ay += diff.y;
+			arect.bx += diff.x;
+			arect.by += diff.y;
+			wnd2->setRect(arect);
+			bool haveParent = m_parent != nullptr;
+			if (haveParent && !isSetRect) {
+				Rect newRect = getRect();
+				WhenMove when = {isLeft, Point_i(newRect.ax, newRect.ay)};
+				m_parent->sendMessageUp(CARCASS_MOVE, &when);
+			}
 		} else {
 			notResize = true;
-			Rect newRect(when->newPos.x, when->newPos.y, when->newPos.x + arect.x(), when->newPos.y + arect.y());
-			rect.ax += newRect.ax - arect.ax;
-			rect.ay += newRect.ay - arect.ay;
-			rect.bx += newRect.bx - arect.bx;
-			rect.by += newRect.by - arect.by;
+			Point_i diff(when->newPos.x - arect.ax, when->newPos.y - arect.ay);
+			rect.ax += diff.x;
+			rect.ay += diff.y;
+			rect.bx += diff.x;
+			rect.by += diff.y;
+			arect.ax += diff.x;
+			arect.ay += diff.y;
+			arect.bx += diff.x;
+			arect.by += diff.y;
 			wnd1->setRect(rect);
-			arect = newRect;
+			bool haveParent = m_parent != nullptr;
+			if (haveParent && !isSetRect) {
+				Rect newRect = getRect();
+				WhenMove when = {isLeft, Point_i(newRect.ax, newRect.ay)};
+				m_parent->sendMessageUp(CARCASS_MOVE, &when);
+			}
 		}
 	}
 	return nullptr;
 }
 
 //-----------------------------------------------------------------------------
+template<class Wnd1, class Wnd2>
+void WindowCarcass<Wnd1, Wnd2>::waitForClose() {
+	wnd1->waitForClose();
+	wnd2->waitForClose();
+}
+
+//-----------------------------------------------------------------------------
+template<class Wnd1, class Wnd2>
+Rect WindowCarcass<Wnd1, Wnd2>::getRect(void) {
+	Rect orect;
+	orect.ax = rect.ax;
+	orect.ay = rect.ay;
+	orect.bx = arect.bx;
+	orect.by = arect.by;
+	return orect;
+}
+
+//-----------------------------------------------------------------------------
+template<class Wnd1, class Wnd2>
+Point_i WindowCarcass<Wnd1, Wnd2>::getPos(void) {
+	Rect orect = getRect();
+	return Point_i(orect.ax, orect.ay);	
+}
+
+//-----------------------------------------------------------------------------
+template<class Wnd1, class Wnd2>
+Point_i WindowCarcass<Wnd1, Wnd2>::getMaxSize(void) {
+	if (isVertical)
+		return Point_i(TWG_min(max.x, amax.x), max.y + amax.y);
+	else 
+		return Point_i(max.x + amax.x, TWG_min(max.y, amax.y));
+}
+
+//-----------------------------------------------------------------------------
+template<class Wnd1, class Wnd2>
+Point_i WindowCarcass<Wnd1, Wnd2>::getMinSize(void) {
+	if (isVertical)
+		return Point_i(TWG_max(min.x, amin.x), min.y + amin.y);
+	else 
+		return Point_i(min.x + amin.x, TWG_max(min.y, amin.y));
+}
+
+//-----------------------------------------------------------------------------
+template<class Wnd1, class Wnd2>
+void WindowCarcass<Wnd1, Wnd2>::setRect(Rect rect1) {
+	// Изменить rect1 в соответствии с минмакс размерами
+	Point_i omin = getMinSize();
+	Point_i omax = getMaxSize();
+	if (rect1.x() < omin.x) rect1.bx = rect1.ax + omin.x;
+	if (rect1.y() < omin.y) rect1.by = rect1.ay + omin.y;
+	if (rect1.x() > omax.x) rect1.bx = rect1.ax + omax.x;
+	if (rect1.y() > omax.y) rect1.by = rect1.ay + omax.y;
+
+	if (isVertical) {
+		changeXY(rect);
+		changeXY(arect);
+		changeXY(rect1);
+		changeXY(min);
+		changeXY(max);
+		changeXY(amin);
+		changeXY(amax);
+	}
+
+	rect.ax = rect1.ax;
+	rect.ay = rect1.ay;
+	rect.by = rect1.by;
+	arect.ay = rect1.ay;
+	arect.bx = rect1.bx;
+	arect.by = rect1.by;
+
+	rLeftSide(rect, arect, min, max, amin, amax, alpha, aalpha);
+
+	if (isVertical) {
+		changeXY(rect);
+		changeXY(arect);
+		changeXY(rect1);
+		changeXY(min);
+		changeXY(max);
+		changeXY(amin);
+		changeXY(amax);
+	}
+
+	isSetRect = true;
+
+	wnd1->setRect(rect);
+	wnd2->setRect(arect);
+
+	isSetRect = false;
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-int main() {
-	WindowCarcass wnd(nullptr);
+//int main() {
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	typedef CarcassWindow<WindowEvents> FirstWindow;
+	typedef WindowCarcass<FirstWindow, FirstWindow> SecondWindow;
+	typedef WindowCarcass<SecondWindow, FirstWindow> ThirdWindow;
+	typedef WindowCarcass<SecondWindow, SecondWindow> FourthWindow;
 
-	WindowType type1(-1,
-		Point_i(100, 100),
-		Point_i(100, 100), 
-		Point_i(50, 40),
-		Point_i(200, 150),
-		L"Left",
-		WINDOW_TOOL);
-	CarcassWindow<WindowEvents> wnd1(type1, &wnd);
-
-	WindowType type2(-1,
-		Point_i(100, 100),
+	WindowType type(-1,
+		Point_i(0, 0),
 		Point_i(100, 100), 
 		Point_i(50, 50),
-		Point_i(200, 110),
-		L"Right",
-		WINDOW_TOOL);
-	CarcassWindow<WindowEvents> wnd2(type2, &wnd);
+		Point_i(-1, -1), 
+		L"Window", 
+		WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
 
-	wnd.assign(&wnd1, &wnd2, false);
+	// FourthWindow wnd(nullptr);
+	// SecondWindow wndC(&wnd);
+	// SecondWindow wnd1(&wnd);
 
-	wnd.waitForClose();
+	// FirstWindow wnd2(type, &wnd1);
+	// FirstWindow wnd3(type, &wnd1);
+	// FirstWindow wnd4(type, &wndC);
+	// FirstWindow wnd5(type, &wndC);
+
+	// wnd1.assign(&wnd2, &wnd3, true);
+	// wndC.assign(&wnd4, &wnd5, true);
+	// wnd.assign(&wnd1, &wndC, false);
+
+	// wnd2.waitForClose();
+
+	ThirdWindow wnd(nullptr);
+	SecondWindow wnd1(&wnd);
+
+	FirstWindow wnd2(type, &wnd1);
+	FirstWindow wnd3(type, &wnd1);
+	FirstWindow wnd4(type, &wnd);
+
+	wnd1.assign(&wnd2, &wnd3, true);
+	wnd.assign(&wnd1, &wnd4, false);
+
+	wnd2.waitForClose();
+
+	// WindowType type1(-1,
+	// 	Point_i(100, 100),
+	// 	Point_i(100, 100), 
+	// 	Point_i(50, 40),
+	// 	Point_i(200, 150),
+	// 	L"Left Up",
+	// 	WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
+	// WindowType type2(-1,
+	// 	Point_i(100, 100),
+	// 	Point_i(100, 100), 
+	// 	Point_i(50, 50),
+	// 	Point_i(200, 110),
+	// 	L"Left Down",
+	// 	WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
+	// WindowType type3(-1,
+	// 	Point_i(100, 100),
+	// 	Point_i(100, 100), 
+	// 	Point_i(50, 50),
+	// 	Point_i(200, 400),
+	// 	L"Right",
+	// 	WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
+	// WindowType type4(-1,
+	// 	Point_i(100, 100),
+	// 	Point_i(100, 100), 
+	// 	Point_i(50, 50),
+	// 	Point_i(200, 400),
+	// 	L"Right",
+	// 	WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
 }

@@ -221,6 +221,42 @@ inline typename PointBase<T, T1>::SelfType PointBase<T, T1>::operator/(ComputeCo
 
 //-----------------------------------------------------------------------------
 template<class T, class T1> 
+inline PointBase<T, T1> operator+(const PointBase<T, T1>& a, const PointBase<T, T1> b) {
+	return PointBase<T, T1>(a.x + b.x, a.y + b.y);
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1> 
+inline PointBase<T, T1> operator-(const PointBase<T, T1>& a, const PointBase<T, T1> b) {
+	return PointBase<T, T1>(a.x - b.x, a.y - b.y);
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1> 
+inline PointBase<T, T1> operator*(const PointBase<T, T1>& a, const T1 b) {
+	return PointBase<T, T1>(a.x*b, a.y*b);
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1> 
+inline PointBase<T, T1> operator/(const PointBase<T, T1>& a, const T1 b) {
+	return PointBase<T, T1>(a.x/b, a.y/b);
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1, class T3> 
+inline PointBase<T, T1> operator*(const PointBase<T, T1>& a, const T3 b) {
+	return PointBase<T, T1>(a.x*T1(b), a.y*T1(b));
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1, class T3> 
+inline PointBase<T, T1> operator/(const PointBase<T, T1>& a, const T3 b) {
+	return PointBase<T, T1>(a.x/T1(b), a.y/T1(b));
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1> 
 inline bool PointBase<T, T1>::operator==(SelfConst& a) {
 	return x == a.x && y == a.y;
 }
