@@ -79,7 +79,7 @@ void WindowObject::waitForClose(void) {
 
 //-----------------------------------------------------------------------------
 bool WindowObject::isClosed(void) {
-	return IsWindow(m_hwnd);
+	return !IsWindow(m_hwnd);
 }
 
 }
