@@ -61,10 +61,10 @@ bool WindowCtrl::onKeyboard(KeyType key, bool isDown) {
 }
 
 //-----------------------------------------------------------------------------
-bool WindowCtrl::onResize(Rect* rect, SizingType type) {
+bool WindowCtrl::onResize(Rect rect, SizingType type) {
 	bool isResized = false;
-	Point_i newSize(rect->bx - rect->ax, rect->by - rect->ay); 
-	Point_i pos(rect->ax, rect->ay);
+	Point_i newSize(rect.x(), rect.y()); 
+	Point_i pos(rect.ax, rect.ay);
 	if (newSize.x > m_buffer->width() || newSize.y > m_buffer->height()) {
 		if (newSize.x > m_buffer->width())
 			m_buffer->resize(Point_i(newSize.x + 100, m_buffer->height()));

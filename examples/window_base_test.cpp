@@ -3,7 +3,8 @@
 
 using namespace twg;
 
-int main() {
+//int main() {
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	WindowType type(-1,
 					Point_i(100, 0),
 					Point_i(300, 50), 
@@ -41,7 +42,7 @@ int main() {
 	type.pos += Point_i(0, 70);
 	WindowBase wnd5(type);
 
-	messageBox(std::wstring(L"Сейчас был тест создания окон разного стиля.\nВы можете наблюдать стили окон соответственно:\n\tWINDOW_STANDART\n\tWINDOW_TOOL\n\tWINDOW_CAPTION\n\tWINDOW_POPUP\n\tWINDOW_NO_BORDER\n\nОкна закроются автоматически по завершению тестов.\n\nДалее будет тест измененеия параметров окна во время работы, такие как:\n\tДвижение окна\n\tИзменение заголовка\n\tИзменение размеров\n\tИзменение стиля"), std::wstring(L"Test #1"), MESSAGE_OK | MESSAGE_ICON_INFORMATION | MESSAGE_STYLE_TOPMOST);
+	messageBox(std::wstring(L"Сейчас был тест создания окон разного стиля.\nВы можете наблюдать стили окон соответственно:\n\tWINDOW_STANDART\n\tWINDOW_TOOL\n\tWINDOW_CAPTION\n\tWINDOW_POPUP\n\tWINDOW_NO_BORDER\n\nОкна закроются автоматически по завершению тестов.\n\nДалее будет тест измененеия параметров окна во время работы, такие как:\n\tДвижение окна\n\tИзменение заголовка\n\tИзменение размеров\n\tИзменение стиля"), std::wstring(L"Test #1"), MessageType(MESSAGE_OK | MESSAGE_ICON_INFORMATION | MESSAGE_STYLE_TOPMOST));
 
 	Point_i center = wnd1.getPos();
 	Point_i lastPos = wnd2.getPos();
@@ -54,12 +55,12 @@ int main() {
 		wnd2.setPos(pos);
 		wnd3.setCaption(str2wstr(std::to_string(i)) + L" degrees of rotate");
 		wnd4.setWindowSize(Point_i(i/360.0 * 300, 50));
-		wnd5.setStyle(k % (WINDOW_IMAGE32 + 1));
+		wnd5.setStyle(WindowStyle(k % (WINDOW_IMAGE32)));
 
 		sleep(30);
 	}
 
-	messageBox(std::wstring(L"Все тесты окончены"), std::wstring(L"Test #2"), MESSAGE_OK | MESSAGE_ICON_INFORMATION | MESSAGE_STYLE_TOPMOST);
+	messageBox(std::wstring(L"Все тесты окончены"), std::wstring(L"Test #2"), MessageType(MESSAGE_OK | MESSAGE_ICON_INFORMATION | MESSAGE_STYLE_TOPMOST));
 
 	return 0;
 }

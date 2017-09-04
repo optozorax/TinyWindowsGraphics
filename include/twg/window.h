@@ -91,6 +91,8 @@ namespace twg
 		Point_i		 m_maxSize;
 		WindowType*	 m_type;
 		std::wstring m_className;
+		bool 		 m_isResized;
+		Rect* 		 m_nowRect;
 	
 		HWND 	create(void* wndProc);
 		LRESULT wndProc(HWND hwnd, 

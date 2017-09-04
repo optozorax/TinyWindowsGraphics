@@ -14,6 +14,8 @@ WindowBase::WindowBase(WindowType type) :
 	if (m_maxSize.y == -1) m_maxSize.y = 20000;
 	if (m_minSize.x == -1) m_minSize.x = 0;
 	if (m_minSize.y == -1) m_minSize.y = 0;
+	m_isResized = false;
+	m_nowRect = nullptr;
 	onStart();
 }
 
@@ -24,30 +26,32 @@ WindowBase::~WindowBase() {
 
 //-----------------------------------------------------------------------------
 Rect WindowBase::getRect(void) {
-	Point_i size = getWindowSize();
-	Point_i pos = getPos();
-	return Rect(pos.x, pos.y, pos.x + size.x, pos.y + size.y);
+	if (m_isResized) 
+		return *m_nowRect;
+	else {
+		RECT rect = {};
+		GetWindowRect(m_hwnd, &rect);
+		return Rect(rect.left, rect.top, rect.right, rect.bottom);
+	}
 }
 
 //-----------------------------------------------------------------------------
 Point_i WindowBase::getClientSize(void) {
-	RECT rc = {};
-	GetClientRect(m_hwnd, &rc);
-	return Point_i(rc.right, rc.bottom);
+	RECT rect = {};
+	GetClientRect(m_hwnd, &rect);
+	return Point_i(rect.right, rect.bottom);
 }
 
 //-----------------------------------------------------------------------------
 Point_i WindowBase::getWindowSize(void) {
-	RECT rc = {};
-	GetWindowRect(m_hwnd, &rc);
-	return Point_i(rc.right-rc.left, rc.bottom-rc.top);
+	Rect rect = getRect();
+	return Point_i(rect.x(), rect.y());
 }
 
 //-----------------------------------------------------------------------------
 Point_i WindowBase::getPos(void) {
-	RECT rc = {};
-	GetWindowRect(m_hwnd, &rc);
-	return Point_i(rc.left, rc.top);
+	Rect rect = getRect();
+	return Point_i(rect.ax, rect.ay);
 }
 
 //-----------------------------------------------------------------------------
@@ -98,27 +102,34 @@ WindowStyle WindowBase::getStyle(void) {
 
 //-----------------------------------------------------------------------------
 void WindowBase::setRect(Rect rect) {
-	MoveWindow(m_hwnd, rect.ax, rect.ay, rect.x(), rect.y(), TRUE);
+	if (m_isResized) 
+		*m_nowRect = rect;
+	else
+		MoveWindow(m_hwnd, rect.ax, rect.ay, rect.x(), rect.y(), TRUE);
 }
 
 //-----------------------------------------------------------------------------
 void WindowBase::setClientSize(Point_i size) {
-	Point_i pos = getPos();
-	Point_i diff = getWindowSize() - getClientSize();
-	Point_i newSize = size + diff;
-	MoveWindow(m_hwnd, pos.x, pos.y, newSize.x, newSize.y, TRUE);
+	if (!m_isResized) {
+		Rect rect = getRect();
+		Point_i diff = getWindowSize() - getClientSize();
+		Point_i newSize = size + diff;
+		rect.bx = rect.ax + newSize.x;
+		rect.by = rect.ay + newSize.y;
+		setRect(rect);
+	}
 }
 
 //-----------------------------------------------------------------------------
 void WindowBase::setWindowSize(Point_i size) {
-	Point_i pos = getPos();
-	MoveWindow(m_hwnd, pos.x, pos.y, size.x, size.y, TRUE);
+	Rect rect = getRect();
+	setRect(Rect(rect.ax, rect.ay, rect.ax + size.x, rect.ay + size.y));
 }
 
 //-----------------------------------------------------------------------------
 void WindowBase::setPos(Point_i pos) {
-	Point_i size = getWindowSize();
-	MoveWindow(m_hwnd, pos.x, pos.y, size.x, size.y, TRUE);	
+	Rect rect = getRect();
+	setRect(Rect(pos.x, pos.y, pos.x + rect.x(), pos.y + rect.y()));
 }
 
 //-----------------------------------------------------------------------------
@@ -279,16 +290,38 @@ LRESULT WindowBase::wndProc(HWND hwnd,
 							WPARAM wParam, 
 							LPARAM lParam) {
 	switch (msg) {
+		//---------------------------------------------------------------------
 		case WM_GETMINMAXINFO:
-		if (m_minSize != Point_i(-1, -1) && m_maxSize != Point_i(-1, -1)) {
-			MINMAXINFO *pInfo = (MINMAXINFO *)(lParam);
-			pInfo->ptMinTrackSize = { m_minSize.x, m_minSize.y };
-			pInfo->ptMaxTrackSize = { m_maxSize.x, m_maxSize.y };
-			return 0;
-		} break;
+			if (m_minSize != Point_i(-1, -1) && m_maxSize != Point_i(-1, -1)) {
+				MINMAXINFO *pInfo = (MINMAXINFO *)(lParam);
+				// Установка в переменные минимальных и максимальных размеров стандартных значений
+				if (pInfo->ptMinTrackSize.x > m_minSize.x)
+					m_minSize.x = pInfo->ptMinTrackSize.x;
+				if (pInfo->ptMinTrackSize.y > m_minSize.y)
+					m_minSize.y = pInfo->ptMinTrackSize.y;
+				pInfo->ptMinTrackSize = { m_minSize.x, m_minSize.y };
+				pInfo->ptMaxTrackSize = { m_maxSize.x, m_maxSize.y };
+				return 0;
+			} break;
+
+		//---------------------------------------------------------------------
+		case WM_SIZING: {
+			m_nowRect = (Rect*)(lParam);
+			m_isResized = true;
+			} break;
+
+		//---------------------------------------------------------------------
+		case WM_MOVING: {
+			m_nowRect = (Rect*)(lParam);
+			m_isResized = true;
+			} break;
 	}
 
-	return wndProcNext(hwnd, msg, wParam, lParam);
+	LRESULT returned = wndProcNext(hwnd, msg, wParam, lParam);
+
+	m_isResized = false;
+
+	return returned;
 }
 
 //-----------------------------------------------------------------------------

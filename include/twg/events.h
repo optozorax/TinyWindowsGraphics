@@ -54,7 +54,7 @@ namespace twg
 		virtual bool onMouse(Point_i pos, MouseType type) { return false; }
 		virtual bool onKeyboard(KeyType key, bool isDown) { return false; }
 
-		virtual bool onResize(Rect* rect, SizingType type) { return false; }
+		virtual bool onResize(Rect rect, SizingType type) { return false; }
 
 		// @TODO переделать, чтобы было на рект
 		virtual bool onMove(Point_i newPos) { return false; }

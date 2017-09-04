@@ -43,11 +43,9 @@ class CarcassTemplate : public Win, public CarcassedWindow
 {
 public: 
 	CarcassTemplate(WindowType type, EventsBase* parent = nullptr) : 
-		Win(type, parent), 
-		isNowResize(false), 
-		currentRect(nullptr) {}
+		Win(type, parent) {}
 
-	bool onResize(Rect* rect, SizingType type);
+	bool onResize(Rect rect, SizingType type);
 	bool onMove(Point_i newPos);
 
 	//-------------------------------------------------------------------------
@@ -59,9 +57,6 @@ public:
 	Point_i c_getMinSize(void);
 
 	void c_setRect(Rect rect);
-private:
-	bool isNowResize;
-	Rect* currentRect;
 };
 
 //-----------------------------------------------------------------------------
@@ -74,7 +69,7 @@ enum CarcassMessages : int32u
 //-----------------------------------------------------------------------------
 struct WhenResize {
 	bool isFirst;
-	Rect* rect;
+	Rect rect;
 	SizingType type;
 };
 
@@ -136,13 +131,10 @@ private:
 
 //-----------------------------------------------------------------------------
 template<class Win>
-bool CarcassTemplate<Win>::onResize(Rect* rect, SizingType type) {
-	currentRect = rect;
-	isNowResize = true;
+bool CarcassTemplate<Win>::onResize(Rect rect, SizingType type) {
 	bool returned = Win::onResize(rect, type);
 	WhenResize when = {isFirst, rect, type};
 	c_sendMessageUp(CARCASS_RESIZE, &when);
-	isNowResize = false;
 	return returned;
 }
 
@@ -158,10 +150,7 @@ bool CarcassTemplate<Win>::onMove(Point_i newPos) {
 //-----------------------------------------------------------------------------
 template<class Win>
 void CarcassTemplate<Win>::c_setRect(Rect rect) {
-	if (isNowResize) 
-		*currentRect = rect;
-	else
-		Win::setRect(rect);
+	setRect(rect);
 }
 
 //-----------------------------------------------------------------------------
@@ -583,7 +572,7 @@ void* WindowCarcass::c_sendMessageUp(int32u messageNo, void* data) {
 			resizeWnd(notResize, anotResize,
 					  true, isVertical,
 					  type2,
-					  *(when->rect), arect,
+					  when->rect, arect,
 					  min, max, amin, amax,
 					  alpha, aalpha,
 					  rect);
@@ -599,7 +588,7 @@ void* WindowCarcass::c_sendMessageUp(int32u messageNo, void* data) {
 					else ;
 				SizingType type = sizing22sizing(type2);
 				Rect newRect = c_getRect();
-				WhenResize when = {isFirst, &newRect, type};
+				WhenResize when = {isFirst, newRect, type};
 				parent->c_sendMessageUp(CARCASS_RESIZE, &when);
 			} else {
 				wnd1->c_setRect(rect);
@@ -609,7 +598,7 @@ void* WindowCarcass::c_sendMessageUp(int32u messageNo, void* data) {
 			resizeWnd(anotResize, notResize,
 					  false, isVertical,
 					  sizing2sizing2(when->type),
-					  *(when->rect), rect,
+					  when->rect, rect,
 					  amin, amax, min, max,
 					  aalpha, alpha,
 					  arect);
@@ -625,7 +614,7 @@ void* WindowCarcass::c_sendMessageUp(int32u messageNo, void* data) {
 					else ;
 				SizingType type = sizing22sizing(type2);
 				Rect newRect = c_getRect();
-				WhenResize when = {isFirst, &newRect, type};
+				WhenResize when = {isFirst, newRect, type};
 				parent->c_sendMessageUp(CARCASS_RESIZE, &when);
 			} else {
 				wnd1->c_setRect(rect);

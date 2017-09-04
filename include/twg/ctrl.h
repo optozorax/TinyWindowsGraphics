@@ -51,7 +51,7 @@ namespace twg
 		bool onMouse(Point_i pos, MouseType type);
 		bool onKeyboard(KeyType key, bool isDown);
 
-		bool onResize(Rect* rect, SizingType type);
+		bool onResize(Rect rect, SizingType type);
 		bool onMove(Point_i newPos);
 		bool onKillFocus(void);
 

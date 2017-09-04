@@ -27,7 +27,7 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 			}
 			Rect rect = getRect();
 			if (type != 0)
-				if (onResize(&rect, type))
+				if (onResize(rect, type))
 					return 0;
 			} break;
 
@@ -44,7 +44,7 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 				case WMSZ_TOPLEFT:		type = SIZING_TOP_LEFT;		break;
 				case WMSZ_TOPRIGHT:		type = SIZING_TOP_RIGHT;	break;
 			}
-			Rect* rect = (Rect*)(lParam);
+			Rect rect = *((Rect*)(lParam));
 			if (onResize(rect, type))
 				return TRUE;
 			} break;

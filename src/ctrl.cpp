@@ -135,7 +135,7 @@ bool CtrlStorage::onKeyboard(KeyType key, bool isDown) {
 }
 
 //-----------------------------------------------------------------------------
-bool CtrlStorage::onResize(Rect* rect, SizingType type) {
+bool CtrlStorage::onResize(Rect rect, SizingType type) {
 	return sendMessage([&] (CtrlBase* i) -> bool { 
 		return i->onResize(rect, type); 
 	});

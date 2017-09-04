@@ -125,8 +125,8 @@ Point_d ImageDrawing_aa::getTextSize(std::wstring text) {
 	Point_i x(0, 0);
 
 	do {
-		first = text.substr(0, text.find(L"\n"));
-		GetTextExtentPoint32(fEng.getHdc(), first.c_str(), first.size(), sz);
+		first = text.substr(0, text.find("\n"));
+		GetTextExtentPoint32W(fEng.getHdc(), first.c_str(), first.size(), sz);
 		x = Point_i(TWG_max(x.x, sz->cx), TWG_max(x.y, sz->cy));
 		text.erase(0, first.size()+1);
 	} while (text.size() != 0);

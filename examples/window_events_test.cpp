@@ -20,7 +20,7 @@ public:
 	//-------------------------------------------------------------------------
 	bool onMouse(Point_i pos, MouseType type);
 	bool onKeyboard(KeyType key, bool isDown);
-	bool onResize(Rect* rect, SizingType type);
+	bool onResize(Rect rect, SizingType type);
 	bool onMove(Point_i newPos);
 	bool onKillFocus(void);
 	bool onMessage(int32u messageNo, void* data);
@@ -150,11 +150,11 @@ bool MyWindow::onKeyboard(KeyType key, bool isDown) {
 }
 
 //-----------------------------------------------------------------------------
-bool MyWindow::onResize(Rect* rect, SizingType type) {
+bool MyWindow::onResize(Rect rect, SizingType type) {
 	std::wstringstream sout;
 
-	Point_i newSize(rect->bx - rect->ax, rect->by - rect->ay); 
-	Point_i pos(rect->ax, rect->ay);
+	Point_i newSize(rect.x(), rect.y()); 
+	Point_i pos(rect.ax, rect.ay);
 
 	sout << "Resize type: ";
 	switch (type) {
@@ -209,8 +209,8 @@ bool MyWindow::onMessage(int32u messageNo, void* data) {
 //=============================================================================
 //=============================================================================
 
-//int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-int main() {
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+//int main() {
 	WindowType type(-1,
 		Point_i(100, 0),
 		Point_i(300, 300), 
