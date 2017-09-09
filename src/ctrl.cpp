@@ -95,7 +95,7 @@ void CtrlStorage::deleteCtrls(void) {
 
 //-----------------------------------------------------------------------------
 void CtrlStorage::draw(ImageBase* buffer) {
-	for (auto i = array.rbegin(); i != array.rend(); ++i)
+	for (auto i = array.begin(); i != array.end(); ++i)
 		(*i)->draw(buffer);
 }
 
@@ -149,9 +149,9 @@ bool CtrlStorage::onMove(Point_i newPos) {
 }
 
 //-----------------------------------------------------------------------------
-bool CtrlStorage::onKillFocus(void) {
+bool CtrlStorage::onFocus(bool isKilled) {
 	return sendMessage([&] (CtrlBase* i) -> bool { 
-		return i->onKillFocus(); 
+		return i->onFocus(isKilled); 
 	});
 }
 

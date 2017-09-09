@@ -18,7 +18,6 @@ namespace twg
 	class WindowEvents : public WindowBase, public CtrlBase
 	{
 	public:
-		WindowEvents(EventsBase* parent = nullptr) : CtrlBase(parent) {}
 		WindowEvents(WindowType type, EventsBase* parent = nullptr) : 
 			WindowBase(type), 
 			CtrlBase(parent) {}

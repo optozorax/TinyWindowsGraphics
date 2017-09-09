@@ -33,7 +33,7 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 
 		//---------------------------------------------------------------------
 		case WM_SIZING: {
-			SizingType type;
+			SizingType type = SIZING_RESTORED;
 			switch (wParam) {
 				case WMSZ_BOTTOM:		type = SIZING_BOTTOM;		break;
 				case WMSZ_BOTTOMLEFT:	type = SIZING_BOTTOM_LEFT;	break;
@@ -43,6 +43,7 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 				case WMSZ_TOP:			type = SIZING_TOP;			break;
 				case WMSZ_TOPLEFT:		type = SIZING_TOP_LEFT;		break;
 				case WMSZ_TOPRIGHT:		type = SIZING_TOP_RIGHT;	break;
+				case 9:					type = SIZING_MAXIMIZED;	break;
 			}
 			Rect rect = *((Rect*)(lParam));
 			if (onResize(rect, type))
@@ -123,7 +124,13 @@ LRESULT WindowEvents::wndProcNext(HWND hwnd,
 
 		//---------------------------------------------------------------------
 		case WM_KILLFOCUS: {
-			if (onKillFocus())
+			if (onFocus(true))
+				return 0;
+			} break;		
+
+		//---------------------------------------------------------------------
+		case WM_SETFOCUS: {
+			if (onFocus(false))
 				return 0;
 			} break;		
 	}

@@ -4,7 +4,7 @@ namespace twg
 {
 
 //-----------------------------------------------------------------------------
-ImageAgg::ImageAgg(Point_i size) : ImageBase(size), rbuf((int8u*) buf(), width(), height(), width()*4), pf(rbuf), renBase(pf), renSl(renBase), fEng(GetDC(0)), fMan(fEng) {
+ImageAgg::ImageAgg(Point_i size) : ImageBase(size), rbuf((int8u*) buf(), width(), height(), width()*4), pf(rbuf), renBase(pf), renSl(renBase), fEng(GetDC(0)), fMan(fEng), prim(renBase) {
 
 }
 

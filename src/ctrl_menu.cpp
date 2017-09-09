@@ -27,8 +27,10 @@ HBITMAP icon2bmp(HICON hicon);
 
 //-----------------------------------------------------------------------------
 void MenuParser::deleteSpaces(std::wstring& str) {
-	while (str[str.size()-1] == L' ') str.erase(str.size()-1, 1);
-	while (str[0] == L' ') str.erase(0, 1);
+	if (str.size() != 0) {
+		while (str[str.size()-1] == L' ') str.erase(str.size()-1, 1);
+		while (str[0] == L' ') str.erase(0, 1);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -39,7 +41,6 @@ void MenuParser::parseMenuItem(std::wstring str, HMENU menu, bool isPopup, HMENU
 	bool separator = str == L"---";
 
 	// Узнать номер пункта меню
-	deleteSpaces(str);
 	size_t posEqual = str.find(L"=");
 	int32u id = 0;
 	if (posEqual != std::wstring::npos) {
@@ -237,7 +238,7 @@ bool StaticMenu::onMessage(int32u messageNo, void* data) {
 		onMessageStruct* msg = (onMessageStruct*)data;
 		if (msg->msg == WM_COMMAND) {
 			onClick(LOWORD(msg->wParam));
-			m_wnd->redraw();
+			m_wnd->worthRedraw();
 		}
 
 	}

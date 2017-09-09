@@ -23,8 +23,8 @@ namespace twg
 		PointBase(T x = 0, T y = 0) : x(x), y(y) {}
 
 		//---------------------------------------------------------------------
-		ComputeConst getLength(void);
-		ComputeConst getAngle(void);
+		ComputeConst getLength(void) const;
+		ComputeConst getAngle(void) const;
 
 		void toBasis(SelfConst& x1, SelfConst& y1);		
 		void fromBasis(SelfConst& x1, SelfConst& y1);
@@ -32,12 +32,12 @@ namespace twg
 		void rotate(ComputeConst& angle, 
 					SelfConst& center = SelfType());
 
-		ComputeConst computeAngle(SelfConst& a);
+		ComputeConst computeAngle(SelfConst& a) const;
 		
-		bool inRectangle(SelfConst& p1, SelfConst& p2);
+		bool inRectangle(SelfConst& p1, SelfConst& p2) const;
 		bool inTriangle(SelfConst& p1, 
 						SelfConst& p2, 
-						SelfConst& p3);
+						SelfConst& p3) const;
 
 		//---------------------------------------------------------------------
 		template<class N, class N1>
@@ -49,11 +49,6 @@ namespace twg
 		SelfType operator-=(SelfConst& a);
 		SelfType operator*=(ComputeConst &a);
 		SelfType operator/=(ComputeConst &a);
-
-		SelfType operator+(SelfConst& a);
-		SelfType operator-(SelfConst& a);
-		SelfType operator*(ComputeConst &a);
-		SelfType operator/(ComputeConst &a);
 
 		bool operator==(SelfConst& a);
 		bool operator!=(SelfConst& a);
@@ -91,26 +86,31 @@ namespace twg
 
 //-----------------------------------------------------------------------------
 template<class T, class T1> 
-inline typename PointBase<T, T1>::ComputeConst PointBase<T, T1>::getLength(void) {
+inline typename PointBase<T, T1>::ComputeConst PointBase<T, T1>::getLength(void) const {
 	return sqrt(x*x + y*y);
 }
 
 //-----------------------------------------------------------------------------
 template<class T, class T1> 
-inline typename PointBase<T, T1>::ComputeConst PointBase<T, T1>::getAngle(void) {
+inline typename PointBase<T, T1>::ComputeConst PointBase<T, T1>::getAngle(void) const {
 	return atan2(y, x);
 }
 
 //-----------------------------------------------------------------------------
 template<class T, class T1> 
 void PointBase<T, T1>::toBasis(SelfConst& x1, SelfConst& y1) {
-
+	ValueType nx = (y*y1.x-x*y1.y)/(x1.y*y1.x-x1.x*y1.y);
+	ValueType ny = -(x1.x*y-x*x1.y)/(x1.y*y1.x-x1.x*y1.y);
+	x = nx;
+	y = ny;
 }
 
 //-----------------------------------------------------------------------------
 template<class T, class T1> 
 void PointBase<T, T1>::fromBasis(SelfConst& x1, SelfConst& y1) {
-
+	SelfType a = x1*x + y1*y;
+	x = a.x;
+	y = a.y;
 }
 
 //-----------------------------------------------------------------------------
@@ -125,15 +125,16 @@ void PointBase<T, T1>::rotate(ComputeConst& angle,
 
 //-----------------------------------------------------------------------------
 template<class T, class T1> 
-typename PointBase<T, T1>::ComputeConst PointBase<T, T1>::computeAngle(SelfConst& a) {
+typename PointBase<T, T1>::ComputeConst PointBase<T, T1>::computeAngle(SelfConst& a) const {
 	ComputeConst angle = getAngle() - a.getAngle();
 	angle = (angle < 0) ? -angle : angle;
+	while (angle > 2*pi) angle -= 2*pi;
 	return angle;
 }
 
 //-----------------------------------------------------------------------------
 template<class T, class T1> 
-inline bool PointBase<T, T1>::inRectangle(SelfConst& p1, SelfConst& p2) {
+inline bool PointBase<T, T1>::inRectangle(SelfConst& p1, SelfConst& p2) const {
 	SelfConst p3(TWG_min(p1.x, p2.x), TWG_min(p1.y, p2.y));
 	SelfConst p4(TWG_max(p1.x, p2.x), TWG_max(p1.y, p2.y));
 	return (x <= p4.x && x >= p3.x && y <= p4.y && y >= p3.y);
@@ -143,7 +144,7 @@ inline bool PointBase<T, T1>::inRectangle(SelfConst& p1, SelfConst& p2) {
 template<class T, class T1> 
 inline bool PointBase<T, T1>::inTriangle(SelfConst& p1, 
 						   SelfConst& p2, 
-						   SelfConst& p3) {
+						   SelfConst& p3) const {
 	return false;
 }
 
@@ -196,27 +197,15 @@ inline typename PointBase<T, T1>::SelfType PointBase<T, T1>::operator/=(ComputeC
 }
 
 //-----------------------------------------------------------------------------
-template<class T, class T1> 
-inline typename PointBase<T, T1>::SelfType PointBase<T, T1>::operator+(SelfConst& a) {
-	return PointBase(x+a.x, y+a.y);
+template<class T, class T1, class T2, class T3> 
+inline PointBase<T, T1> operator+(const PointBase<T, T1>& a, const PointBase<T2, T3> b) {
+	return PointBase<T, T1>(a.x + T(b.x), a.y + T(b.y));
 }
 
 //-----------------------------------------------------------------------------
-template<class T, class T1> 
-inline typename PointBase<T, T1>::SelfType PointBase<T, T1>::operator-(SelfConst& a) {
-	return PointBase(x-a.x, y-a.y);
-}
-
-//-----------------------------------------------------------------------------
-template<class T, class T1> 
-inline typename PointBase<T, T1>::SelfType PointBase<T, T1>::operator*(ComputeConst &a) {
-	return PointBase(x*a, y*a);
-}
-
-//-----------------------------------------------------------------------------
-template<class T, class T1> 
-inline typename PointBase<T, T1>::SelfType PointBase<T, T1>::operator/(ComputeConst &a) {
-	return PointBase(x/a, y/a);
+template<class T, class T1, class T2, class T3> 
+inline PointBase<T, T1> operator-(const PointBase<T, T1>& a, const PointBase<T2, T3> b) {
+	return PointBase<T, T1>(a.x - T(b.x), a.y - T(b.y));
 }
 
 //-----------------------------------------------------------------------------
@@ -252,6 +241,30 @@ inline PointBase<T, T1> operator*(const PointBase<T, T1>& a, const T3 b) {
 //-----------------------------------------------------------------------------
 template<class T, class T1, class T3> 
 inline PointBase<T, T1> operator/(const PointBase<T, T1>& a, const T3 b) {
+	return PointBase<T, T1>(a.x/T1(b), a.y/T1(b));
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1> 
+inline PointBase<T, T1> operator*(const T1 b, const PointBase<T, T1>& a) {
+	return PointBase<T, T1>(a.x*b, a.y*b);
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1> 
+inline PointBase<T, T1> operator/(const T1 b, const PointBase<T, T1>& a) {
+	return PointBase<T, T1>(a.x/b, a.y/b);
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1, class T3> 
+inline PointBase<T, T1> operator*(const T3 b, const PointBase<T, T1>& a) {
+	return PointBase<T, T1>(a.x*T1(b), a.y*T1(b));
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1, class T3> 
+inline PointBase<T, T1> operator/(const T3 b, const PointBase<T, T1>& a) {
 	return PointBase<T, T1>(a.x/T1(b), a.y/T1(b));
 }
 

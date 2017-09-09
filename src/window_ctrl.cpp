@@ -4,12 +4,18 @@ namespace twg
 {
 
 //-----------------------------------------------------------------------------
+void WindowCtrl::worthRedraw(void) {
+	m_worthRedraw = true;
+}
+
+//-----------------------------------------------------------------------------
 bool WindowCtrl::redraw(bool returnType) {
-	if (returnType) {
+	if (returnType || m_worthRedraw) {
 		m_buffer->clear(White);
 		storage.draw(m_buffer);
 		m_buffer->copyTo(&canvas, Point_i(), Point_i(), m_buffer->size());	
 	}
+	m_worthRedraw = false;
 	return returnType;
 }
 
@@ -81,8 +87,8 @@ bool WindowCtrl::onMove(Point_i newPos) {
 
 }
 //-----------------------------------------------------------------------------
-bool WindowCtrl::onKillFocus(void) {
-	return redraw(storage.onKillFocus());
+bool WindowCtrl::onFocus(bool isKilled) {
+	return redraw(storage.onFocus(isKilled));
 }
 
 }

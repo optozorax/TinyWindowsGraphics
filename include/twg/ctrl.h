@@ -53,7 +53,7 @@ namespace twg
 
 		bool onResize(Rect rect, SizingType type);
 		bool onMove(Point_i newPos);
-		bool onKillFocus(void);
+		bool onFocus(bool isKilled);
 
 		bool onMessage(int32u messageNo, void* data);
 		void* sendMessageUp(int32u messageNo, void* data);

@@ -80,7 +80,7 @@ void setCursor(CursorType type) {
 		case CURSOR_SIZE_LEFT_DOWN_CORNER:
 			SetCursor(LoadCursor(NULL, IDC_SIZENESW));
 			break;
-		case CURSOR_SIZE_RIGHT_UP_CORNER:
+		case CURSOR_SIZE_RIGHT_DOWN_CORNER:
 			SetCursor(LoadCursor(NULL, IDC_SIZENWSE));
 			break;
 	}

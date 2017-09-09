@@ -58,7 +58,7 @@ namespace twg
 
 		// @TODO переделать, чтобы было на рект
 		virtual bool onMove(Point_i newPos) { return false; }
-		virtual bool onKillFocus(void) { return false; }
+		virtual bool onFocus(bool isKilled) { return false; }
 	};
 
 	//-------------------------------------------------------------------------

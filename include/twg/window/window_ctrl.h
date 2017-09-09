@@ -23,14 +23,15 @@ namespace twg
 	class WindowCtrl : public WindowEvents
 	{
 	public:
-		WindowCtrl(EventsBase* parent = nullptr) : WindowEvents(parent), storage(this), m_buffer(nullptr) {}
 		WindowCtrl(WindowType type, EventsBase* parent = nullptr) : 
 			WindowEvents(type, parent), 
 			storage(this), 
-			m_buffer(new ImageBase(Point_i(1000, 1000))) {}
+			m_buffer(new ImageBase(Point_i(1000, 1000))),
+			m_worthRedraw(false) {}
 
 		CtrlStorage 	storage;
 
+		void worthRedraw();
 		bool redraw(bool returnType = true);	
 
 		//---------------------------------------------------------------------
@@ -42,9 +43,10 @@ namespace twg
 
 		bool onResize(Rect rect, SizingType type);
 		bool onMove(Point_i newPos);
-		bool onKillFocus(void);
+		bool onFocus(bool isKilled);
 	private:
 		ImageBase*		m_buffer;
+		bool 			m_worthRedraw;
 	};
 
 	//-------------------------------------------------------------------------

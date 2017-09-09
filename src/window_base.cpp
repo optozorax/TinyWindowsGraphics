@@ -10,10 +10,6 @@ WindowBase::WindowBase(WindowType type) :
 	m_type(new WindowType(type)), 
 	m_minSize(type.minSize),
 	m_maxSize(type.maxSize) {
-	if (m_maxSize.x == -1) m_maxSize.x = 20000;
-	if (m_maxSize.y == -1) m_maxSize.y = 20000;
-	if (m_minSize.x == -1) m_minSize.x = 0;
-	if (m_minSize.y == -1) m_minSize.y = 0;
 	m_isResized = false;
 	m_nowRect = nullptr;
 	onStart();
@@ -246,11 +242,13 @@ HWND WindowBase::create(void* data) {
 	wc.hbrBackground = CreateSolidBrush(RGB(255,255,255));
 	wc.lpszMenuName = NULL;
 
-	if (m_type->iconNo == -1)
-		wc.hIcon = NULL;
-	else
+	if (m_type->iconNo >= ICON_APPLICATION && m_type->iconNo <= ICON_INFORMATION) {
+		wc.hIcon = LoadIcon(NULL, MAKEINTRESOURCE(m_type->iconNo));
+		wc.hIconSm = LoadIcon(NULL, MAKEINTRESOURCE(m_type->iconNo));
+	} else {
 		wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(m_type->iconNo));
-	wc.hIconSm = wc.hIcon;
+		wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(m_type->iconNo));
+	}
 
 	if (m_type->style & WINDOW_DROP_SHADOW)
 		wc.style |= CS_DROPSHADOW;
@@ -261,7 +259,8 @@ HWND WindowBase::create(void* data) {
 	bool registered = false;
 	do {
 		currentClassN++;
-		m_className = L"TWG_CLASS_" + str2wstr(std::to_string(currentClassN));
+		std::string str = std::to_string(currentClassN);
+		m_className = L"TWG_CLASS_" + std::wstring(str.begin(), str.end());
 		wc.lpszClassName = m_className.c_str();
 		registered = RegisterClassEx(&wc) != 0;
 	} while (!registered);

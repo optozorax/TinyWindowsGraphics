@@ -14,6 +14,7 @@
 #include <agg_renderer_scanline.h>
 #include <agg_ellipse.h>
 #include <agg_basics.h>
+#include <agg_renderer_primitives.h>
 #include "agg_font_win32_tt.h"
 
 namespace twg
@@ -27,6 +28,7 @@ namespace twg
 	typedef agg::scanline_u8								scanline;
 	typedef agg::font_engine_win32_tt_int32 				font_engine_type;
 	typedef agg::font_cache_manager<font_engine_type> 		font_manager_type;
+	typedef agg::renderer_primitives<renderer_base> 		renderer_prim;
 
 	//-------------------------------------------------------------------------
 	class ImageAgg : virtual public ImageBase
@@ -43,6 +45,7 @@ namespace twg
 		renderer_scanline 		renSl;
 		rasterizer_scanline 	ras;
 		scanline 				sl;
+		renderer_prim 			prim;
 
 		font_engine_type		fEng;
 		font_manager_type		fMan;
