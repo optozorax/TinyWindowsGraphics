@@ -759,7 +759,7 @@ void WindowCarcass::c_setRect(Rect rect1) {
 
 //-----------------------------------------------------------------------------
 void test1() {
-	WindowType type(-1, Point_i(100, 100), Point_i(100, 100), Point_i(50, 50), Point_i(-1, -1), L"Window", WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
+	WindowType type(stdIcon, Point_i(100, 100), Point_i(100, 100), Point_i(50, 50), stdMax, L"Window", WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
 
 	WindowCarcass wndc1;
 	CarcassTemplate<WindowEvents> wnd1(type), wnd2(type);
@@ -770,7 +770,7 @@ void test1() {
 
 //-----------------------------------------------------------------------------
 void test2() {
-	WindowType type(-1, Point_i(100, 100), Point_i(100, 100), Point_i(50, 50), Point_i(-1, -1), L"Window", WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
+	WindowType type(stdIcon, Point_i(100, 100), Point_i(100, 100), Point_i(50, 50), stdMax, L"Window", WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
 
 	WindowCarcass wndc1;
 	CarcassTemplate<WindowEvents> wnd1(type), wnd2(type);
@@ -781,7 +781,7 @@ void test2() {
 
 //-----------------------------------------------------------------------------
 void test3() {
-	WindowType type(-1, Point_i(100, 100), Point_i(100, 100), Point_i(50, 50), Point_i(-1, -1), L"Window", WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
+	WindowType type(stdIcon, Point_i(100, 100), Point_i(100, 100), Point_i(50, 50), stdMax, L"Window", WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
 
 	WindowCarcass wndc1, wndc2;
 	CarcassTemplate<WindowEvents> wnd1(type), wnd2(type), wnd3(type);
@@ -793,7 +793,7 @@ void test3() {
 
 //-----------------------------------------------------------------------------
 void test4() {
-	WindowType type(-1, Point_i(100, 100), Point_i(100, 100), Point_i(50, 50), Point_i(-1, -1), L"Window", WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
+	WindowType type(stdIcon, Point_i(100, 100), Point_i(100, 100), Point_i(50, 50), stdMax, L"Window", WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
 
 	WindowCarcass wndc1, wndc2, wndc3;
 	CarcassTemplate<WindowEvents> wnd1(type), wnd2(type), wnd3(type), wnd4(type);
@@ -807,21 +807,21 @@ void test4() {
 
 //-----------------------------------------------------------------------------
 void test5() {
-	WindowType type1(-1,
+	WindowType type1(stdIcon,
 		Point_i(100, 100),
 		Point_i(100, 100), 
 		Point_i(50, 40),
 		Point_i(200, 150),
 		L"Left Up",
 		WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
-	WindowType type2(-1,
+	WindowType type2(stdIcon,
 		Point_i(100, 100),
 		Point_i(100, 100), 
 		Point_i(50, 50),
 		Point_i(200, 110),
 		L"Left Down",
 		WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
-	WindowType type3(-1,
+	WindowType type3(stdIcon,
 		Point_i(100, 100),
 		Point_i(100, 100), 
 		Point_i(50, 50),
@@ -840,7 +840,7 @@ void test5() {
 
 //-----------------------------------------------------------------------------
 void test6() {
-	WindowType type(-1, Point_i(100, 100), Point_i(100, 100), Point_i(50, 50), Point_i(-1, -1), L"Window", WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
+	WindowType type(stdIcon, Point_i(100, 100), Point_i(100, 100), Point_i(50, 50), stdMax, L"Window", WindowStyle(WINDOW_TOOL | WINDOW_ON_TOP));
 
 	WindowCarcass wndc1, wndc2, wndc3, wndc4, wndc5;
 	CarcassTemplate<WindowEvents> wnd1(type), wnd2(type), wnd3(type), wnd4(type), wnd5(type), wnd6(type);

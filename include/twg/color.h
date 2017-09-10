@@ -9,21 +9,35 @@ namespace twg
 {
 	union ColorUnion;
 
+	/** @defgroup Цвета
+	
+		Написать что используются полупрозрачные цвета и как они работают.
+
+		@{
+	 */
+
+	/** Цвет пикселя в изображении Windows. Содержит 4 байта. Каждый байт - оттенок красного, зеленого, или синего. Порядок расположения байтов: blue, green, red, alpha. */
 	typedef int32u Color_order_bgra_32;
 	typedef Color_order_bgra_32 Color;
 
 	//-------------------------------------------------------------------------
+	/** Возвращает цвет по параметрам красного, зеленого и синего. Альфа-канал всегда равен 255. */
 	Color rgb(const int8u r, 
 			  const int8u g, 
 			  const int8u b);
+	/** Возвращает цвет по параметрам красного, зеленого, синего и альфа-канала. */
 	Color rgba(const int8u r, 
 			   const int8u g, 
 			   const int8u b, 
 			   const int8u a);
 
+	/** Возвращает копию заданного цвета с другим альфа-каналом. */
 	Color setAlpha(Color clr, int8u a);
+	/** Возвращает копию заданного цвета с другим оттенком красного. */
 	Color setRed(Color clr, int8u r);
+	/** Возвращает копию заданного цвета с другим оттенком зеленого. */
 	Color setGreen(Color clr, int8u g);
+	/** Возвращает копию заданного цвета с другим оттенком синего. */
 	Color setBlue(Color clr, int8u b);
 
 	int8u getAlpha(Color clr);
@@ -31,14 +45,19 @@ namespace twg
 	int8u getGreen(Color clr);
 	int8u getBlue(Color clr);
 
+	/** Возвращает какой будет цвет на градиенте двух цветов clr1 и clr2 в позиции pos, которая может меняться от 0 до 1.
+		@note При указании pos больше чем 1, возвращается цвет на 1. Если pos меньше 0, то возвращается цвет на 0.
+	 */
 	Color getColorBetween(double pos, Color clr1,  Color clr2);
 	Color getGrayHue(double hue);
+	/** Возвращает цвет из градиента радуги в положении pos. */
 	Color getRainbow(double pos);
 	Color getGradient(double pos, std::vector<Color> colors);
 	Color getGradient(double pos, 
 					  std::vector<Color> colors, 
 					  std::vector<double> sizes);
 
+	/** Рассчитывает наложение двух полупрозрачных пикселей. */
 	Color computeOverlay(Color upper, Color lower);
 
 	//-------------------------------------------------------------------------
@@ -90,6 +109,8 @@ namespace twg
 		ColorUnion(const Color& color) : color(color) {}
 		ColorUnion(const int8u r, const int8u g, const int8u b, const int8u a) : rgba(r, g, b, a) {}
 	};
+
+	/** @} */
 
 //=============================================================================
 //=============================================================================

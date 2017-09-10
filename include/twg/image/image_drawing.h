@@ -72,13 +72,13 @@ namespace twg
 
 		std::vector<Point_d> array;
 
-		Polygon_d& move(Point_d diff);
-		Polygon_d& rotate(double angle, Point_d center);
-		Polygon_d& scale(Point_d scale);
-		Polygon_d& toBasis(Point_d newOX, Point_d newOY);
-		Polygon_d& fromBasis(Point_d oldOX, Point_d oldOY);
+		Polygon_d& move(const Point_d& diff);
+		Polygon_d& rotate(const double& angle, const Point_d& center);
+		Polygon_d& scale(const Point_d& scale);
+		Polygon_d& toBasis(const Point_d& newOX, const Point_d& newOY);
+		Polygon_d& fromBasis(const Point_d& oldOX, const Point_d& oldOY);
 
-		Polygon_d& flipAxis(Point_d axis); // You can mirror coords by OX(1, 0)
+		Polygon_d& flipAxis(const Point_d& axis); // You can mirror coords by OX(1, 0)
 	};
 
 	Polygon_d computeEllipse(Point_d radius);

@@ -29,8 +29,8 @@ namespace twg
 		void toBasis(SelfConst& x1, SelfConst& y1);		
 		void fromBasis(SelfConst& x1, SelfConst& y1);
 
-		void rotate(ComputeConst& angle, 
-					SelfConst& center = SelfType());
+		SelfConst rotate(ComputeConst& angle, 
+						 SelfConst& center = SelfType());
 
 		ComputeConst computeAngle(SelfConst& a) const;
 		
@@ -115,12 +115,14 @@ void PointBase<T, T1>::fromBasis(SelfConst& x1, SelfConst& y1) {
 
 //-----------------------------------------------------------------------------
 template<class T, class T1> 
-void PointBase<T, T1>::rotate(ComputeConst& angle, 
+const PointBase<T, T1> PointBase<T, T1>::rotate(ComputeConst& angle, 
 					   		  SelfConst& center) {
 	T x1 = x - center.x;
 	T y1 = y - center.y;
 	x = cos(angle)*x1 - sin(angle)*y1 + center.x;
 	y = sin(angle)*x1 + cos(angle)*y1 + center.y;
+	
+	return *this;
 }
 
 //-----------------------------------------------------------------------------

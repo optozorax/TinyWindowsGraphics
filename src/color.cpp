@@ -1,4 +1,5 @@
 #include <twg/color.h>
+#include <math.h>
 
 namespace twg 
 {

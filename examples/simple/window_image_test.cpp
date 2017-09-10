@@ -218,7 +218,7 @@ void redrawWindow(MyWindow& wnd, Point_i size) {
 //-----------------------------------------------------------------------------
 
 int main() {
-	WindowType type(-1, Point_i(100, 100), Point_i(100, 100), Point_i(20, 20), Point_i(5000, 5000), L"WINDOW_IMAGE test.", WINDOW_IMAGE32 | WINDOW_ON_TOP);
+	WindowType type(stdIcon, Point_i(100, 100), Point_i(100, 100), Point_i(20, 20), stdMax, L"WINDOW_IMAGE test.", WINDOW_IMAGE32 | WINDOW_ON_TOP);
 	MyWindow wnd(type);	
 	redrawWindow(wnd, wnd.getClientSize());
 	wnd.waitForClose();

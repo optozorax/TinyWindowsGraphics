@@ -22,7 +22,7 @@ public:
 	bool onKeyboard(KeyType key, bool isDown);
 	bool onResize(Rect rect, SizingType type);
 	bool onMove(Point_i newPos);
-	bool onKillFocus(void);
+	bool onFocus(bool isKilled);
 	bool onMessage(int32u messageNo, void* data);
 };
 
@@ -187,7 +187,7 @@ bool MyWindow::onMove(Point_i newPos) {
 }
 
 //-----------------------------------------------------------------------------
-bool MyWindow::onKillFocus(void) {
+bool MyWindow::onFocus(bool isKilled) {
 	std::wstringstream sout;
 	sout << "Focus killed." << std::endl;
 
@@ -205,17 +205,17 @@ bool MyWindow::onMessage(int32u messageNo, void* data) {
 	return false;
 }
 
-//=============================================================================
-//=============================================================================
-//=============================================================================
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 //int main() {
-	WindowType type(-1,
+	WindowType type(ICON_WARNING,
 		Point_i(100, 0),
 		Point_i(300, 300), 
 		Point_i(100, 100),
-		Point_i(-1, -1),
+		stdMax,
 		L"Test events of WindowEvents class.",
 		WINDOW_STANDART);	
 	MyWindow wnd(type);

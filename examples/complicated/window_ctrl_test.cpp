@@ -36,8 +36,8 @@ protected:
 	virtual bool isInside(Point_i pos) = 0;
 	virtual void move(Point_i diff) = 0;
 
-	virtual bool onRMouse(Point_i pos) {};
-	virtual bool onWheel(Point_i pos, MouseType wheel) {};
+	virtual bool onRMouse(Point_i pos) { return false; };
+	virtual bool onWheel(Point_i pos, MouseType wheel) { return false; };
 
 	virtual void drawDefault(ImageBase* buffer) {};
 	virtual void drawHover(ImageBase* buffer) { drawDefault(buffer); };
@@ -206,15 +206,15 @@ void MovableCtrl::draw(ImageBase* buffer) {
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-extern int32u 			PointCtrl::m_radius(5);
-extern int32u			PointCtrl::m_minRadius(3);
-extern int32u 			PointCtrl::m_maxRadius(30);
+int32u 			PointCtrl::m_radius(5);
+int32u			PointCtrl::m_minRadius(3);
+int32u 			PointCtrl::m_maxRadius(30);
 
-extern ImageDrawing_aa  PointCtrl::m_imgDefault(Point_i(10, 10));
-extern ImageDrawing_aa  PointCtrl::m_imgHover(Point_i(10, 10));
-extern ImageDrawing_aa  PointCtrl::m_imgMove(Point_i(10, 10));
-extern bool 			PointCtrl::m_drawed(false);
-extern bool 			PointCtrl::m_resized(false);
+ImageDrawing_aa  PointCtrl::m_imgDefault(Point_i(10, 10));
+ImageDrawing_aa  PointCtrl::m_imgHover(Point_i(10, 10));
+ImageDrawing_aa  PointCtrl::m_imgMove(Point_i(10, 10));
+bool 			PointCtrl::m_drawed(false);
+bool 			PointCtrl::m_resized(false);
 
 //-----------------------------------------------------------------------------
 void PointCtrl::redrawBuffers() {
@@ -340,11 +340,11 @@ void MyMenu::onClick(int32u id) {
 //-----------------------------------------------------------------------------
 
 int main() {
-	WindowType type(-1,
+	WindowType type(stdIcon,
 		Point_i(100, 0),
 		Point_i(300, 300), 
-		Point_i(-1, -1),
-		Point_i(-1, -1),
+		stdMin,
+		stdMax,
 		L"There are many points.",
 		WINDOW_STANDART);	
 	WindowCtrl wnd(type);
@@ -354,7 +354,7 @@ int main() {
 	menu->onClick(2);
 
 	// Make points
-	for (int i = 0; i < 500; ++i)
+	for (int i = 0; i < 5000; ++i)
 		menu->onClick(1);
 
 	wnd.redraw();

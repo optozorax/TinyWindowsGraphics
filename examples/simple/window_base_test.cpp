@@ -8,8 +8,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	WindowType type(-1,
 					Point_i(100, 0),
 					Point_i(300, 50), 
-					Point_i(-1, -1),
-					Point_i(-1, -1),
+					stdMin,
+					stdMax,
 					L"",
 					WINDOW_STANDART);	
 
@@ -37,8 +37,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	
 	type.style = WINDOW_NO_BORDER;
 	type.caption = L"Window no border";
-	type.maxSize = Point_i(-1, -1);
-	type.minSize = Point_i(-1, -1);
+	type.maxSize = stdMin;
+	type.minSize = stdMax;
 	type.pos += Point_i(0, 70);
 	WindowBase wnd5(type);
 
@@ -53,7 +53,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		Point_i pos = lastPos;
 		pos.rotate(i/180.0 * pi, center);
 		wnd2.setPos(pos);
-		wnd3.setCaption(str2wstr(std::to_string(i)) + L" degrees of rotate");
+		std::string str = std::to_string(i);
+		wnd3.setCaption(std::wstring(str.begin(), str.end()) + L" degrees of rotate");
 		wnd4.setWindowSize(Point_i(i/360.0 * 300, 50));
 		wnd5.setStyle(WindowStyle(k % (WINDOW_IMAGE32)));
 

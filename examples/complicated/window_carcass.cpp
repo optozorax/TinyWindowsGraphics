@@ -70,14 +70,14 @@ CtrlWindow::CtrlWindow(WindowType type, EventsBase* parent) : WindowEvents(type,
 bool CtrlWindow::onResize(Rect rect, SizingType type) {
 	WhenResize data = {this, rect, type};
 	sendMessageUp(WINDOW_RESIZE, &data);
-	WindowEvents::onResize(rect, type);
+	return WindowEvents::onResize(rect, type);
 }
 
 //-----------------------------------------------------------------------------
 bool CtrlWindow::onMove(Point_i newPos) {
 	WhenMove data = {this, newPos};
 	sendMessageUp(WINDOW_MOVE, &data);
-	WindowEvents::onMove(newPos);
+	return WindowEvents::onMove(newPos);
 }
 
 //-----------------------------------------------------------------------------
@@ -92,7 +92,7 @@ void* WindowCarcass::sendMessageUp(int32u messageNo, void* data) {
 		if (messageNo == WINDOW_CREATE) {
 			// Запомнить размеры и положение окна
 			static int32u count = 0; count++;
-			WindowEvents* wnd = data;
+			WindowEvents* wnd = (WindowEvents*)data;
 			Point_i pos = wnd->getPos();
 			Point_i size = wnd->getWindowSize();
 			m_positions[wnd] = pos;
@@ -107,7 +107,7 @@ void* WindowCarcass::sendMessageUp(int32u messageNo, void* data) {
 			max.y = TWG_max(pos.y + size.y, max.y);
 		} else if (messageNo == WINDOW_RESIZE) {
 			// Ресайзить и перемещать все окна в соответствии
-			WhenResize* data1 = data;
+			WhenResize* data1 = (WhenResize*)data;
 			WindowEvents* wnd = data1->pointer;
 			Point_d A = m_positions[wnd];
 			Point_d B = A + m_sizes[wnd];
@@ -154,7 +154,7 @@ void* WindowCarcass::sendMessageUp(int32u messageNo, void* data) {
 			min = min1;
 		} else if (messageNo == WINDOW_MOVE) {
 			// Перемещать все окна в соответствии
-			WhenMove* data1 = data;
+			WhenMove* data1 = (WhenMove*)data;
 			WindowEvents* wnd = data1->pointer;
 			Point_i diff = data1->newPos - m_positions[wnd];
 			for (auto& i : array)
@@ -173,18 +173,18 @@ void* WindowCarcass::sendMessageUp(int32u messageNo, void* data) {
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-int main() {
+void test1() {
 	WindowCarcass carcass;
-	WindowType type(-1,
+	WindowType type(stdIcon,
 		Point_i(100, 100),
 		Point_i(200, 100), 
-		Point_i(-1, -1),
-		Point_i(-1, -1),
+		stdMin,
+		stdMax,
 		L"Window.",
 		WINDOW_TOOL);
 
-	const int32u xOffset = 2;
-	const int32u yOffset = 2;
+	const int32u xOffset = 0;
+	const int32u yOffset = 0;
 	type.pos = Point_i(100, 100);
 	CtrlWindow wnd1(type, &carcass);
 	type.pos = type.pos + Point_i(type.size.x + xOffset, 0);
@@ -203,4 +203,74 @@ int main() {
 	wnd2.waitForClose();
 	wnd3.waitForClose();
 	wnd4.waitForClose();
+}
+
+void test2() {
+	WindowCarcass carcass;
+	WindowType type(stdIcon,
+		Point_i(100, 100),
+		Point_i(200, 100), 
+		stdMin,
+		stdMax,
+		L"Window.",
+		WINDOW_TOOL);
+	
+	type.pos = Point_i(100, 100);
+	CtrlWindow wnd1(type, &carcass);
+	type.pos = type.pos + Point_i(type.size.x, 0);
+	CtrlWindow wnd2(type, &carcass);
+	type.pos = type.pos + Point_i(-type.size.x, type.size.y);
+	type.size.x = 400;
+	CtrlWindow wnd3(type, &carcass);
+
+	carcass.array.push_back(&wnd1);
+	carcass.array.push_back(&wnd2);
+	carcass.array.push_back(&wnd3);
+
+	wnd1.waitForClose();
+	wnd2.waitForClose();
+	wnd3.waitForClose();
+}
+
+void test3() {
+	WindowCarcass carcass;
+	WindowType type(stdIcon,
+		Point_i(100, 100),
+		Point_i(100, 100), 
+		stdMin,
+		stdMax,
+		L"Window.",
+		WINDOW_TOOL);
+
+	type.pos = Point_i(100, 100);
+	CtrlWindow wnd1(type, &carcass);
+	type.pos = type.pos + Point_i(50, 50);
+	CtrlWindow wnd2(type, &carcass);
+	type.pos = type.pos + Point_i(50, 50);
+	CtrlWindow wnd3(type, &carcass);
+
+	type.size = Point_i(50, 50);
+
+	type.pos = Point_i(250, 100);
+	CtrlWindow wnd4(type, &carcass);
+
+	type.pos = Point_i(100, 250);
+	CtrlWindow wnd5(type, &carcass);
+
+	carcass.array.push_back(&wnd1);
+	carcass.array.push_back(&wnd2);
+	carcass.array.push_back(&wnd3);
+	carcass.array.push_back(&wnd4);
+	carcass.array.push_back(&wnd5);
+
+	wnd1.waitForClose();
+	wnd2.waitForClose();
+	wnd3.waitForClose();
+	wnd4.waitForClose();
+	wnd5.waitForClose();
+}
+
+//int main() {
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	test3();
 }

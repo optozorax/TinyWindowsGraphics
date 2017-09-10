@@ -4,21 +4,21 @@ namespace twg
 {
 
 //-----------------------------------------------------------------------------
-Polygon_d& Polygon_d::move(Point_d diff) {
+Polygon_d& Polygon_d::move(const Point_d& diff) {
 	for (auto& i : array)
 		i += diff;
 	return *this;
 }
 
 //-----------------------------------------------------------------------------
-Polygon_d& Polygon_d::rotate(double angle, Point_d center) {
+Polygon_d& Polygon_d::rotate(const double& angle, const Point_d& center) {
 	for (auto& i : array)
 		i.rotate(angle, center);
 	return *this;
 }
 
 //-----------------------------------------------------------------------------
-Polygon_d& Polygon_d::scale(Point_d scale) {
+Polygon_d& Polygon_d::scale(const Point_d& scale) {
 	for (auto& i: array) {
 		i.x *= scale.x;
 		i.y *= scale.y;
@@ -27,21 +27,21 @@ Polygon_d& Polygon_d::scale(Point_d scale) {
 }
 
 //-----------------------------------------------------------------------------
-Polygon_d& Polygon_d::toBasis(Point_d newOX, Point_d newOY) {
+Polygon_d& Polygon_d::toBasis(const Point_d& newOX, const Point_d& newOY) {
 	for (auto& i : array)
 		i.toBasis(newOX, newOY);
 	return *this;
 }
 
 //-----------------------------------------------------------------------------
-Polygon_d& Polygon_d::fromBasis(Point_d oldOX, Point_d oldOY) {
+Polygon_d& Polygon_d::fromBasis(const Point_d& oldOX, const Point_d& oldOY) {
 	for (auto& i : array)
 		i.fromBasis(oldOX, oldOY);
 	return *this;
 }
 
 //-----------------------------------------------------------------------------
-Polygon_d& Polygon_d::flipAxis(Point_d axis) {
+Polygon_d& Polygon_d::flipAxis(const Point_d& axis) {
 	for (auto& i : array) {
 		double t = (axis.x*i.x + axis.y*i.y)/(axis.x*axis.x + axis.y*axis.y);
 		i = axis*2.0*t - i;

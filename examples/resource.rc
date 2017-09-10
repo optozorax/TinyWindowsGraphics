@@ -1,8 +1,0 @@
-#include <windows.h>
-
-MAINICON ICON "res/my.ico"
-1 ICON "res/Icon_78.ico"
-2 ICON "res/Icon_84.ico"
-3 ICON "res/Icon_96.ico"
-4 ICON "res/Icon_855.ico"
-5 ICON "res/Icon_1272.ico"
