@@ -5,11 +5,11 @@
 #include "twg/window/window_ctrl.h"
 #include "twg/image/image_drawing.h"
 #include "twg/ctrl/menu.h"
-#include <twg/ctrl/movable_ctrl.h>
 
 using namespace twg;
 
 class MyMenu;
+class MovableCtrl;
 class PointCtrl;
 
 //-----------------------------------------------------------------------------
@@ -18,6 +18,41 @@ class MyMenu : public StaticMenu
 public:
 	MyMenu(std::wstring str, EventsBase* parent) : StaticMenu(str, parent) {}
 	void onClick(int32u id);
+};
+
+//-----------------------------------------------------------------------------
+class MovableCtrl : public CtrlBase 
+{
+public:
+	MovableCtrl(EventsBase* parent) : 
+		CtrlBase(parent), 
+		m_current(STATE_DEFAULT) {}
+
+	//-------------------------------------------------------------------------
+	bool onMouse(Point_i pos, MouseType type) final;
+	bool onKeyboard(KeyType key, bool isDown) final;
+	void draw(ImageBase* buffer) final;
+protected:
+	virtual bool isInside(Point_i pos) = 0;
+	virtual void move(Point_i diff) = 0;
+
+	virtual bool onRMouse(Point_i pos) { return false; };
+	virtual bool onWheel(Point_i pos, MouseType wheel) { return false; };
+
+	virtual void drawDefault(ImageBase* buffer) {};
+	virtual void drawHover(ImageBase* buffer) { drawDefault(buffer); };
+	virtual void drawWhenMove(ImageBase* buffer) { drawDefault(buffer); };
+
+private:
+	enum MyState
+	{
+		STATE_DEFAULT,
+		STATE_MOVE,
+		STATE_HOVER
+	};
+
+	MyState			m_current;
+	Point_i 		m_lastPos;
 };
 
 //-----------------------------------------------------------------------------
@@ -62,6 +97,113 @@ private:
 //=============================================================================
 //=============================================================================
 //=============================================================================
+
+//-----------------------------------------------------------------------------
+bool MovableCtrl::onMouse(Point_i pos, MouseType type) 
+{
+	bool isHandle = false;
+	bool on = isInside(pos);
+
+	if (m_current == STATE_HOVER) {
+		switch (type) {
+			case MOUSE_R_UP:
+				isHandle |= onRMouse(pos);
+				break;
+			case MOUSE_WHEEL_UP:
+			case MOUSE_WHEEL_DOWN:
+				isHandle |= onWheel(pos, type);
+				break;
+		}
+	}
+
+	if (m_current == STATE_MOVE && type == MOUSE_MOVE) {
+		move(pos-m_lastPos);
+		m_lastPos = pos;
+		isHandle |= true;
+	}
+
+	switch (type) {
+		case MOUSE_MOVE:
+			if (on && !(m_current == STATE_MOVE)) {
+				m_current = STATE_HOVER;
+				isHandle |= true;
+			}
+			if (!on && (m_current != STATE_MOVE) && (m_current != STATE_DEFAULT)) {
+				m_current = STATE_DEFAULT;
+				isHandle |= true;
+			}
+			break;
+		case MOUSE_L_DOWN:
+			if (on) {
+				m_lastPos = pos;
+				m_current = STATE_MOVE;
+				isHandle |= true;
+			}
+			break;
+		case MOUSE_L_UP:
+			if (m_current == STATE_MOVE) {
+				m_current = STATE_HOVER;
+				isHandle |= true;
+			}
+			break;
+	}
+	
+	switch (m_current) {
+		case STATE_HOVER:
+			setCursor(CURSOR_CLICK);
+			break;
+		case STATE_MOVE:
+			setCursor(CURSOR_CLICK);
+			break;
+	}
+
+	return isHandle;
+};
+
+//-----------------------------------------------------------------------------
+bool MovableCtrl::onKeyboard(KeyType key, bool isDown) 
+{
+	if (isDown && (m_current == STATE_MOVE || m_current == STATE_HOVER))
+	switch (key) {
+		case VK_UP:
+			move(Point_i(0, -1));
+			m_lastPos += Point_i(0, -1);
+			return true;
+		case VK_DOWN:
+			move(Point_i(0, 1));
+			m_lastPos += Point_i(0, 1);
+			return true;
+		case VK_LEFT:
+			move(Point_i(-1, 0));
+			m_lastPos += Point_i(-1, 0);
+			return true;
+		case VK_RIGHT:
+			move(Point_i(1, 0));
+			m_lastPos += Point_i(1, 0);
+			return true;
+	}
+
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+void MovableCtrl::draw(ImageBase* buffer) {
+	switch (m_current) {
+		case STATE_DEFAULT:
+			drawDefault(buffer);
+			break;
+		case STATE_MOVE:
+			drawWhenMove(buffer);
+			break;
+		case STATE_HOVER:
+			drawHover(buffer);
+			break;
+	}
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 int32u 			PointCtrl::m_radius(5);
