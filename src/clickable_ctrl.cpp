@@ -1,10 +1,10 @@
-#include <twg/ctrl/movable_ctrl.h>
+#include <twg/ctrl/clickable_ctrl.h>
 
 namespace twg
 {
 
 //-----------------------------------------------------------------------------
-MovableCtrl::MovableCtrl(EventsBase* parent) : 
+ClickableCtrl::ClickableCtrl(EventsBase* parent) : 
 	CtrlBase(parent), 
 	m_current(STATE_DEFAULT) {
 	WindowCtrl** wnd = (WindowCtrl**)sendMessageUp(WINDOW_GET_POINTER, nullptr);
@@ -13,7 +13,7 @@ MovableCtrl::MovableCtrl(EventsBase* parent) :
 }
 
 //-----------------------------------------------------------------------------
-bool MovableCtrl::onMouse(Point_i pos, MouseType type) 
+bool ClickableCtrl::onMouse(Point_i pos, MouseType type) 
 {
 	bool isHandle = false;
 	bool on = isInside(pos);
@@ -30,33 +30,31 @@ bool MovableCtrl::onMouse(Point_i pos, MouseType type)
 		}
 	}
 
-	if (m_current == STATE_MOVE && type == MOUSE_MOVE) {
-		move(pos-m_lastPos);
-		m_lastPos = pos;
-		isHandle |= true;
-	}
-
 	switch (type) {
 		case MOUSE_MOVE:
-			if (on && !(m_current == STATE_MOVE)) {
+			if (on && m_current != STATE_HOVER && m_current != STATE_CLICK) {
 				m_current = STATE_HOVER;
 				m_wnd->worthRedraw();
 			}
-			if (!on && (m_current != STATE_MOVE) && (m_current != STATE_DEFAULT)) {
+			if (!on && m_current != STATE_DEFAULT) {
 				m_current = STATE_DEFAULT;
 				m_wnd->worthRedraw();
 			}
 			break;
+		case MOUSE_L_DBL:
 		case MOUSE_L_DOWN:
 			if (on) {
-				m_lastPos = pos;
-				m_current = STATE_MOVE;
+				m_current = STATE_CLICK;
 				isHandle |= true;
 			}
 			break;
 		case MOUSE_L_UP:
-			if (m_current == STATE_MOVE) {
-				m_current = STATE_HOVER;
+			if (m_current == STATE_CLICK) {
+				if (on)
+					m_current = STATE_HOVER;
+				else
+					m_current = STATE_DEFAULT;
+				onClick();
 				isHandle |= true;
 			}
 			break;
@@ -64,9 +62,7 @@ bool MovableCtrl::onMouse(Point_i pos, MouseType type)
 	
 	switch (m_current) {
 		case STATE_HOVER:
-			setCursor(CURSOR_CLICK);
-			break;
-		case STATE_MOVE:
+		case STATE_CLICK:
 			setCursor(CURSOR_CLICK);
 			break;
 	}
@@ -75,39 +71,13 @@ bool MovableCtrl::onMouse(Point_i pos, MouseType type)
 };
 
 //-----------------------------------------------------------------------------
-bool MovableCtrl::onKeyboard(KeyType key, bool isDown) 
-{
-	if (isDown && (m_current == STATE_MOVE || m_current == STATE_HOVER))
-	switch (key) {
-		case VK_UP:
-			move(Point_i(0, -1));
-			m_lastPos += Point_i(0, -1);
-			return true;
-		case VK_DOWN:
-			move(Point_i(0, 1));
-			m_lastPos += Point_i(0, 1);
-			return true;
-		case VK_LEFT:
-			move(Point_i(-1, 0));
-			m_lastPos += Point_i(-1, 0);
-			return true;
-		case VK_RIGHT:
-			move(Point_i(1, 0));
-			m_lastPos += Point_i(1, 0);
-			return true;
-	}
-
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-void MovableCtrl::draw(ImageBase* buffer) {
+void ClickableCtrl::draw(ImageBase* buffer) {
 	switch (m_current) {
 		case STATE_DEFAULT:
 			drawDefault(buffer);
 			break;
-		case STATE_MOVE:
-			drawWhenMove(buffer);
+		case STATE_CLICK:
+			drawWhenClick(buffer);
 			break;
 		case STATE_HOVER:
 			drawHover(buffer);
@@ -116,8 +86,8 @@ void MovableCtrl::draw(ImageBase* buffer) {
 }
 
 //-----------------------------------------------------------------------------
-bool MovableCtrl::onFocus(bool isKilled) {
-	if (isKilled)  {
+bool ClickableCtrl::onFocus(bool isKilled) {
+	if (isKilled) { 
 		m_current = STATE_DEFAULT;
 		m_wnd->worthRedraw();
 	}
