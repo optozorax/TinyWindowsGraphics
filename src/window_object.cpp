@@ -51,7 +51,7 @@ DWORD WINAPI makeWindow(LPVOID data) {
 
 //-----------------------------------------------------------------------------
 void WindowObject::onStart() {
-	CreateThread(NULL, 0, &makeWindow, this, 0, NULL);
+	m_thread = CreateThread(NULL, 0, &makeWindow, this, 0, NULL);
 	while (!waitForCreate) {
 		sleep(1);
 	}
@@ -68,6 +68,11 @@ WindowObject::~WindowObject() {
 //-----------------------------------------------------------------------------
 HWND WindowObject::getHwnd(void) {
 	return m_hwnd;
+}
+
+//-----------------------------------------------------------------------------
+HANDLE WindowObject::getThread(void) {
+	return m_thread;
 }
 
 //-----------------------------------------------------------------------------

@@ -34,10 +34,15 @@ namespace twg
 	class WindowObject
 	{
 	public:
+		WindowObject() : m_initFinish(false) {}
 		~WindowObject();
 
 		/** @return HWND данного окна. */
 		HWND getHwnd(void);
+		/** @return декскриптор потока обработки сообщений данного окна.
+			@note если поставите этот поток на паузу, то будет возникать очень много проблем и багов. Например, нельзя будет узнать размер окна и подобное. Поставится на паузу так же обработка сообщений окна и все, что в них выполнялось.
+		 */
+		HANDLE getThread(void);
 		/** Ожидает закрытия окна. */
 		void waitForClose(void);
 		/** @return true, если окно закрыто, иначе false. */
@@ -48,6 +53,8 @@ namespace twg
 	protected:
 		HWND 	m_hwnd;
 		HDC 	m_hdc;
+		HANDLE	m_thread;
+		bool	m_initFinish;
 
 		/** Потомок обязан вызвать эту функцию в своем конструкторе. */
 		void onStart();

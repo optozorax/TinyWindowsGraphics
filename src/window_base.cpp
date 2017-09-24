@@ -13,6 +13,7 @@ WindowBase::WindowBase(WindowType type) :
 	m_isResized = false;
 	m_nowRect = nullptr;
 	onStart();
+	m_initFinish = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -316,7 +317,11 @@ LRESULT WindowBase::wndProc(HWND hwnd,
 			} break;
 	}
 
-	LRESULT returned = wndProcNext(hwnd, msg, wParam, lParam);
+	LRESULT returned;
+	if (m_initFinish)
+		returned = wndProcNext(hwnd, msg, wParam, lParam);
+	else
+		returned = DefWindowProc(hwnd, msg, wParam, lParam);
 
 	m_isResized = false;
 
