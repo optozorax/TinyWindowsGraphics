@@ -1,3 +1,4 @@
+#include <fstream>
 #include <twg/image.h>
 #include <twg/image/image_drawing.h>
 
@@ -35,16 +36,36 @@ void drawFractal(ImageDrawing_aa& img,
 	}
 }
 
-int main() {
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+//int main() {
+	using namespace std;
+	int n;
 	Polygon_d poly;
-	poly.array.push_back(Point_d(-1, 0));
-	poly.array.push_back(Point_d(0, 1));
-	poly.array.push_back(Point_d(1, 0));
-	//poly.array.push_back(Point_d(2, 0));
-	poly.scale(Point_d(400, 400));
-	poly.move(Point_d(1920/2, 230));
+	Point_i size;
 
-	ImageDrawing_aa img(Point_i(1920, 1080));
+	ifstream fin("line.txt");
+	if (fin.is_open()) {
+		fin >> size.x >> size.y;
+		fin >> n;
+		Point_i x;
+		for (int i = 0; i < n; ++i) {
+			fin >> x.x >> x.y;
+			poly.array.push_back(x);
+		}
+		fin.close();
+	} else {
+		poly.array.push_back(Point_d(-1, 0));
+		poly.array.push_back(Point_d(0, 1));
+		poly.array.push_back(Point_d(1, 0));
+		//poly.array.push_back(Point_d(2, 0));
+		poly.scale(Point_d(400, 400));
+		poly.move(Point_d(1920/2, 230));
+
+		n = 3;
+		size = Point_i(1920, 1080);
+	}
+
+	ImageDrawing_aa img(size);
 	img.clear(Black);
 
 	double length = (poly.array[1]-poly.array[0]).getLength();
