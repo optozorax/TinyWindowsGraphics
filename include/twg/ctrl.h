@@ -36,7 +36,7 @@ namespace twg
 	{
 	public:
 		CtrlStorage(EventsBase* parent) : CtrlBase(parent), OMFOC(false), m_messageDepth(0) {}
-		~CtrlStorage() {}
+		~CtrlStorage();
 
 		int32u getId(CtrlBase* ctrl);
 		int32u getPos(CtrlBase* ctrl);
@@ -69,6 +69,7 @@ namespace twg
 		};
 
 		std::vector<CtrlBase*>	m_toDelete;
+		std::vector<CtrlBase*>	m_toAdd;
 		IdDistributor			m_distributor;
 		int32u 					m_messageDepth;
 

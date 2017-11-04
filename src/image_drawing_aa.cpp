@@ -117,6 +117,7 @@ TextStyle ImageDrawing_aa::getTextStyle(void) {
 
 //-----------------------------------------------------------------------------
 Point_d ImageDrawing_aa::getTextSize(std::wstring text) {
+	text += L"\n";
 	while (text.find(L"\t") != std::string::npos)
 		text.replace(text.find(L"\t"), 1, L"        ");
 	
@@ -125,9 +126,9 @@ Point_d ImageDrawing_aa::getTextSize(std::wstring text) {
 	Point_i x(0, 0);
 
 	do {
-		//first = text.substr(0, text.find("\n"));
+		first = text.substr(0, text.find(L'\n'));
 		GetTextExtentPoint32W(fEng.getHdc(), first.c_str(), first.size(), sz);
-		x = Point_i(TWG_max(x.x, sz->cx), TWG_max(x.y, sz->cy));
+		x = Point_i(TWG_max(x.x, sz->cx), x.y + sz->cy);
 		text.erase(0, first.size()+1);
 	} while (text.size() != 0);
 
@@ -209,8 +210,8 @@ void ImageDrawing_aa::drawText(Point_d pos, std::wstring text) {
 			fMan.init_embedded_adaptors(glyph, x, y);
 
 			if(glyph->data_type == agg::glyph_data_outline) {
-				if (*p == L'\n') { 
-					y += getTextSize(L"\n").y;
+				if (*p == '\n') { 
+					y += getTextSize(L"|").y;
 					x = pos.x;
 					p++;
 					continue;

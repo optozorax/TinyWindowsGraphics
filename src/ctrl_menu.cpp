@@ -159,17 +159,19 @@ void MenuParser::parseMenu(std::wstring str, HMENU menu) {
 
 	bool noRight = posRight == std::wstring::npos;
 	bool noUp = posUp == std::wstring::npos;
-	if (noRight && noUp) {
-		parseMenuItem(str, menu);
-	} else if (noRight && !noUp) {
-		parseMenuNoRight(str, menu);
-	} else if (!noRight && noUp) {
-		parseMenuNoUp(str, menu);
-	}  else {
-		if (posUp < posRight)
+	if (!str.empty()) {
+		if (noRight && noUp) {
+			parseMenuItem(str, menu);
+		} else if (noRight && !noUp) {
 			parseMenuNoRight(str, menu);
-		else
+		} else if (!noRight && noUp) {
 			parseMenuNoUp(str, menu);
+		}  else {
+			if (posUp < posRight)
+				parseMenuNoRight(str, menu);
+			else
+				parseMenuNoUp(str, menu);
+		}
 	}
 }
 

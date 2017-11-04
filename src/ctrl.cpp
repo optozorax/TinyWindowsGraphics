@@ -18,6 +18,12 @@ CtrlBase::CtrlBase(EventsBase* parent) : EventsHandler(parent), m_storage(nullpt
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
+CtrlStorage::~CtrlStorage() {
+	for (int i = 0; i < array.size(); ++i)
+		delete array[i];
+}
+
+//-----------------------------------------------------------------------------
 int32u CtrlStorage::IdDistributor::getId(void* pointer) {
 	// Находим, есть ли указатель в массиве
 	for (auto& i : m_ids)
@@ -103,20 +109,20 @@ void CtrlStorage::draw(ImageBase* buffer) {
 template<class Function>
 bool CtrlStorage::sendMessage(Function f) {
 	/* Это функция, которая посылает всем контролам какое-то сообщение, заданное функцией f. Она написана таким образом, чтобы учесть случаи, когда массив контролов модифицируется во время вызова сообщения. m_messageDepth нужно для того, чтобы контролы удалялись только к полному выходу из отправки сообщений. Иначе может случиться так, что на глубине, например, 2, мы удалили почти весь массив контролов, и когда будет на глубине 1, то мы будем обращаться к указателям на эти удаленные контролы и произойдет ошибка сегментации. */
-	m_messageDepth++;
-	std::vector<CtrlBase*> arrayCopy(array.begin(), array.end());
+	const std::vector<CtrlBase*> arrayCopy(array.begin(), array.end());
 	bool isOneTrue = false;
+
+	m_messageDepth++;
 	for (auto& i : arrayCopy) {
 		bool returned = f(i);
 		isOneTrue |= returned;
-		if (returned && OMFOC) {
-			m_messageDepth--;
-			if (m_messageDepth == 0) deleteCtrls();
-			return true;
-		}
+		if (returned && OMFOC)
+			break;
 	}
 	m_messageDepth--;
-	if (m_messageDepth == 0) deleteCtrls();
+
+	if (m_messageDepth == 0) 
+		deleteCtrls();
 	return isOneTrue;
 }
 

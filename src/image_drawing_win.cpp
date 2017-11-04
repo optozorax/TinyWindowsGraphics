@@ -129,7 +129,7 @@ Point_d ImageDrawing_win::getTextSize(std::wstring text) {
 	do {
 		first = text.substr(0, text.find(L"\n"));
 		GetTextExtentPoint32(getHdc(), first.c_str(), first.size(), sz);
-		x = Point_i(TWG_max(x.x, sz->cx), TWG_max(x.y, sz->cy));
+		x = Point_i(TWG_max(x.x, sz->cx), x.y + sz->cy);
 		text.erase(0, first.size()+1);
 	} while (text.size() != 0);
 
@@ -154,11 +154,12 @@ void ImageDrawing_win::drawPolygon(Polygon_d& points) {
 //-----------------------------------------------------------------------------
 void ImageDrawing_win::drawPolyline(Polygon_d& points, bool isRoundJoin) {
 	std::vector<Point_d> ps = points.array;
-	POINT *mas1 = new POINT[ps.size()];
+	POINT *mas1 = new POINT[ps.size() + 1];
 	for (int i = 0; i < ps.size(); i++) {
 		mas1[i] = {(int32)(ps[i].x), (int32)(ps[i].y)};
 	}
-	Polyline(m_hdc, mas1, ps.size());
+	mas1[ps.size()] = {(int32)(ps[0].x), (int32)(ps[0].y)};
+	Polyline(m_hdc, mas1, ps.size() + 1);
 	delete mas1;
 }
 

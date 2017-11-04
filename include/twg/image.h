@@ -62,7 +62,10 @@ namespace twg
 		void clear(Color bk = White);
 		
 		Color& getPixel(const Point_i& pos);
+		const Color& getPixel(const Point_i& pos) const;
+
 		Color& operator[](const Point_i& pos);
+		const Color& operator[](const Point_i& pos) const;
 	protected:
 		ImageBase* 	m_assigned;
 		Color*		m_buf;
@@ -108,6 +111,20 @@ inline Color& ImageBase::getPixel(const Point_i& pos) {
 
 //-----------------------------------------------------------------------------
 inline Color& ImageBase::operator[](const Point_i& pos) {
+	return m_buf[pos.x + m_width * pos.y];
+}
+
+//-----------------------------------------------------------------------------
+inline const Color& ImageBase::getPixel(const Point_i& pos) const {
+	if (pos.x > m_width || pos.x < 0 || pos.y > m_height || pos.y < 0)
+		// Вызвать исключение
+		return *m_buf;
+	else
+		return m_buf[pos.x + m_width * pos.y];
+}
+
+//-----------------------------------------------------------------------------
+inline const Color& ImageBase::operator[](const Point_i& pos) const {
 	return m_buf[pos.x + m_width * pos.y];
 }
 
