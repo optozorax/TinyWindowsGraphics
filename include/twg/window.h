@@ -35,7 +35,7 @@ namespace twg
 	{
 	public:
 		WindowObject() : m_initFinish(false) {}
-		~WindowObject();
+		virtual ~WindowObject();
 
 		/** @return HWND данного окна. */
 		HWND getHwnd(void);
@@ -81,7 +81,7 @@ namespace twg
 		/** Создает окно, все его параметры задаются в WindowType. Окно существует пока существует объект. */
 		WindowBase(WindowType type);
 		/** При вызове деструктора, окно уничтожается. */
-		~WindowBase();
+		virtual ~WindowBase();
 
 		/** @return Rect текущего окна. См. \ref Rect. */
 		Rect 		 getRect(void);

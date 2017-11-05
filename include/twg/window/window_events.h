@@ -21,6 +21,8 @@ namespace twg
 		WindowEvents(WindowType type, EventsBase* parent = nullptr) : 
 			WindowBase(type), 
 			CtrlBase(parent) {}
+
+		virtual ~WindowEvents() {}
 	protected:
 		LRESULT wndProcNext(HWND hwnd, 
 							UINT msg,
