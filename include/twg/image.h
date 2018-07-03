@@ -30,14 +30,15 @@ namespace twg
 		virtual Point_i size(void) const;
 
 		void copyTo(ImageWin *dst, 
-					Point_i dstStart, 
+					Point_i dstStart,  
 					Point_i srcStart,
 					Point_i srcSize) const;
 
 		void drawTo(ImageWin* dst, 
-					Point_i dstStart, 
+					Point_i dstStart,
 					Point_i srcStart,
-					Point_i srcSize) const;
+					Point_i srcSize,
+					Point_i dstSize) const;
 	protected:
 		HDC		m_hdc;
 	};

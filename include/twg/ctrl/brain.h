@@ -1,9 +1,9 @@
-#ifndef TWG_MOVABLE_CTRL_INCLUDED
-#define TWG_MOVABLE_CTRL_INCLUDED
+#ifndef TWG_BRAIN_CTRL_INCLUDED
+#define TWG_BRAIN_CTRL_INCLUDED
 
 #include <string>
-#include "twg/events.h"
-#include "twg/ctrl.h"
+#include <twg/events.h>
+#include <twg/ctrl.h>
 #include <twg/window/window_ctrl.h>
 
 namespace twg

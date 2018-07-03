@@ -33,7 +33,8 @@ void ImageWin::copyTo(ImageWin* dst,
 void ImageWin::drawTo(ImageWin* dst, 
 					  Point_i dstStart, 
 					  Point_i srcStart,
-					  Point_i srcSize) const {
+					  Point_i srcSize,
+					  Point_i dstSize) const {
 	BLENDFUNCTION blendFn = {};
 	blendFn.BlendOp = AC_SRC_OVER;
 	blendFn.BlendFlags = 0;
@@ -42,7 +43,7 @@ void ImageWin::drawTo(ImageWin* dst,
 
 	AlphaBlend(dst->m_hdc, 
 			   dstStart.x, dstStart.y,
-			   srcSize.x, srcSize.y,
+			   dstSize.x, dstSize.y,
 			   m_hdc,
 			   srcStart.x, srcStart.y,
 			   srcSize.x, srcSize.y,
