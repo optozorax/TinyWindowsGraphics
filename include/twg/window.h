@@ -79,7 +79,7 @@ namespace twg
 	{
 	public:
 		/** Создает окно, все его параметры задаются в WindowType. Окно существует пока существует объект. */
-		WindowBase(WindowType type);
+		WindowBase(WindowType type, bool isInitFinish = true);
 		/** При вызове деструктора, окно уничтожается. */
 		virtual ~WindowBase();
 

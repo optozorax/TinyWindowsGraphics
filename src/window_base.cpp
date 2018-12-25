@@ -6,14 +6,14 @@ namespace twg
 {
 
 //-----------------------------------------------------------------------------
-WindowBase::WindowBase(WindowType type) : 
+WindowBase::WindowBase(WindowType type, bool isInitFinish) : 
 	m_type(new WindowType(type)), 
 	m_minSize(type.minSize),
 	m_maxSize(type.maxSize) {
 	m_isResized = false;
 	m_nowRect = nullptr;
 	onStart();
-	m_initFinish = true;
+	m_initFinish = isInitFinish;
 }
 
 //-----------------------------------------------------------------------------

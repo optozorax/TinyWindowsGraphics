@@ -18,9 +18,11 @@ namespace twg
 	class WindowEvents : public WindowBase, public CtrlBase
 	{
 	public:
-		WindowEvents(WindowType type, EventsBase* parent = nullptr) : 
-			WindowBase(type), 
-			CtrlBase(parent) {}
+		WindowEvents(WindowType type, EventsBase* parent = nullptr, bool isInitFinish = true) : 
+			WindowBase(type, false), 
+			CtrlBase(parent) {
+			m_initFinish = isInitFinish;
+		}
 
 		virtual ~WindowEvents() {}
 	protected:

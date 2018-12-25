@@ -28,10 +28,12 @@ namespace twg
 	{
 	public:
 		WindowCtrl(WindowType type, EventsBase* parent = nullptr) : 
-			WindowEvents(type, parent), 
+			WindowEvents(type, parent, false), 
 			storage(this), 
 			m_buffer(new ImageBase(Point_i(1000, 1000))),
-			m_worthRedraw(false) {}
+			m_worthRedraw(false) {
+			m_initFinish = true;
+		}
 
 		CtrlStorage 	storage;
 
