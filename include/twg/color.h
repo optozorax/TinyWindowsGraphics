@@ -30,6 +30,15 @@ namespace twg
 			   const int8u g, 
 			   const int8u b, 
 			   const int8u a);
+	/** Возвращает цвет по параметрам оттенка, контраста и яркости. Альфа-канал всегда равен 255. */
+	Color hsl(const int8u h, /// Оттенок
+			  const int8u s, /// Контраст
+			  const int8u l); /// Яркость
+	/** Возвращает цвет по параметрам оттенка, контраста, яркости и альфа-канала. */
+	Color hsla(const int8u h, /// Оттенок
+			   const int8u s, /// Контраст
+			   const int8u l, /// Яркость
+			   const int8u a);
 
 	/** Возвращает копию заданного цвета с другим альфа-каналом. */
 	Color setAlpha(Color clr, int8u a);
@@ -39,14 +48,24 @@ namespace twg
 	Color setGreen(Color clr, int8u g);
 	/** Возвращает копию заданного цвета с другим оттенком синего. */
 	Color setBlue(Color clr, int8u b);
+	/** Возвращает копию заданного цвета с другим оттенком. */
+	int8u setHue(Color clr, int8u h);
+	/** Возвращает копию заданного цвета с другим контрастом. */
+	int8u setSaturation(Color clr, int8u s);
+	/** Возвращает копию заданного цвета с другой яркостью. */
+	int8u setLightness(Color clr, int8u l);
 
 	int8u getAlpha(Color clr);
 	int8u getRed(Color clr);
 	int8u getGreen(Color clr);
 	int8u getBlue(Color clr);
+	int8u getHue(Color clr);
+	int8u getSaturation(Color clr);
+	int8u getLightness(Color clr);
 
 	/** Возвращает какой будет цвет на градиенте двух цветов clr1 и clr2 в позиции pos, которая может меняться от 0 до 1.
 		@note При указании pos больше чем 1, возвращается цвет на 1. Если pos меньше 0, то возвращается цвет на 0.
+		@note Градиент реализуется физически корректно.
 	 */
 	Color getColorBetween(double pos, Color clr1,  Color clr2);
 	Color getGrayHue(double hue);
@@ -59,7 +78,7 @@ namespace twg
 
 	/** Рассчитывает наложение двух полупрозрачных пикселей. */
 	Color computeOverlay(Color upper, Color lower);
-
+	
 	//-------------------------------------------------------------------------
 	const Color Transparent 	= rgba(0, 0, 0, 0);
 
