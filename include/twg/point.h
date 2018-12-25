@@ -21,6 +21,8 @@ namespace twg
 		//---------------------------------------------------------------------
 		T x, y;
 		PointBase(T x = 0, T y = 0) : x(x), y(y) {}
+		template<class T3>
+		PointBase(const T3& t) : x(T(t.x)), y(T(t.y)) {}
 
 		//---------------------------------------------------------------------
 		ComputeConst getLength(void) const;
@@ -220,6 +222,12 @@ inline PointBase<T, T1> operator+(const PointBase<T, T1>& a, const PointBase<T, 
 template<class T, class T1> 
 inline PointBase<T, T1> operator-(const PointBase<T, T1>& a, const PointBase<T, T1> b) {
 	return PointBase<T, T1>(a.x - b.x, a.y - b.y);
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class T1> 
+inline PointBase<T, T1> operator*(const PointBase<T, T1>& a, const PointBase<T, T1> b) {
+	return PointBase<T, T1>(a.x*b.x, a.y*b.y);
 }
 
 //-----------------------------------------------------------------------------
