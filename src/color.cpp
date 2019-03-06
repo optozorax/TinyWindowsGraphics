@@ -24,7 +24,7 @@ Color hsla(const int8u h,
 }
 
 //-----------------------------------------------------------------------------
-int8u setHue(Color clr, int8u h) {
+Color setHue(Color clr, int8u h) {
 	color::rgb<int8u> clr1({getRed(clr), getGreen(clr), getBlue(clr)});
 	color::hsl<int8u> clr2;
 	clr2 = clr1;
@@ -34,7 +34,7 @@ int8u setHue(Color clr, int8u h) {
 }
 
 //-----------------------------------------------------------------------------
-int8u setSaturation(Color clr, int8u s) {
+Color setSaturation(Color clr, int8u s) {
 	color::rgb<int8u> clr1({getRed(clr), getGreen(clr), getBlue(clr)});
 	color::hsl<int8u> clr2;
 	clr2 = clr1;
@@ -44,7 +44,7 @@ int8u setSaturation(Color clr, int8u s) {
 }
 
 //-----------------------------------------------------------------------------
-int8u setLightness(Color clr, int8u l) {
+Color setLightness(Color clr, int8u l) {
 	color::rgb<int8u> clr1({getRed(clr), getGreen(clr), getBlue(clr)});
 	color::hsl<int8u> clr2;
 	clr2 = clr1;

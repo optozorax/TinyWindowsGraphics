@@ -49,11 +49,11 @@ namespace twg
 	/** Возвращает копию заданного цвета с другим оттенком синего. */
 	Color setBlue(Color clr, int8u b);
 	/** Возвращает копию заданного цвета с другим оттенком. */
-	int8u setHue(Color clr, int8u h);
+	Color setHue(Color clr, int8u h);
 	/** Возвращает копию заданного цвета с другим контрастом. */
-	int8u setSaturation(Color clr, int8u s);
+	Color setSaturation(Color clr, int8u s);
 	/** Возвращает копию заданного цвета с другой яркостью. */
-	int8u setLightness(Color clr, int8u l);
+	Color setLightness(Color clr, int8u l);
 
 	int8u getAlpha(Color clr);
 	int8u getRed(Color clr);

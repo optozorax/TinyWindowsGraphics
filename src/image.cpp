@@ -3,6 +3,14 @@
 #include "twg/image.h"
 #include "twg/color.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_WINDOWS_UTF8
+#define STBIW_WINDOWS_UTF8
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STBI_MSC_SECURE_CRT
+#include <stb_image.h>
+#include <stb_image_write.h>
+
 namespace twg
 {
 
@@ -213,6 +221,47 @@ void saveToBmp(ImageBase* img, std::wstring fileName, bool is32bitBmp) {
 
 		AnImage.WriteToFile(fileName.c_str());
 	}
+}
+
+//-----------------------------------------------------------------------------
+void loadFromPngJpg(ImageBase* img, std::wstring fileName) {
+	unsigned char *data;
+	int width, height, n;
+	char buffer[500];
+	stbi_convert_wchar_to_utf8(buffer, 500, fileName.c_str());
+	data = stbi_load(buffer, &width, &height, &n, 4);
+	img->resize({width, height});
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			(*img)[Point_i(j, i)] = rgba(
+				data[4*(i * width + j)+0],
+				data[4*(i * width + j)+1], 
+				data[4*(i * width + j)+2],
+				data[4*(i * width + j)+3]
+			);
+		}
+	}
+	STBI_FREE(data);
+}
+
+//-----------------------------------------------------------------------------
+void saveToPng(ImageBase* img, std::wstring fileName, bool is32bitPng) {
+	unsigned char *data = new unsigned char[img->width() * img->height() * 4];
+	for (int i = 0; i < img->height(); i++) {
+		for (int j = 0; j < img->width(); j++) {
+			int offset = 4*(i * img->width() + j);
+			auto clr = (*img)[Point_i(j, i)];
+			data[offset + 0] = getRed(clr);
+			data[offset + 1] = getGreen(clr);
+			data[offset + 2] = getBlue(clr);
+			data[offset + 3] = getAlpha(clr);
+		}
+	}
+	stbi_write_png_compression_level = 64;
+	char buffer[500];
+	stbiw_convert_wchar_to_utf8(buffer, 500, fileName.c_str());
+	stbi_write_png(buffer, img->width(), img->height(), 4, data, img->width() * 4);
+	delete[] data;
 }
 
 }

@@ -81,6 +81,8 @@ namespace twg
 	//-------------------------------------------------------------------------
 	void loadFromBmp(ImageBase* img, std::wstring fileName);
 	void saveToBmp(ImageBase* img, std::wstring fileName, bool is32bitBmp = false);
+	void loadFromPngJpg(ImageBase* img, std::wstring fileName);
+	void saveToPng(ImageBase* img, std::wstring fileName, bool is32bitPng = true);
 
 //=============================================================================
 //=============================================================================
