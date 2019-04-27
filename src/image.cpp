@@ -11,6 +11,8 @@
 #include <stb_image.h>
 #include <stb_image_write.h>
 
+#include <gif.h>
+
 namespace twg
 {
 
@@ -257,11 +259,44 @@ void saveToPng(ImageBase* img, std::wstring fileName, bool is32bitPng) {
 			data[offset + 3] = getAlpha(clr);
 		}
 	}
-	stbi_write_png_compression_level = 64;
+	stbi_write_png_compression_level = 1;
 	char buffer[500];
 	stbiw_convert_wchar_to_utf8(buffer, 500, fileName.c_str());
 	stbi_write_png(buffer, img->width(), img->height(), 4, data, img->width() * 4);
 	delete[] data;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+void ImageGif::start(Point_i size, const std::string& filename) {
+	writer = new GifWriter;
+	img2 = new uint32_t[size.x * size.y];
+	GifBegin((GifWriter*)(writer), filename.c_str(), size.x, size.y, 3);
+	width = size.x;
+	height = size.y;
+}
+
+//-----------------------------------------------------------------------------
+void ImageGif::process(const ImageBase& img, int delay_ms) {
+	if (img.width() != width || img.height() != height)
+		throw std::exception();
+
+	for (uint32_t x = 0; x < width * height; ++x) {
+		Color color = img.buf()[x];
+		img2[x] = rgb(getBlue(color), getGreen(color), getRed(color));
+	}
+
+	GifWriteFrame((GifWriter*)(writer), (uint8_t*)img2, width, height, 10, 8);
+}
+
+//-----------------------------------------------------------------------------
+void ImageGif::end(void) {
+	GifEnd((GifWriter*)(writer));
+	delete writer;
+	delete[] img2;
 }
 
 }

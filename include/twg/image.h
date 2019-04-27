@@ -56,6 +56,7 @@ namespace twg
 		virtual void resize(Point_i newSize);
 	
 		Color* buf(void);
+		const Color* buf(void) const;
 		int32u width(void) const;
 		int32u height(void) const;
 		Point_i size(void) const;
@@ -83,6 +84,20 @@ namespace twg
 	void saveToBmp(ImageBase* img, std::wstring fileName, bool is32bitBmp = false);
 	void loadFromPngJpg(ImageBase* img, std::wstring fileName);
 	void saveToPng(ImageBase* img, std::wstring fileName, bool is32bitPng = true);
+
+	//-------------------------------------------------------------------------
+	class ImageGif
+	{
+	public:
+		void start(Point_i size, const std::string& filename);
+		void process(const ImageBase& img, int delay_ms);
+		void end(void);
+	private:
+		int width, height;
+		void* writer;
+		uint32_t* img2;
+	};
+
 
 //=============================================================================
 //=============================================================================
@@ -133,6 +148,11 @@ inline const Color& ImageBase::operator[](const Point_i& pos) const {
 
 //-----------------------------------------------------------------------------
 inline Color* ImageBase::buf(void) {
+	return m_buf;
+}
+
+//-----------------------------------------------------------------------------
+inline const Color* ImageBase::buf(void) const {
 	return m_buf;
 }
 
