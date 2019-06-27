@@ -289,7 +289,7 @@ void ImageGif::process(const ImageBase& img, int delay_ms) {
 		img2[x] = rgb(getBlue(color), getGreen(color), getRed(color));
 	}
 
-	GifWriteFrame((GifWriter*)(writer), (uint8_t*)img2, width, height, 10, 8);
+	GifWriteFrame((GifWriter*)(writer), (uint8_t*)img2, width, height, delay_ms, 8);
 }
 
 //-----------------------------------------------------------------------------
